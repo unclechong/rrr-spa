@@ -1,0 +1,7 @@
+.baselayout-logo{
+    width: 200px;
+    height: 31px;
+    background: url('../../static/images/superset-logo@2x.png') no-repeat ;
+    margin: 16px 24px 16px 0;
+    float: left;
+}
