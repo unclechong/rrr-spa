@@ -1,0 +1,20 @@
+.sm-main-area-left {
+    position: fixed;
+    top: 64px;
+    bottom: 0;
+    left: 0px;
+    background: #fff;
+    box-shadow:2px 2px 5px #b9b3b3;
+    -moz-box-shadow:2px 2px 5px #b9b3b3;
+    -webkit-box-shadow:2px 2px 5px #b9b3b3;
+}
+.sm-main-area-right {
+    position: fixed;
+    top: 64px;
+    bottom: 0;
+    right: 0px;
+}
+.sm-main-area-left-tab {
+    width: 100%;
+    text-align: center;
+}
