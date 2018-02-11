@@ -63,22 +63,13 @@ export default class BaseLayout extends React.PureComponent{
                 <Content
                     style={{
                         padding: '0 24px',
+                        background:'#e5e7ea'
                     }}
                 >
-                    <div style={{
-                            background: '#fff',
-                            padding: 24
-                        }}>
+                    <div>
                         {children}
                     </div>
                 </Content>
-                <Footer
-                    style={{
-                        textAlign: 'right'
-                    }}
-                >
-                    Quant-Chi ©2018 Created by unclechong
-                </Footer>
             </Layout>
         )
     }

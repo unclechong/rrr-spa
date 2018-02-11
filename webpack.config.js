@@ -16,14 +16,14 @@ module.exports = {
 
     resolve: {
 	    extensions: [".js", ".json", ".jsx", ".css"],
-        // alias: {
+        alias: {
         //     'app_images': ROOT_PATH + "/src/resources/"+APP_NAME+"/images",
         //     'app_constants': ROOT_PATH + "/src/constants/index",
         //     'app_common': ROOT_PATH + "/src/common",
-        //     'app_component': ROOT_PATH + "/src/component",
+            'app_component': ROOT_PATH + "/app/component",
         //     'app_page': ROOT_PATH + "/src/app",
         //     'app_css': ROOT_PATH + "/src/resources/"+APP_NAME+"/css",
-        // }
+        }
         //别名key 要加引号，否则不识别
     },
 
