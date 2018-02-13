@@ -63,7 +63,7 @@ export default class BaseLayout extends React.PureComponent{
                 <Content
                     style={{
                         padding: '0 24px',
-                        background:'#e5e7ea'
+                        background:'#f7f7f7'
                     }}
                 >
                     <div>
