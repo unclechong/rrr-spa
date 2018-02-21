@@ -2,6 +2,18 @@
     border: 1px solid #ffffff;
     background: #f7f7f7;
     padding: 10px 10px 5px 10px;
+    max-height: 500px;
+    overflow: auto;
+}
+.com-tl-body::-webkit-scrollbar {
+    width: 6px;
+    background-color: #f7f7f7;
+}
+.com-tl-body::-webkit-scrollbar-track {
+    background-color: #f7f7f7;
+}
+.com-tl-body::-webkit-scrollbar-thumb {
+    background: #999;
 }
 .com-tl-body-ul{
     list-style-type:none;
@@ -20,11 +32,11 @@
     white-space: nowrap;
 }
 .com-tl-body-ul-li-active{
-    background: #4164a5;
+    background: #3963b2;
     color: #FFF;
 }
 .com-tl-body-ul-li:hover{
-    background: #4164a5;
+    background: #3963b2;
     color: #fff;
     box-shadow: 2px 2px 5px #b9b3b3;
     -moz-box-shadow: 2px 2px 5px #b9b3b3;

@@ -1,9 +1,9 @@
 import { combineReducers } from 'redux-immutable';
-import reduce from './reduce_1';
+import typesystem from './typesystem';
 
 
 const rootReducer = combineReducers({
-    reduce: reduce
+    typesystem: typesystem
 });
 
 export default rootReducer;
