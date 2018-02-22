@@ -57,24 +57,144 @@ const tabMap = {
     prop:'属性'
 }
 
-
-const formList = [
-    {
-        label:'名称',
-        id:'username',
-        type:'input'
-    },
-    {
-        label:'描述',
-        id:'desc',
-        type:'inputArea'
-    },
-    {
-        label:'图片',
-        id:'img',
-        type:'uploadImg'
-    }
-]
+const formListMap = {
+    entity:[
+        {
+            label:'名称',
+            id:'username',
+            type:'input'
+        },
+        {
+            label:'描述',
+            id:'desc',
+            type:'inputArea'
+        },
+        {
+            label:'图片',
+            id:'img',
+            type:'uploadImg'
+        }
+    ],
+    event:[
+        {
+            label:'名称',
+            id:'username',
+            type:'input'
+        },
+        {
+            label:'描述',
+            id:'desc',
+            type:'inputArea'
+        },
+    ],
+    relation:[
+        {
+            label:'名称',
+            id:'username',
+            type:'input'
+        },
+        {
+            label:'描述',
+            id:'desc',
+            type:'inputArea'
+        },
+        {
+            label:'对象1',
+            id:'obj1',
+            type:'select',
+            options:[
+                {
+                    label:'opt1',
+                    value:'o1'
+                },
+                {
+                    label:'opt2',
+                    value:'o2'
+                },
+                {
+                    label:'opt3',
+                    value:'o3'
+                }
+            ]
+        },
+        {
+            label:'对象2',
+            id:'obj2',
+            type:'select',
+            options:[
+                {
+                    label:'opt1',
+                    value:'o1'
+                },
+                {
+                    label:'opt2',
+                    value:'o2'
+                },
+                {
+                    label:'opt3',
+                    value:'o3'
+                }
+            ]
+        },
+    ],
+    prop:[
+        {
+            label:'名称',
+            id:'username',
+            type:'input'
+        },
+        {
+            label:'对象1',
+            id:'obj1',
+            type:'select',
+            options:[
+                {
+                    label:'opt1',
+                    value:'o1'
+                },
+                {
+                    label:'opt2',
+                    value:'o2'
+                },
+                {
+                    label:'opt3',
+                    value:'o3'
+                }
+            ]
+        },
+        {
+            label:'单选',
+            id:'obj2',
+            type:'treeselect',
+            treeData:[{
+              label: 'Node1',
+              value: '0-0',
+              key: '0-0',
+              disabled:true,
+              // isLeaf:true,
+              children: [{
+                label: 'Child Node1',
+                value: '0-0-1',
+                key: '0-0-1',
+              }, {
+                label: 'Child Node2',
+                value: '0-0-2',
+                key: '0-0-2',
+              }],
+            }, {
+            disabled:true,
+              label: 'Node2',
+              value: '0-1',
+              key: '0-1',
+            }]
+        },
+        {
+            label:'描述',
+            id:'desc',
+            type:'inputArea'
+        }
+    ]
+}
 
 @Form.create()
 @connect(mapStateToProps, mapDispatchToProps)
@@ -89,6 +209,7 @@ export default class TypeSystem extends React.Component {
     componentDidMount(){
         // this.props.actions.changeActiveTag();
         this.props.actions.changeTab(this.tabDefaultKey);
+
     }
 
     tabOnChange = (e) => {
@@ -107,52 +228,60 @@ export default class TypeSystem extends React.Component {
         this.props.actions.changeActiveTag(e);
     }
 
-    check = () => {
-  this.props.form.validateFields(
-    (err,values) => {
-      if (!err) {
-        console.info(values);
-      }
-    },
-  );
-}
-handleChange = (e) => {
-  this.setState({
-    checkNick: e.target.checked,
-  }, () => {
-    this.props.form.validateFields(['nickname'], { force: true });
-  });
-}
+    formCheck = () => {
+        this.props.form.validateFields(
+            (err,values) => {
+                if (!err) {
+                    // console.log( file.url || file.thumbUrl);
+                    // var fr = new FileReader();
+                    console.log(values);
+                    // fr.readAsDataURL(values.img[0]);  // 将文件读取为Data URL
+                    //
+                    // fr.onload = function(e) {
+                    //     var result = e.target.result;
+                    //     console.log(result);
+                    // }
+                    // console.info(values);
+                }
+            },
+        );
+    }
 
-handlePreview = (file) => {
-  this.setState({
-    previewImage: file.url || file.thumbUrl,
-    previewVisible: true,
-  });
-}
-
+    formCancel = () => {
+        this.props.form.resetFields();
+        // this.props.form.setFieldsValue({img:[{
+        //   uid: -1,
+        //   name: 'xxx.png',
+        //   status: 'done',
+        //   url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+        //   thumbUrl: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+        // }, {
+        //   uid: -2,
+        //   name: 'yyy.png',
+        //   status: 'done',
+        //   url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+        //   thumbUrl: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+        // }]})
+    }
 
     //带两个参数，返回类型
     //是否是编辑， 如果是编辑状态，将参数填写去，是添加状态返回空的form
     getAddArea = () => {
         const { getFieldDecorator } = this.props.form;
-        const formItemLayout = {
-            labelCol: { span: 4 },
-            wrapperCol: { span: 8 },
-        };
-        const formTailLayout = {
-            labelCol: { span: 12 },
-            wrapperCol: { span: 12, offset: 4 },
-        };
         return (
-        <div className='ts-mainarea-right-body'>
-            <div className='ts-mainarea-right-body-title'>{tabMap[this.props.typesystem.currentTab]}类型编辑</div>
-            <div>
-                <FormItemFactory getFieldDecorator={getFieldDecorator} formList={formList} onSubmit={this.check} />
+            <div className='ts-mainarea-right-body'>
+                <div className='ts-mainarea-right-body-title'>{tabMap[this.props.typesystem.currentTab]}类型编辑</div>
+                <div>
+                    <FormItemFactory
+                        getFieldDecorator={getFieldDecorator}
+                        formList={formListMap[this.props.typesystem.currentTab]}
+                        onSubmit={this.formCheck}
+                        onCancel={this.formCancel}
+                    />
+                </div>
             </div>
-        </div>
-    )
-}
+        )
+    }
 
     addCurrentType = () => {
         this.props.actions.showAddArea(true);

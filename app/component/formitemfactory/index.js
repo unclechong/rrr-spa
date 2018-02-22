@@ -1,6 +1,9 @@
-import { Input, Button, Form, Upload, Modal } from 'antd';
+import { Input, Button, Form, Upload, Modal, Select,TreeSelect, message,Icon } from 'antd';
 const FormItem = Form.Item;
+const Option = Select.Option;
 const { TextArea } = Input;
+const SHOW_ALL = TreeSelect.SHOW_ALL;
+import UploadForm from './uploadform';
 
 const formItemLayout = {
     labelCol: { span: 4 },
@@ -11,11 +14,14 @@ const formTailLayout = {
     wrapperCol: { span: 12, offset: 4 },
 };
 
-const normFile = (e) => {
-    if (Array.isArray(e)) {
-        return e;
+const normFile = ({file}) => {
+    const fr = new FileReader();
+    fr.readAsDataURL(file);  // 将文件读取为Data URL
+
+    fr.onload = function(e) {
+        return e.target.result;
     }
-    return e && e.fileList;
+    return '111'
 }
 
 const returnFormItem = (getFieldDecorator,itemData) => {
@@ -49,38 +55,90 @@ const returnFormItem = (getFieldDecorator,itemData) => {
             </FormItem>
         )
     }else if (type === 'uploadImg') {
+        // <Icon type={this.state.loading ? 'loading' : 'plus'} />
+        const uploadButton = (
+            <div>
+                <Icon type='plus' />
+                <div style={{marginTop: 8,color: '#666'}} >Upload</div>
+            </div>
+        );
         return (
             <FormItem {...formItemLayout} label={label} key={id}>
                 {getFieldDecorator(id, {
                     valuePropName: 'fileList',
                     getValueFromEvent: normFile,
                 })(
-                     // <div className="clearfix">
-                    <Upload
-                        name="logo"
-                        listType="picture"
-                        beforeUpload={(file)=>{
-                        // console.log( file.url || file.thumbUrl);
-                        // var fr = new FileReader();
-                        // fr.readAsDataURL(file);  // 将文件读取为Data URL
-                        //
-                        // fr.onload = function(e) {
-                        //     var result = e.target.result;
-                        //     console.log(result);
-                        // }
-
-                        return false}
+                    <UploadForm />
+                )}
+            </FormItem>
+        )
+    }else if (type === 'select') {
+        return (
+            <FormItem {...formItemLayout} label={label} key={id}>
+                {getFieldDecorator(id, {
+                    rules: [{
+                        required: true,
+                        message: itemData.message || `请选择${label}`,
+                    }]
+                })(
+                    <Select placeholder={itemData.placeholder || `请选择${label}`} style={{width:'100%'}}>
+                        {
+                            itemData.options.map(option=><Option value={option.value} key={option.value}>{option.label}</Option>)
                         }
-                    >
-                        <Button type="dashed">选择图片</Button>
-                    </Upload>
+                    </Select>
+                )}
+            </FormItem>
+        )
+    }else if (type === 'multiple') {
+        return (
+            <FormItem {...formItemLayout} label={label} key={id}>
+                {getFieldDecorator(id, {
+                    rules: [{
+                        required: true,
+                        message: itemData.message || `请选择${label}`,
+                        type: 'array'
+                    }]
+                })(
+                    <Select mode="multiple" allowClear placeholder={itemData.placeholder || `请选择${label}`} style={{width:'100%'}}>
+                        {
+                            itemData.options.map(option=><Option value={option.value} key={option.value}>{option.label}</Option>)
+                        }
+                    </Select>
+                )}
+            </FormItem>
+        )
+    }else if (type === 'treeselect') {
+        const props = {
+            showSearch:true,
+            style:{width:'100%'},
+            dropdownStyle:{ maxHeight: 400, overflow: 'auto' },
+            placeholder:itemData.placeholder || `请选择${label}`,
+            allowClear:true,
+            multiple:true,
+            treeData:itemData.treeData,
+            treeDefaultExpandAll:itemData.treeDefaultExpandAll || true,
+            treeNodeFilterProp:'label',
+            // treeCheckStrictly:true
+            showCheckedStrategy: SHOW_ALL,
+            // treeCheckable:true
+        }
+        return (
+            <FormItem {...formItemLayout} label={label} key={id}>
+                {getFieldDecorator(id, {
+                    rules: [{
+                        required: true,
+                        message: itemData.message || `请选择${label}`,
+                        type: 'array'
+                    }]
+                })(
+                    <TreeSelect {...props} />
                 )}
             </FormItem>
         )
     }
 }
 
-const FormItemFactory = ({getFieldDecorator,formList,onSubmit}) => {
+const FormItemFactory = ({getFieldDecorator,formList,onSubmit,onCancel}) => {
     return (
         <div>
             {
@@ -88,7 +146,7 @@ const FormItemFactory = ({getFieldDecorator,formList,onSubmit}) => {
             }
             <FormItem {...formTailLayout}>
                 <Button type="primary" icon="check" style={{marginRight:'7%'}} onClick={onSubmit}>保存</Button>
-                <Button icon="close">清空</Button>
+                <Button icon="close" onClick={onCancel}>清空</Button>
             </FormItem>
         </div>
     )
