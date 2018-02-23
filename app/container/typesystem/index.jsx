@@ -10,6 +10,9 @@ import './index.css';
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux';
 import * as actions from 'actions/typesystem';
+
+import typesystemApi from 'app_api/typesystemApi';
+
 const taglist = [
     {
         key:'1',
@@ -71,7 +74,7 @@ const formListMap = {
         },
         {
             label:'图片',
-            id:'img',
+            id:'img444',
             type:'uploadImg'
         }
     ],
@@ -208,6 +211,10 @@ export default class TypeSystem extends React.Component {
 
     componentDidMount(){
         // this.props.actions.changeActiveTag();
+        // typesystemApi.gettargetlist().then(res=>{
+        //     console.log(res.data);
+        // });
+        this.props.actions.gettargetlist();
         this.props.actions.changeTab(this.tabDefaultKey);
 
     }
@@ -249,24 +256,12 @@ export default class TypeSystem extends React.Component {
 
     formCancel = () => {
         this.props.form.resetFields();
-        // this.props.form.setFieldsValue({img:[{
-        //   uid: -1,
-        //   name: 'xxx.png',
-        //   status: 'done',
-        //   url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-        //   thumbUrl: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-        // }, {
-        //   uid: -2,
-        //   name: 'yyy.png',
-        //   status: 'done',
-        //   url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-        //   thumbUrl: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-        // }]})
+        // this.props.form.setFieldsValue({img:''})
     }
 
     //带两个参数，返回类型
     //是否是编辑， 如果是编辑状态，将参数填写去，是添加状态返回空的form
-    getAddArea = () => {
+    getEditArea = () => {
         const { getFieldDecorator } = this.props.form;
         return (
             <div className='ts-mainarea-right-body'>
@@ -288,7 +283,6 @@ export default class TypeSystem extends React.Component {
     }
 
     render() {
-        console.log('render');
         const {typesystem:{activeTag,activeTagName,currentTab,showAddArea}} = this.props;
         const SearchInput = (
             <Search
@@ -333,7 +327,7 @@ export default class TypeSystem extends React.Component {
                                 <Button style={{marginRight:10,color:'red'}} disabled={!activeTag}>删除{tabMap[currentTab]}类型</Button>
                             </span>
                         </div>
-                        {showAddArea?this.getAddArea():null}
+                        {showAddArea?this.getEditArea():null}
                     </div>
                 }
             />

@@ -15,6 +15,10 @@ const showAddArea = isShow => ({
     type:'SHOW_ADD_AREA',
     isShow
 })
+
+const gettargetlist = () => ({
+    type:'GET_TARGET_LIST'
+})
 // const isAdded = data => ({
 //     type:'ADD_TODO',
 //     name:data
@@ -36,4 +40,4 @@ const showAddArea = isShow => ({
 //     }
 // }
 
-export { changeActiveTag,changeTab,showAddArea }
+export { changeActiveTag,changeTab,showAddArea,gettargetlist }

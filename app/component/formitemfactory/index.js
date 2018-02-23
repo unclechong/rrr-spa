@@ -1,8 +1,8 @@
-import { Input, Button, Form, Upload, Modal, Select,TreeSelect, message,Icon } from 'antd';
+import { Input, Button, Form, Select,TreeSelect } from 'antd';
 const FormItem = Form.Item;
 const Option = Select.Option;
 const { TextArea } = Input;
-const SHOW_ALL = TreeSelect.SHOW_ALL;
+// const SHOW_ALL = TreeSelect.SHOW_ALL;
 import UploadForm from './uploadform';
 
 const formItemLayout = {
@@ -14,14 +14,13 @@ const formTailLayout = {
     wrapperCol: { span: 12, offset: 4 },
 };
 
-const normFile = ({file}) => {
-    const fr = new FileReader();
-    fr.readAsDataURL(file);  // 将文件读取为Data URL
-
-    fr.onload = function(e) {
-        return e.target.result;
+const checkFieldNull = (rule, value, callback) => {
+    if (value === '' || value === undefined || value.length === 0) {
+        callback(rule.message);
+        return;
+    }else {
+        callback();
     }
-    return '111'
 }
 
 const returnFormItem = (getFieldDecorator,itemData) => {
@@ -32,7 +31,7 @@ const returnFormItem = (getFieldDecorator,itemData) => {
                 {getFieldDecorator(id, {
                     // initialValue:'1',
                     rules: [{
-                        required: true,
+                        validator: checkFieldNull ,
                         message: itemData.message || `请输入${label}`,
                     }],
                 })(
@@ -46,7 +45,7 @@ const returnFormItem = (getFieldDecorator,itemData) => {
                 {getFieldDecorator(id, {
                     // initialValue:'1',
                     rules: [{
-                        required: true,
+                        validator: checkFieldNull ,
                         message: itemData.message || `请输入${label}`,
                     }],
                 })(
@@ -55,18 +54,15 @@ const returnFormItem = (getFieldDecorator,itemData) => {
             </FormItem>
         )
     }else if (type === 'uploadImg') {
-        // <Icon type={this.state.loading ? 'loading' : 'plus'} />
-        const uploadButton = (
-            <div>
-                <Icon type='plus' />
-                <div style={{marginTop: 8,color: '#666'}} >Upload</div>
-            </div>
-        );
         return (
             <FormItem {...formItemLayout} label={label} key={id}>
                 {getFieldDecorator(id, {
-                    valuePropName: 'fileList',
-                    getValueFromEvent: normFile,
+                    valuePropName:'img',
+                    // initialValue:'',
+                    rules: [{
+                        validator: checkFieldNull ,
+                        message: itemData.message || `请上传图片`,
+                    }],
                 })(
                     <UploadForm />
                 )}
@@ -77,7 +73,7 @@ const returnFormItem = (getFieldDecorator,itemData) => {
             <FormItem {...formItemLayout} label={label} key={id}>
                 {getFieldDecorator(id, {
                     rules: [{
-                        required: true,
+                        validator: checkFieldNull ,
                         message: itemData.message || `请选择${label}`,
                     }]
                 })(
@@ -94,7 +90,7 @@ const returnFormItem = (getFieldDecorator,itemData) => {
             <FormItem {...formItemLayout} label={label} key={id}>
                 {getFieldDecorator(id, {
                     rules: [{
-                        required: true,
+                        validator: checkFieldNull ,
                         message: itemData.message || `请选择${label}`,
                         type: 'array'
                     }]
@@ -119,14 +115,14 @@ const returnFormItem = (getFieldDecorator,itemData) => {
             treeDefaultExpandAll:itemData.treeDefaultExpandAll || true,
             treeNodeFilterProp:'label',
             // treeCheckStrictly:true
-            showCheckedStrategy: SHOW_ALL,
+            // showCheckedStrategy: SHOW_ALL,
             // treeCheckable:true
         }
         return (
             <FormItem {...formItemLayout} label={label} key={id}>
                 {getFieldDecorator(id, {
                     rules: [{
-                        required: true,
+                        validator: checkFieldNull ,
                         message: itemData.message || `请选择${label}`,
                         type: 'array'
                     }]

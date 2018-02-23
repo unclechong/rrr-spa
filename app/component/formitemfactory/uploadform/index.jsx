@@ -1,32 +1,32 @@
-import { Input, Button, Form, Upload, Modal, Select,TreeSelect, message,Icon } from 'antd';
+import { Button, Upload, Modal, message, Icon } from 'antd';
 import './index.css';
+
+const uploadLocale = {
+    previewFile:"预览",
+    removeFile:"删除",
+    uploadError:"上传失败",
+    uploading:"正在上传..."
+}
 
 export default class UploadForm extends React.Component{
     constructor(props){
         super(props);
 
-        const value = this.props.value || {};
+        const value = this.props.img || undefined;
         this.state = {
-            uploading:false,
+            previewVisible:false,
+            uploading:value?true:false,
             loading:false,
-            imgURL:value.imgURL || null
+            imgURL:value || undefined
         }
         this.isOK = false;
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.id === 'img') {
-            //如果饭base64 就直接放进去
-            this.isOK = true;
-            this.uploadFormHandleChange({file:nextProps.fileList[0]})
+    componentWillReceiveProps(nextProps){
+        if ('img' in nextProps) {
+            const imgURL = nextProps.img;
+            this.setState({imgURL,uploading:!!imgURL});
         }
-        console.log(nextProps);
-        // if ('value' in nextProps) {
-        //     console.log(nextProps.value)
-        //     const value = nextProps.value;
-        //     console.log(value);
-        //     this.setState(value);
-        // }
     }
 
     getBase64 = (img, callback) => {
@@ -62,20 +62,19 @@ export default class UploadForm extends React.Component{
                     loading:false,
                     imgURL:imageUrl
                 })
-                console.log(this.state);
-                // this.props.onChange(Object.assign({}, this.state.value, {img:imageUrl}));
+                this.props.onChange(imageUrl);
                 this.isOK = false;
             });
         }
     }
 
-    triggerChange = (changedValue) => {
-        // Should provide an event to pass value to Form.
-        const onChange = this.props.onChange;
-        if (onChange) {
-            onChange(Object.assign({}, this.state, changedValue));
-        }
-        console.log(111);
+    handleCancel = () => this.setState({ previewVisible: false })
+
+    uploadFormHandlePreview = () => this.setState({ previewVisible: true })
+
+    uploadFormHandleRemove = () => {
+        this.setState({ imgURL: undefined,uploading:false });
+        this.props.onChange(undefined);
     }
 
     render(){
@@ -86,17 +85,24 @@ export default class UploadForm extends React.Component{
             </div>
         );
         return (
-            <Upload
-                listType="picture-card"
-                className="avatar-uploader"
-                // onPreview={this.uploadFormHandlePreview}
-
-                name="logo"
-                beforeUpload={this.uploadFormBeforeUpload}
-                onChange={this.uploadFormHandleChange}
-            >
-                {this.state.uploading ? <img style={{width:88,height:88}} src={this.state.imgURL} alt="" /> : uploadButton}
-            </Upload>
+            <div className="clearfix">
+                <Upload
+                    listType="picture-card"
+                    className="avatar-uploader"
+                    // onPreview={this.uploadFormHandlePreview}
+                    fileList={this.state.imgURL?[{uid: -1,url:this.state.imgURL}]:undefined}
+                    locale={uploadLocale}
+                    onPreview={this.uploadFormHandlePreview}
+                    beforeUpload={this.uploadFormBeforeUpload}
+                    onChange={this.uploadFormHandleChange}
+                    onRemove={this.uploadFormHandleRemove}
+                >
+                    {this.state.uploading?null:uploadButton}
+                </Upload>
+                <Modal visible={this.state.previewVisible} footer={null} onCancel={this.handleCancel}>
+                    <img alt="预览图片" style={{ width: '100%' }} src={this.state.imgURL} />
+                </Modal>
+            </div>
         )
     }
 }

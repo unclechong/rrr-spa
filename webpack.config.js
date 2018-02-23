@@ -21,8 +21,8 @@ module.exports = {
         //     'app_constants': ROOT_PATH + "/src/constants/index",
         //     'app_common': ROOT_PATH + "/src/common",
             'app_component': ROOT_PATH + "/app/component",
-            'actions': ROOT_PATH + "/app/actions"
-        //     'app_page': ROOT_PATH + "/src/app",
+            'actions': ROOT_PATH + "/app/actions",
+            'app_api': ROOT_PATH + "/app/api"
         //     'app_css': ROOT_PATH + "/src/resources/"+APP_NAME+"/css",
         }
         //别名key 要加引号，否则不识别

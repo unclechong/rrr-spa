@@ -1,0 +1,84 @@
+{
+	"header": {
+		"message": "api request success",
+		"code": "200"
+	},
+	"body": {
+		"taglist": {
+			"event": [{
+					"key": "event-1",
+					"value": "event-1",
+					"label": "event-aaa"
+				},
+				{
+					"key": "event-2",
+					"value": "event-2",
+					"label": "event-bbb"
+				},
+				{
+					"key": "event-3",
+					"value": "event-3",
+					"label": "event-ccc"
+				}
+			],
+			"relation": [{
+					"key": "relation-1",
+					"value": "relation-1",
+					"label": "relation-aaa"
+				},
+				{
+					"key": "relation-2",
+					"value": "relation-2",
+					"label": "relation-bbb"
+				},
+				{
+					"key": "relation-3",
+					"value": "relation-3",
+					"label": "relation-ccc"
+				},
+				{
+					"key": "relation-4",
+					"value": "relation-4",
+					"label": "relation-ddd"
+				}
+			],
+			"entity": [{
+					"key": "entity-1",
+					"value": "entity-1",
+					"label": "entity-aaa"
+				},
+				{
+					"key": "entity-2",
+					"value": "entity-2",
+					"label": "entity-bbb"
+				}
+			],
+			"prop": [{
+					"key": "prop-1",
+					"value": "prop-1",
+					"label": "prop-aaa"
+				},
+				{
+					"key": "prop-2",
+					"value": "prop-2",
+					"label": "prop-bbb"
+				},
+				{
+					"key": "prop-3",
+					"value": "prop-3",
+					"label": "prop-ccc"
+				},
+				{
+					"key": "prop-4",
+					"value": "prop-4",
+					"label": "prop-ddd"
+				},
+				{
+					"key": "prop-5",
+					"value": "prop-5",
+					"label": "prop-eee"
+				}
+			]
+		}
+	}
+}
