@@ -4,9 +4,9 @@
     bottom: 0;
     left: 0px;
     background: #fff;
-    box-shadow:2px 2px 5px #b9b3b3;
-    -moz-box-shadow:2px 2px 5px #b9b3b3;
-    -webkit-box-shadow:2px 2px 5px #b9b3b3;
+    box-shadow:2px 2px 5px #868685;
+    -moz-box-shadow:2px 2px 5px #868685;
+    -webkit-box-shadow:2px 2px 5px #868685;
 }
 .sm-main-area-right {
     position: fixed;
