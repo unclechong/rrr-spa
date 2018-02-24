@@ -1,0 +1,25 @@
+{
+    "header": {
+		"message": "api request success",
+		"code": "200"
+	},
+	"body": {
+        "result":[
+            {
+				"key": "entity-1",
+				"value": "entity-1",
+				"label": "search-aaa"
+			},
+			{
+				"key": "search-2",
+				"value": "search-2",
+				"label": "search-bbb"
+			},
+			{
+				"key": "search-3",
+				"value": "search-3",
+				"label": "search-ccc"
+			}
+        ]
+    }
+}

@@ -8,8 +8,9 @@ const sendPost = (url,method='get',params) => {
         url,
         sendParams
     )
-    .then(response=>{
-        return response.data
+    .then(res=>{
+        const {data:{header,body}} = res;
+        return header.code === '200' ? body : false
     })
     .catch(err=>{
         console.log(err);

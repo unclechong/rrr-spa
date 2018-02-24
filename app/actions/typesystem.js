@@ -1,43 +1,44 @@
 import { fromJS } from 'immutable';
 
 
-const changeActiveTag = e => ({
+export const changeActiveTag = tag => ({
     type:'CHANGE_ACTIVE_TAG',
-    e
+    tag
 })
 
-const changeTab = currentTab => ({
-    type:'CHANGE_TAB',
-    currentTab
-})
+export const changeTab = currentTab => {
+    return (dispatch,getState) => {
+        dispatch(resetTaglist())
+        dispatch({
+            type:'CHANGE_TAB',
+            currentTab
+        })
+    }
+}
 
-const showAddArea = isShow => ({
+export const showAddArea = isShow => ({
     type:'SHOW_ADD_AREA',
     isShow
 })
 
-const gettargetlist = () => ({
-    type:'GET_TARGET_LIST'
+export const resetTaglist = () => ({
+    type:'typesystem/RESET_TAGLIST'
 })
-// const isAdded = data => ({
-//     type:'ADD_TODO',
-//     name:data
-// })
-//
-// const isAdding = () => ({
-//     type:'IS_ADDING',
-// })
-//
-// const addTodo = (n) => {
-//     return (dispatch,getState) => {
-//         dispatch(isAdding())
-//         setTimeout(()=>{
-//             dispatch(isAdded(fromJS('add')))
-//         },1500)
-//         // axios.get('./index.json').then(data=>{
-//         //     dispatch(isAdded(fromJS(data.data.name)))
-//         // })
-//     }
-// }
 
-export { changeActiveTag,changeTab,showAddArea,gettargetlist }
+export const gettargetlist = () => ({
+    type:'typesystem/saga/GET_TARGET_LIST'
+})
+
+export const cleanSearch = () => {
+    return (dispatch,getState) => {
+        dispatch(resetTaglist())
+        dispatch({
+            type:'typesystem/CLEAN_SEARCH_LIST'
+        })
+    }
+}
+
+export const search = params => ({
+    type:'typesystem/saga/SEARCH',
+    params
+})

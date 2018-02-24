@@ -4,16 +4,18 @@ import typesystemApi from 'app_api/typesystemApi';
 
 function* initTypesystem() {
     try {
-        const user = yield call(typesystemApi.gettargetlist);
-        yield put({type: 'FETCH_USER_SUCCESS', payload: user});
+        const data = yield call(typesystemApi.getTagList);
+        yield put({type: 'typesystem/GET_TAGLIST_OK', payload: data.taglist});
     } catch (error) {
         yield put({type: 'FETCH_FAILED', error});
     }
 }
 
-function* sagaTakeTest() {
+function* search({params}) {
     try {
-        yield take('GET_TARGET_LIST');
+        const data = yield call(typesystemApi.search, params);
+        yield put({type: 'typesystem/RESET_TAGLIST'});
+        yield put({type: 'typesystem/SEARCH_OK', payload: data.result});
     } catch (error) {
         yield put({type: 'FETCH_FAILED', error});
     }
@@ -21,8 +23,8 @@ function* sagaTakeTest() {
 
 function* watchCreateLesson() {
     yield[
-        takeEvery('GET_TARGET_LIST', initTypesystem),
-        fork(sagaTakeTest)
+        takeLatest('typesystem/saga/GET_TARGET_LIST', initTypesystem),
+        takeLatest('typesystem/saga/SEARCH', search)
     ];
 }
 

@@ -2,49 +2,16 @@ import { Tabs, Input, Button,Form, Upload,Modal } from 'antd';
 const FormItem = Form.Item;
 const TabPane = Tabs.TabPane;
 const { TextArea,Search } = Input;
-import PageContainer from 'app_component/pagecontainer';
-import TagList from 'app_component/taglist';
-import FormItemFactory from 'app_component/FormItemFactory';
 
-import './index.css';
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux';
 import * as actions from 'actions/typesystem';
 
-import typesystemApi from 'app_api/typesystemApi';
+import PageContainer from 'app_component/pagecontainer';
+import TagList from 'app_component/taglist';
+import FormItemFactory from 'app_component/FormItemFactory';
+import './index.css';
 
-const taglist = [
-    {
-        key:'1',
-        value:'1',
-        label:'1133333333333333333333333333333333333333333333333331'
-    },
-    {
-        key:'2',
-        value:'2',
-        label:'222'
-    },
-    {
-        key:'3',
-        value:'3',
-        label:'333'
-    },
-    {
-        key:'4',
-        value:'4',
-        label:'444'
-    },
-    {
-        key:'5',
-        value:'5',
-        label:'555'
-    },
-    {
-        key:'6',
-        value:'6',
-        label:'666'
-    }
-]
 const mapStateToProps = state => {
     return {typesystem: state.get('typesystem').toJS()}
 }
@@ -203,30 +170,23 @@ const formListMap = {
 @connect(mapStateToProps, mapDispatchToProps)
 export default class TypeSystem extends React.Component {
 
-    constructor(props) {
-        super(props);
-
-        this.tabDefaultKey = 'entity';
-    }
-
     componentDidMount(){
-        // this.props.actions.changeActiveTag();
-        // typesystemApi.gettargetlist().then(res=>{
-        //     console.log(res.data);
-        // });
-
         //获取页面左侧类型列表
         this.props.actions.gettargetlist();
-        this.props.actions.changeTab(this.tabDefaultKey);
-
     }
 
     tabOnChange = (e) => {
+        //切换tab
         this.props.actions.changeTab(e);
     }
 
-    handleSearchEvent = (e) => {
-        console.log(e);
+    handleSearchEvent = (keyword) => {
+        if (keyword === '') {
+            this.props.actions.cleanSearch();
+            return
+        }
+        //搜索
+        this.props.actions.search({keyword,type:this.props.typesystem.currentTab});
     }
 
     getTabPaneComponent(type){
@@ -234,9 +194,19 @@ export default class TypeSystem extends React.Component {
     }
 
     taglistOnClick = (activeTag,e) => {
-        this.props.actions.changeActiveTag(e);
+        //选择列表tag
+        if (activeTag === this.props.typesystem.activeTag) {
+            this.props.actions.resetTaglist();
+        }else {
+            this.props.actions.changeActiveTag(e);
+        }
     }
 
+    addCurrentType = () => {
+        this.props.actions.showAddArea(true);
+    }
+
+    //form提交
     formCheck = () => {
         this.props.form.validateFields(
             (err,values) => {
@@ -256,6 +226,7 @@ export default class TypeSystem extends React.Component {
         );
     }
 
+    //清空form
     formCancel = () => {
         this.props.form.resetFields();
         // this.props.form.setFieldsValue({img:''})
@@ -280,22 +251,22 @@ export default class TypeSystem extends React.Component {
         )
     }
 
-    addCurrentType = () => {
-        this.props.actions.showAddArea(true);
-    }
-
     render() {
-        const {typesystem:{activeTag,activeTagName,currentTab,showAddArea}} = this.props;
+        console.log('in render');
+        const {typesystem:{activeTag,activeTagName,isSearch,searchResultList,
+            currentTab,showAddArea,tagList}} = this.props;
+        const renderTagList = isSearch?searchResultList:tagList[currentTab] || [];
         const SearchInput = (
             <Search
                 placeholder="请输入关键字"
+                onPressEnter={(e)=>{this.handleSearchEvent(e)}}
                 onSearch={(e)=>{this.handleSearchEvent(e)}}
                 enterButton
                 style={{marginBottom:10}}
             />
         )
         const areaLeft = (
-            <Tabs defaultActiveKey={this.tabDefaultKey} className='ts-main-area-left-tab' onChange={e=>{this.tabOnChange(e)}}>
+            <Tabs activeKey={currentTab} className='ts-main-area-left-tab' onChange={e=>{this.tabOnChange(e)}}>
                 <TabPane tab="实体" key="entity"></TabPane>
                 <TabPane tab="事件" key="event"></TabPane>
                 <TabPane tab="关系" key="relation"></TabPane>
@@ -310,7 +281,7 @@ export default class TypeSystem extends React.Component {
                         {SearchInput}
                         <TagList
                             style={{maxHeight:'70%'}}
-                            data={taglist}
+                            data={renderTagList}
                             onClick={this.taglistOnClick}
                             activeTag={activeTag}
                         />
