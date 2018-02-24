@@ -2,7 +2,7 @@ import {takeEvery, takeLatest} from 'redux-saga';
 import {call, put, take, fork} from 'redux-saga/effects';
 import typesystemApi from 'app_api/typesystemApi';
 
-function* initTypesystem() {
+function* getTagList() {
     try {
         const data = yield call(typesystemApi.getTagList);
         yield put({type: 'typesystem/GET_TAGLIST_OK', payload: data.taglist});
@@ -23,7 +23,7 @@ function* search({params}) {
 
 function* watchCreateLesson() {
     yield[
-        takeLatest('typesystem/saga/GET_TARGET_LIST', initTypesystem),
+        takeLatest('typesystem/saga/GET_TARGET_LIST', getTagList),
         takeLatest('typesystem/saga/SEARCH', search)
     ];
 }
