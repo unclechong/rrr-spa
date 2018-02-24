@@ -1,7 +1,7 @@
 .com-tl-body{
     border: 1px solid #ffffff;
     background: #f7f7f7;
-    padding: 10px 10px 5px 10px;
+    padding: 10px 10px 5px 0px;
     max-height: 500px;
     overflow: auto;
 }
@@ -32,12 +32,15 @@
     white-space: nowrap;
 }
 .com-tl-body-ul-li-active{
-    background: #3963b2;
-    color: #FFF;
+    color: #3963b2;
+    border-left: 5px solid #3963b2;
+    box-shadow: 2px 2px 5px #868685;
+    -moz-box-shadow: 2px 2px 5px #868685;
+    -webkit-box-shadow: 2px 2px 5px #868685;
 }
 .com-tl-body-ul-li:hover{
-    background: #3963b2;
-    color: #fff;
+    /* color: #3963b2; */
+    /* border-left: 5px solid #3963b2; */
     box-shadow: 2px 2px 5px #868685;
     -moz-box-shadow: 2px 2px 5px #868685;
     -webkit-box-shadow: 2px 2px 5px #868685;
