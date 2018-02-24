@@ -313,7 +313,7 @@ export default class TypeSystem extends React.Component {
                                 <Button style={{marginRight:10,color:'red'}} disabled={!activeTag}>删除{tabMap[currentTab]}类型</Button>
                             </span>
                         </div>
-                        {showAddArea?this.getEditArea():null}
+                        {showAddArea?this.getEditArea():<div className='ts-mainarea-right-logo'>supermind</div>}
                     </div>
                 }
             />

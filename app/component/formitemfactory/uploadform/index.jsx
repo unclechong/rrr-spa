@@ -89,7 +89,6 @@ export default class UploadForm extends React.Component{
                 <Upload
                     listType="picture-card"
                     className="avatar-uploader"
-                    // onPreview={this.uploadFormHandlePreview}
                     fileList={this.state.imgURL?[{uid: -1,url:this.state.imgURL}]:undefined}
                     locale={uploadLocale}
                     onPreview={this.uploadFormHandlePreview}
