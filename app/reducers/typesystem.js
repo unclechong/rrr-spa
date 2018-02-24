@@ -28,7 +28,6 @@ export default (state = initialState, action) => {
             return state.set('isSearch', false)
                         .set('searchResultList', []);
         case 'typesystem/RESET_TAGLIST':
-        console.log(111);
             return state.set('activeTag', null)
                         .set('activeTagName', null);
         case 'typesystem/GET_TAGLIST_OK':

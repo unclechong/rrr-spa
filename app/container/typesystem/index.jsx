@@ -170,6 +170,14 @@ const formListMap = {
 @connect(mapStateToProps, mapDispatchToProps)
 export default class TypeSystem extends React.Component {
 
+    constructor(props){
+        super(props);
+
+        this.state = {
+            inputValue:''
+        }
+    }
+
     componentDidMount(){
         //获取页面左侧类型列表
         this.props.actions.gettargetlist();
@@ -177,6 +185,7 @@ export default class TypeSystem extends React.Component {
 
     tabOnChange = (e) => {
         //切换tab
+        this.setState({ inputValue:'' })
         this.props.actions.changeTab(e);
     }
 
@@ -205,6 +214,8 @@ export default class TypeSystem extends React.Component {
     addCurrentType = () => {
         this.props.actions.showAddArea(true);
     }
+
+    inputOnChange = e => this.setState({ inputValue:e.target.value })
 
     //form提交
     formCheck = () => {
@@ -259,6 +270,8 @@ export default class TypeSystem extends React.Component {
         const SearchInput = (
             <Search
                 placeholder="请输入关键字"
+                value={this.state.inputValue}
+                onChange={this.inputOnChange}
                 onPressEnter={(e)=>{this.handleSearchEvent(e)}}
                 onSearch={(e)=>{this.handleSearchEvent(e)}}
                 enterButton
