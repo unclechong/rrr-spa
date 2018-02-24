@@ -214,7 +214,9 @@ export default class TypeSystem extends React.Component {
         // typesystemApi.gettargetlist().then(res=>{
         //     console.log(res.data);
         // });
-        this.props.actions.gettargetlist();
+        setTimeout(()=>{
+            this.props.actions.gettargetlist();
+        },1000)
         this.props.actions.changeTab(this.tabDefaultKey);
 
     }
