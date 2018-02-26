@@ -10,7 +10,8 @@ const initialState = fromJS({
     searchResultList:[],
     checkModal:false,
     searchKeyword:'',
-    prevKeyword:''
+    prevKeyword:'',
+    formData:{entity:{username:'1',desc:'2'}}
 });
 
 export default (state = initialState, action) => {

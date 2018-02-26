@@ -12,6 +12,13 @@ import TagList from 'app_component/taglist';
 import FormItemFactory from 'app_component/FormItemFactory';
 import './index.css';
 
+const tabMap = {
+    entity:'实体',
+    event:'事件',
+    relation:'关系',
+    prop:'属性'
+}
+
 const mapStateToProps = state => {
     return {typesystem: state.get('typesystem').toJS()}
 }
@@ -20,31 +27,24 @@ const mapDispatchToProps = dispatch => ({
     actions: bindActionCreators(actions, dispatch)
 });
 
-const tabMap = {
-    entity:'实体',
-    event:'事件',
-    relation:'关系',
-    prop:'属性'
-}
-
 const formListMap = {
     entity:[
         {
             label:'名称',
-            id:'username',
+            id:'entity|username',
             key:'1',
             type:'input'
         },
         {
             label:'描述',
             key:'2',
-            id:'desc',
+            id:'entity|desc',
             type:'inputArea'
         },
         {
             label:'图片',
             key:'3',
-            id:'img444',
+            id:'entity|img444',
             type:'uploadImg'
         }
     ],
@@ -179,8 +179,28 @@ const formListMap = {
     ]
 }
 
-@Form.create()
+const bindFileldValues = (formListMap,props) => {
+    let obj = {};
+    for (let key in formListMap) {
+        formListMap[key].map(formItem=>{
+            const index = formItem.id.split('|')[1];
+            obj[formItem.id] = Form.createFormField({
+                value: props.typesystem.formData[key][index]
+            })
+        })
+    }
+    return obj
+}
+
 @connect(mapStateToProps, mapDispatchToProps)
+@Form.create({
+    onFieldsChange(props, changedFields) {
+        props.onChange(changedFields);
+    },
+    mapPropsToFields(props) {
+        return bindFileldValues(formListMap,props)
+    }
+})
 export default class TypeSystem extends React.Component {
 
     // constructor(props){
