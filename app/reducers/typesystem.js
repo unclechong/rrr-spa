@@ -4,7 +4,7 @@ const initialState = fromJS({
     activeTag: null,
     activeTagName: null,
     currentTab: 'entity',
-    showAddArea:false,
+    // showAddArea:false,
     tagList:{},
     isSearch:false,
     searchResultList:[],
@@ -18,13 +18,10 @@ export default (state = initialState, action) => {
     switch (action.type) {
         case 'typesystem/CHANGE_TAB':
             return state.set('currentTab', action.currentTab)
-                        // .set('isSearch', false)
-                        // .set('searchResultList', [])
-                        // .set('showAddArea',false)
         case 'typesystem/CHANGE_ACTIVE_TAG':
             return state.set('activeTag', action.tag.key).set('activeTagName', action.tag.label);
-        case 'typesystem/SHOW_ADD_AREA':
-            return state.set('showAddArea', action.isShow);
+        // case 'typesystem/SHOW_ADD_AREA':
+        //     return state.set('showAddArea', action.isShow);
         case 'typesystem/CLEAN_SEARCH_LIST':
             return state.set('isSearch', false)
                         .set('searchKeyword', '')
@@ -37,8 +34,6 @@ export default (state = initialState, action) => {
             return state.set('tagList', action.payload);
         case 'typesystem/CHANGE_SEARCH_KEYWORD':
             return state.set('searchKeyword', action.searchKeyword);
-        // case 'typesystem/CLEAN_SEARCH_KEYWORD':
-        //     return state.set('searchKeyword', '');
         case 'typesystem/SEARCH_OK':
             return state.set('isSearch', true)
                         .set('prevKeyword', action.payload.keyword)

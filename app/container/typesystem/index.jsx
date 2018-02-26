@@ -32,15 +32,18 @@ const formListMap = {
         {
             label:'名称',
             id:'username',
+            key:'1',
             type:'input'
         },
         {
             label:'描述',
+            key:'2',
             id:'desc',
             type:'inputArea'
         },
         {
             label:'图片',
+            key:'3',
             id:'img444',
             type:'uploadImg'
         }
@@ -49,10 +52,12 @@ const formListMap = {
         {
             label:'名称',
             id:'username',
+            key:'4',
             type:'input'
         },
         {
             label:'描述',
+            key:'14',
             id:'desc',
             type:'inputArea'
         },
@@ -60,17 +65,20 @@ const formListMap = {
     relation:[
         {
             label:'名称',
+            key:'5',
             id:'username',
             type:'input'
         },
         {
             label:'描述',
+            key:'6',
             id:'desc',
             type:'inputArea'
         },
         {
             label:'对象1',
             id:'obj1',
+            key:'7',
             type:'select',
             options:[
                 {
@@ -89,6 +97,7 @@ const formListMap = {
         },
         {
             label:'对象2',
+            key:'8',
             id:'obj2',
             type:'select',
             options:[
@@ -110,11 +119,13 @@ const formListMap = {
     prop:[
         {
             label:'名称',
-            id:'username',
+            id:'user2name',
+            key:'91',
             type:'input'
         },
         {
             label:'对象1',
+            key:'102',
             id:'obj1',
             type:'select',
             options:[
@@ -134,6 +145,7 @@ const formListMap = {
         },
         {
             label:'单选',
+            key:'8911',
             id:'obj2',
             type:'treeselect',
             treeData:[{
@@ -160,6 +172,7 @@ const formListMap = {
         },
         {
             label:'描述',
+            key:'111',
             id:'desc',
             type:'inputArea'
         }
@@ -196,10 +209,6 @@ export default class TypeSystem extends React.Component {
         this.props.actions.search({keyword,type:this.props.typesystem.currentTab});
     }
 
-    getTabPaneComponent(type){
-
-    }
-
     taglistOnClick = (activeTag,e) => {
         //选择列表tag
         if (activeTag === this.props.typesystem.activeTag) {
@@ -209,11 +218,19 @@ export default class TypeSystem extends React.Component {
         }
     }
 
-    addCurrentType = () => {
-        this.props.actions.showAddArea(true);
-    }
+    // addCurrentType = (isEdit) => {
+    //     if (!isEdit) {
+    //         this.props.actions.showAddArea(true);
+    //     }else {
+    //         this.props.actions.showEditArea(data=>{
+    //             this.props.form.setFieldsValue(data);
+    //         });
+    //     }
+    // }
 
-    // inputOnChange = e => this.setState({ inputValue:e.target.value })
+    deleteCurrentType = () => {
+        this.props.actions.deleteActiveTag();
+    }
 
     //form提交
     formCheck = () => {
@@ -269,7 +286,6 @@ export default class TypeSystem extends React.Component {
     }
 
     render() {
-        console.log('in render');
         const {typesystem:{activeTag,activeTagName,isSearch,searchResultList,searchKeyword,
             currentTab,showAddArea,tagList,checkModal}} = this.props;
         const renderTagList = isSearch?searchResultList:tagList[currentTab] || [];
@@ -293,6 +309,7 @@ export default class TypeSystem extends React.Component {
             </Tabs>
         )
         const editOrAdd = !!activeTag?'编辑':'添加';
+        // <div className='ts-mainarea-right-logo'>supermind</div>
         return (
             <PageContainer
                 areaLeft = {
@@ -316,11 +333,10 @@ export default class TypeSystem extends React.Component {
                         <div className='ts-mainarea-right-title'>
                             当前：{tabMap[currentTab]}{activeTagName?` / ${activeTagName}`:''}
                             <span style={{float:'right'}}>
-                                <Button type="primary" style={{marginRight:10}} onClick={this.addCurrentType}>{editOrAdd}{tabMap[currentTab]}类型</Button>
-                                <Button style={{marginRight:10,color:'red'}} disabled={!activeTag}>删除{tabMap[currentTab]}类型</Button>
+                                <Button style={{marginRight:10,color:'red'}} onClick={this.deleteCurrentType} disabled={!activeTag}>删除{tabMap[currentTab]}类型</Button>
                             </span>
                         </div>
-                        {showAddArea?this.getEditArea():<div className='ts-mainarea-right-logo'>supermind</div>}
+                        {this.getEditArea()}
                         <Modal
                             visible={checkModal}
                             okText='确定放弃'

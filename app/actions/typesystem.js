@@ -15,6 +15,17 @@ export const search = params => ({
     params
 })
 
+export const showEditArea = cb => ({
+    type:'typesystem/saga/EDIT_TAG',
+    cb
+})
+
+export const deleteActiveTag = () => ({
+    type:'typesystem/saga/DELETE_TAG'
+})
+
+
+
 
 
 //normal actions
@@ -23,10 +34,10 @@ export const changeActiveTag = tag => ({
     tag
 })
 
-export const showAddArea = isShow => ({
-    type:'typesystem/SHOW_ADD_AREA',
-    isShow
-})
+// export const showAddArea = isShow => ({
+//     type:'typesystem/SHOW_ADD_AREA',
+//     isShow
+// })
 
 export const resetTaglist = () => ({
     type:'typesystem/RESET_TAGLIST'
@@ -45,6 +56,7 @@ export const triggerCheckModal = isShow => ({
     type:'typesystem/TRIGGER_CHECK_MODAL',
     isShow
 })
+
 
 // export const cleanSearch = () => {
 //     return (dispatch,getState) => {

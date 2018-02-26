@@ -23,11 +23,11 @@ const checkFieldNull = (rule, value, callback) => {
     }
 }
 
-const returnFormItem = (getFieldDecorator,itemData) => {
-    const {label,id,type} = itemData;
+const returnFormItem = (getFieldDecorator, itemData) => {
+    const {label, id, type, key} = itemData;
     if (type === 'inputArea') {
         return (
-            <FormItem {...formItemLayout} label={label} key={id}>
+            <FormItem {...formItemLayout} label={label} key={key}>
                 {getFieldDecorator(id, {
                     // initialValue:'1',
                     rules: [{
@@ -41,7 +41,7 @@ const returnFormItem = (getFieldDecorator,itemData) => {
         )
     }else if (type === 'input') {
         return (
-            <FormItem {...formItemLayout} label={label} key={id}>
+            <FormItem {...formItemLayout} label={label} key={key}>
                 {getFieldDecorator(id, {
                     // initialValue:'1',
                     rules: [{
@@ -55,7 +55,7 @@ const returnFormItem = (getFieldDecorator,itemData) => {
         )
     }else if (type === 'uploadImg') {
         return (
-            <FormItem {...formItemLayout} label={label} key={id}>
+            <FormItem {...formItemLayout} label={label} key={key}>
                 {getFieldDecorator(id, {
                     valuePropName:'img',
                     // initialValue:'',
@@ -70,7 +70,7 @@ const returnFormItem = (getFieldDecorator,itemData) => {
         )
     }else if (type === 'select') {
         return (
-            <FormItem {...formItemLayout} label={label} key={id}>
+            <FormItem {...formItemLayout} label={label} key={key}>
                 {getFieldDecorator(id, {
                     rules: [{
                         validator: checkFieldNull ,
@@ -87,7 +87,7 @@ const returnFormItem = (getFieldDecorator,itemData) => {
         )
     }else if (type === 'multiple') {
         return (
-            <FormItem {...formItemLayout} label={label} key={id}>
+            <FormItem {...formItemLayout} label={label} key={key}>
                 {getFieldDecorator(id, {
                     rules: [{
                         validator: checkFieldNull ,
@@ -119,7 +119,7 @@ const returnFormItem = (getFieldDecorator,itemData) => {
             // treeCheckable:true
         }
         return (
-            <FormItem {...formItemLayout} label={label} key={id}>
+            <FormItem {...formItemLayout} label={label} key={key}>
                 {getFieldDecorator(id, {
                     rules: [{
                         validator: checkFieldNull ,
