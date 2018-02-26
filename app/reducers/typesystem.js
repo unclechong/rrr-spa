@@ -1,4 +1,4 @@
-import Immutable ,{ fromJS } from 'immutable';
+import Immutable, { fromJS ,Map} from 'immutable';
 
 const initialState = fromJS({
     activeTag: null,
@@ -11,7 +11,7 @@ const initialState = fromJS({
     checkModal:false,
     searchKeyword:'',
     prevKeyword:'',
-    formData:{entity:{username:'1',desc:'2'}}
+    formData:{username:'',desc:'',img444:''}
 });
 
 export default (state = initialState, action) => {
@@ -41,6 +41,14 @@ export default (state = initialState, action) => {
                         .set('searchResultList', action.payload.list);
         case 'typesystem/TRIGGER_CHECK_MODAL':
             return state.set('checkModal', action.isShow);
+        case 'typesystem/SET_EDIT_VALUE':
+            return state.set('formData', fromJS(action.payload));
+        case 'typesystem/CHANGE_FIELDS':
+            const {key, value} = action.data;
+            return state.setIn(['formData', key], value);
+        case 'typesystem/CANCEL_SELECTED_TAG':
+            const newFormData = state.get('formData').map(x => '');
+            return state.set('formData',newFormData);
         default:
             return state;
     }

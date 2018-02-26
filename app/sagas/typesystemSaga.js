@@ -7,8 +7,8 @@ function* initTypesystem() {
         const data = yield call(typesystemApi.getTagList);
         yield put({type: 'typesystem/GET_TAGLIST_OK', payload: data.taglist});
         const currentTab = yield select(state => state.get('typesystem').get('currentTab'));
-        const {key, label} = data.taglist[currentTab][0];
-        yield put({type: 'typesystem/CHANGE_ACTIVE_TAG', tag: {key, label}});
+        const tag = data.taglist[currentTab][0];
+        yield call(editTag, {tag});
     } catch (error) {
         yield put({type: 'FETCH_FAILED', error});
     }
@@ -49,23 +49,23 @@ function* canelCurrentEditHandle(handle) {
 function* changeTab({currentTab}) {
     yield call(canelCurrentEditHandle);
     const taglist = yield select(state => state.get('typesystem').get('tagList'));
-    console.log(taglist);
-    const {key, label} = taglist[currentTab][0];
-    yield put({type: 'typesystem/CHANGE_ACTIVE_TAG', tag: {key, label}});
+    const tag = taglist[currentTab][0];
+    yield call(editTag, {tag});
     // yield put({type: 'typesystem/RESET_TAGLIST'});
     yield put({type: 'typesystem/CLEAN_SEARCH_LIST'});
     yield put({type: 'typesystem/CHANGE_TAB', currentTab});
 }
 
-function* editTag({cb}) {
-    yield call(canelCurrentEditHandle);
+function* editTag({tag}) {
+    // yield call(canelCurrentEditHandle);
+    yield put({type: 'typesystem/CHANGE_ACTIVE_TAG', tag: {key: tag.key, label: tag.label}});
     const typesystem = yield select(state => state.get('typesystem').toJS());
     const {activeTag, currentTab} = typesystem;
     const params = {type: activeTag, value: currentTab};
     try {
         const data = yield call(typesystemApi.getTagDesc, params);
-        yield put({type: 'typesystem/SHOW_ADD_AREA', isShow: true});
-        cb(data.result);
+        yield put({type: 'typesystem/SET_EDIT_VALUE', payload: data.result});
+        // cb(data.result);
     } catch(error){
         yield put({type: 'FETCH_FAILED', error});
     }

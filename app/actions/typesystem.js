@@ -15,9 +15,9 @@ export const search = params => ({
     params
 })
 
-export const showEditArea = cb => ({
+export const editTag = tag => ({
     type:'typesystem/saga/EDIT_TAG',
-    cb
+    tag
 })
 
 export const deleteActiveTag = () => ({
@@ -32,6 +32,11 @@ export const deleteActiveTag = () => ({
 export const changeActiveTag = tag => ({
     type:'typesystem/CHANGE_ACTIVE_TAG',
     tag
+})
+
+export const changedFields = data => ({
+    type:'typesystem/CHANGE_FIELDS',
+    data
 })
 
 // export const showAddArea = isShow => ({
@@ -56,6 +61,18 @@ export const triggerCheckModal = isShow => ({
     type:'typesystem/TRIGGER_CHECK_MODAL',
     isShow
 })
+
+export const cancelSelectedTag = (data) => {
+    return (dispatch,getState) => {
+        dispatch(resetTaglist())
+        dispatch({
+            type:'typesystem/CANCEL_SELECTED_TAG',
+            data
+        })
+    }
+}
+
+
 
 
 // export const cleanSearch = () => {

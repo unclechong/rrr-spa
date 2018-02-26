@@ -31,20 +31,20 @@ const formListMap = {
     entity:[
         {
             label:'名称',
-            id:'entity|username',
+            id:'username',
             key:'1',
             type:'input'
         },
         {
             label:'描述',
             key:'2',
-            id:'entity|desc',
+            id:'desc',
             type:'inputArea'
         },
         {
             label:'图片',
             key:'3',
-            id:'entity|img444',
+            id:'img444',
             type:'uploadImg'
         }
     ],
@@ -179,26 +179,25 @@ const formListMap = {
     ]
 }
 
-const bindFileldValues = (formListMap,props) => {
-    let obj = {};
-    for (let key in formListMap) {
-        formListMap[key].map(formItem=>{
-            const index = formItem.id.split('|')[1];
-            obj[formItem.id] = Form.createFormField({
-                value: props.typesystem.formData[key][index]
+const bindFieldValues = (formListMap,props) => {
+    let fieldObj = {};
+    const currentTab = props.typesystem.currentTab;
+        formListMap[currentTab].map(formItem=>{
+            fieldObj[formItem.id] = Form.createFormField({
+                value: props.typesystem.formData[formItem.id]
             })
         })
-    }
-    return obj
+    return fieldObj
 }
 
 @connect(mapStateToProps, mapDispatchToProps)
 @Form.create({
     onFieldsChange(props, changedFields) {
-        props.onChange(changedFields);
+        const fieldName = Object.keys(changedFields)[0];
+        props.actions.changedFields({key: fieldName, value: changedFields[fieldName].value});
     },
     mapPropsToFields(props) {
-        return bindFileldValues(formListMap,props)
+        return bindFieldValues(formListMap,props)
     }
 })
 export default class TypeSystem extends React.Component {
@@ -232,9 +231,9 @@ export default class TypeSystem extends React.Component {
     taglistOnClick = (activeTag,e) => {
         //选择列表tag
         if (activeTag === this.props.typesystem.activeTag) {
-            this.props.actions.resetTaglist();
+            this.props.actions.cancelSelectedTag();
         }else {
-            this.props.actions.changeActiveTag(e);
+            this.props.actions.editTag(e);
         }
     }
 
@@ -250,6 +249,10 @@ export default class TypeSystem extends React.Component {
 
     deleteCurrentType = () => {
         this.props.actions.deleteActiveTag();
+    }
+
+    onChange = () => {
+
     }
 
     //form提交
@@ -306,6 +309,7 @@ export default class TypeSystem extends React.Component {
     }
 
     render() {
+        console.log('in render');
         const {typesystem:{activeTag,activeTagName,isSearch,searchResultList,searchKeyword,
             currentTab,showAddArea,tagList,checkModal}} = this.props;
         const renderTagList = isSearch?searchResultList:tagList[currentTab] || [];
