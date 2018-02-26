@@ -1,23 +1,30 @@
 import { fromJS } from 'immutable';
 
+//register saga
+export const changeTab = currentTab => ({
+    type:'typesystem/saga/CHANGE_TAB',
+    currentTab
+})
 
+export const gettargetlist = () => ({
+    type:'typesystem/saga/GET_TARGET_LIST'
+})
+
+export const search = params => ({
+    type:'typesystem/saga/SEARCH',
+    params
+})
+
+
+
+//normal actions
 export const changeActiveTag = tag => ({
-    type:'CHANGE_ACTIVE_TAG',
+    type:'typesystem/CHANGE_ACTIVE_TAG',
     tag
 })
 
-export const changeTab = currentTab => {
-    return (dispatch,getState) => {
-        dispatch(resetTaglist())
-        dispatch({
-            type:'CHANGE_TAB',
-            currentTab
-        })
-    }
-}
-
 export const showAddArea = isShow => ({
-    type:'SHOW_ADD_AREA',
+    type:'typesystem/SHOW_ADD_AREA',
     isShow
 })
 
@@ -25,20 +32,25 @@ export const resetTaglist = () => ({
     type:'typesystem/RESET_TAGLIST'
 })
 
-export const gettargetlist = () => ({
-    type:'typesystem/saga/GET_TARGET_LIST'
+export const changeSearchKeyword = searchKeyword => ({
+    type:'typesystem/CHANGE_SEARCH_KEYWORD',
+    searchKeyword
 })
 
-export const cleanSearch = () => {
-    return (dispatch,getState) => {
-        dispatch(resetTaglist())
-        dispatch({
-            type:'typesystem/CLEAN_SEARCH_LIST'
-        })
-    }
-}
-
-export const search = params => ({
-    type:'typesystem/saga/SEARCH',
-    params
+export const needCloseEditArea = () => ({
+    type:'typesystem/NEED_CLOSE_EDIT_AREA'
 })
+
+export const triggerCheckModal = isShow => ({
+    type:'typesystem/TRIGGER_CHECK_MODAL',
+    isShow
+})
+
+// export const cleanSearch = () => {
+//     return (dispatch,getState) => {
+//         dispatch(resetTaglist());
+//         dispatch({
+//             type:'typesystem/CLEAN_SEARCH_LIST'
+//         })
+//     }
+// }

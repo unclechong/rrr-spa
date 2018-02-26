@@ -170,13 +170,10 @@ const formListMap = {
 @connect(mapStateToProps, mapDispatchToProps)
 export default class TypeSystem extends React.Component {
 
-    constructor(props){
-        super(props);
-
-        this.state = {
-            inputValue:''
-        }
-    }
+    // constructor(props){
+    //     super(props);
+    //
+    // }
 
     componentDidMount(){
         //获取页面左侧类型列表
@@ -185,15 +182,16 @@ export default class TypeSystem extends React.Component {
 
     tabOnChange = (e) => {
         //切换tab
-        this.setState({ inputValue:'' })
         this.props.actions.changeTab(e);
     }
 
     handleSearchEvent = (keyword) => {
-        if (keyword === '') {
-            this.props.actions.cleanSearch();
-            return
-        }
+        // if (keyword === '') {
+        //     this.props.actions.cleanSearch();
+        //     return
+        // }
+        //the same keyword return
+        if (keyword === this.props.typesystem.prevKeyword) return
         //搜索
         this.props.actions.search({keyword,type:this.props.typesystem.currentTab});
     }
@@ -215,7 +213,7 @@ export default class TypeSystem extends React.Component {
         this.props.actions.showAddArea(true);
     }
 
-    inputOnChange = e => this.setState({ inputValue:e.target.value })
+    // inputOnChange = e => this.setState({ inputValue:e.target.value })
 
     //form提交
     formCheck = () => {
@@ -235,6 +233,14 @@ export default class TypeSystem extends React.Component {
                 }
             },
         );
+    }
+
+    checkModalHandleCancel = () => {
+        this.props.actions.triggerCheckModal(false);
+    }
+
+    checkModalHandleOk = () => {
+        this.props.actions.needCloseEditArea();
     }
 
     //清空form
@@ -264,14 +270,14 @@ export default class TypeSystem extends React.Component {
 
     render() {
         console.log('in render');
-        const {typesystem:{activeTag,activeTagName,isSearch,searchResultList,
-            currentTab,showAddArea,tagList}} = this.props;
+        const {typesystem:{activeTag,activeTagName,isSearch,searchResultList,searchKeyword,
+            currentTab,showAddArea,tagList,checkModal}} = this.props;
         const renderTagList = isSearch?searchResultList:tagList[currentTab] || [];
         const SearchInput = (
             <Search
                 placeholder="请输入关键字"
-                value={this.state.inputValue}
-                onChange={this.inputOnChange}
+                value={searchKeyword}
+                onChange={(e)=>{this.props.actions.changeSearchKeyword(e.target.value)}}
                 onPressEnter={(e)=>{this.handleSearchEvent(e)}}
                 onSearch={(e)=>{this.handleSearchEvent(e)}}
                 enterButton
@@ -286,6 +292,7 @@ export default class TypeSystem extends React.Component {
                 <TabPane tab="属性" key="prop"></TabPane>
             </Tabs>
         )
+        const editOrAdd = !!activeTag?'编辑':'添加';
         return (
             <PageContainer
                 areaLeft = {
@@ -309,11 +316,20 @@ export default class TypeSystem extends React.Component {
                         <div className='ts-mainarea-right-title'>
                             当前：{tabMap[currentTab]}{activeTagName?` / ${activeTagName}`:''}
                             <span style={{float:'right'}}>
-                                <Button type="primary" style={{marginRight:10}} onClick={this.addCurrentType}>{!!activeTag?'编辑':'添加'}{tabMap[currentTab]}类型</Button>
+                                <Button type="primary" style={{marginRight:10}} onClick={this.addCurrentType}>{editOrAdd}{tabMap[currentTab]}类型</Button>
                                 <Button style={{marginRight:10,color:'red'}} disabled={!activeTag}>删除{tabMap[currentTab]}类型</Button>
                             </span>
                         </div>
                         {showAddArea?this.getEditArea():<div className='ts-mainarea-right-logo'>supermind</div>}
+                        <Modal
+                            visible={checkModal}
+                            okText='确定放弃'
+                            cancelText={`继续${editOrAdd}`}
+                            onCancel={this.checkModalHandleCancel}
+                            onOk={this.checkModalHandleOk}
+                        >
+                            {`确定放弃当前的${editOrAdd}？`}
+                        </Modal>
                     </div>
                 }
             />
