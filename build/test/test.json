@@ -1,84 +1,36 @@
 {
-	"header": {
-		"message": "api request success",
-		"code": "200"
-	},
 	"body": {
-		"taglist": {
-			"event": [{
-					"key": "event-1",
-					"value": "event-1",
-					"label": "event-aaa"
-				},
-				{
-					"key": "event-2",
-					"value": "event-2",
-					"label": "event-bbb"
-				},
-				{
-					"key": "event-3",
-					"value": "event-3",
-					"label": "event-ccc"
-				}
-			],
-			"relation": [{
-					"key": "relation-1",
-					"value": "relation-1",
-					"label": "relation-aaa"
-				},
-				{
-					"key": "relation-2",
-					"value": "relation-2",
-					"label": "relation-bbb"
-				},
-				{
-					"key": "relation-3",
-					"value": "relation-3",
-					"label": "relation-ccc"
-				},
-				{
-					"key": "relation-4",
-					"value": "relation-4",
-					"label": "relation-ddd"
-				}
-			],
-			"entity": [{
-					"key": "entity-1",
-					"value": "entity-1",
-					"label": "entity-aaa"
-				},
-				{
-					"key": "entity-2",
-					"value": "entity-2",
-					"label": "entity-bbb"
-				}
-			],
-			"prop": [{
-					"key": "prop-1",
-					"value": "prop-1",
-					"label": "prop-aaa"
-				},
-				{
-					"key": "prop-2",
-					"value": "prop-2",
-					"label": "prop-bbb"
-				},
-				{
-					"key": "prop-3",
-					"value": "prop-3",
-					"label": "prop-ccc"
-				},
-				{
-					"key": "prop-4",
-					"value": "prop-4",
-					"label": "prop-ddd"
-				},
-				{
-					"key": "prop-5",
-					"value": "prop-5",
-					"label": "prop-eee"
-				}
-			]
-		}
+		"attributionType": [{
+			"mongoId": "5a9514cd1e36be350c48d04f",
+			"typeName": "首都"
+		}, {
+			"mongoId": "5a9660ee1e36be37bc895f29",
+			"typeName": "省"
+		}],
+		"entityType": [{
+			"mongoId": "5a9651591e36be1d1c24d948",
+			"typeName": "国家"
+		}, {
+			"mongoId": "5a9651671e36be1d1c24d949",
+			"typeName": "产品"
+		}, {
+			"mongoId": "5a9651671e36be1d1c24d249",
+			"typeName": "34344343"
+		}],
+		"eventType": [{
+			"mongoId": "5a9514ca1e36be350c48d04e",
+			"typeName": "TBT"
+		}],
+		"relationType": [{
+			"mongoId": "5a9514c71e36be350c48d04d",
+			"typeName": "生产（国家 - 产品）"
+		}, {
+			"mongoId": "5a9660531e36be37bc895f28",
+			"typeName": "国籍（人 - 国家）"
+		}]
+	},
+	"header": {
+		"code": 0,
+		"message": "success"
 	}
 }

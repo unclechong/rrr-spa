@@ -13,10 +13,10 @@ const TagList = ({onClick,activeTag,style,data}) => {
         <div className='com-tl-body' style={style}>
             <ul className='com-tl-body-ul'>
                 {
-                    data.map(item=><Tag
+                    data.map((item,k)=><Tag
                         label={item.label}
                         key={item.key}
-                        onClick={()=>{onClick(item.value,item)}}
+                        onClick={()=>{onClick(item.value, item, k)}}
                         active={item.value===activeTag}
                     />)
                 }

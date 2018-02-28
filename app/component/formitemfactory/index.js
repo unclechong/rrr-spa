@@ -134,14 +134,15 @@ const returnFormItem = (getFieldDecorator, itemData) => {
     }
 }
 
-const FormItemFactory = ({getFieldDecorator,formList,onSubmit,onCancel}) => {
+const FormItemFactory = ({getFieldDecorator,formList,onSubmit,onCancel,elseData}) => {
+    const {isAdd, isUpdate} = elseData;
     return (
         <div>
             {
                 formList.map(item=>returnFormItem(getFieldDecorator,item))
             }
             <FormItem {...formTailLayout}>
-                <Button type="primary" icon="check" style={{marginRight:'7%'}} onClick={onSubmit}>保存</Button>
+                <Button type="primary" icon="check" style={{marginRight:'7%'}} onClick={onSubmit} disabled={isAdd?false:!isUpdate}>{isAdd?'添加':'保存'}</Button>
                 <Button icon="close" onClick={onCancel}>清空</Button>
             </FormItem>
         </div>

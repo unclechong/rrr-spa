@@ -93,7 +93,8 @@ module.exports = {
         new webpack.ProvidePlugin({
             React:"react",
             ReactDOM:"react-dom",
-            axios:'axios'
+            axios:'axios',
+            _:'lodash'
         }),
         new webpack.DefinePlugin({
             __DEV__: JSON.stringify(JSON.parse((process.env.NODE_ENV == 'dev') || 'false'))
@@ -106,24 +107,24 @@ module.exports = {
         hot:true,                                    //这个坑逼hot不能加， 加完不更新后页面不能自动刷新
         progress: true,                              //显示打包进程
         // colors:true,
-        // host:'192.168.1.110',
-        // port:'7878'
+        // host:'192.168.1.132',
+        // port:'8088'
         // proxy: {
         //      '/api': {
-        //          target: 'http://172.88.65.59',
+        //          target: 'http://192.168.1.156',
         //          changeOrigin: true,
         //          secure: false
         //      },
-        //      '/login': {
-        //          target: 'http://172.88.65.59',
-        //          changeOrigin: true,
-        //          secure: false
-        //      },
-        //      '/signOut': {
-        //          target: 'http://172.88.65.59',
-        //          changeOrigin: true,
-        //          secure: false
-        //      }
+             // '/login': {
+             //     target: 'http://172.88.65.59',
+             //     changeOrigin: true,
+             //     secure: false
+             // },
+             // '/signOut': {
+             //     target: 'http://172.88.65.59',
+             //     changeOrigin: true,
+             //     secure: false
+             // }
         // },
 
         //  headers: { "X-Custom-Header": "yes" },

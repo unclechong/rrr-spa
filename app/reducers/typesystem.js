@@ -1,17 +1,18 @@
-import Immutable, { fromJS ,Map} from 'immutable';
+import Immutable, { fromJS ,Map, List} from 'immutable';
 
 const initialState = fromJS({
     activeTag: null,
     activeTagName: null,
-    currentTab: 'entity',
-    // showAddArea:false,
-    tagList:{},
-    isSearch:false,
-    searchResultList:[],
-    checkModal:false,
-    searchKeyword:'',
-    prevKeyword:'',
-    formData:{username:'',desc:'',img444:''}
+    currentTab: 'entityType',
+    tagList: {},
+    isSearch: false,
+    searchResultList: [],
+    checkModal: false,
+    searchKeyword: '',
+    prevKeyword: '',
+    formData: {username: '',desc: '',img444: ''},
+    lastFormData: {},
+    currentFormIsUpdate: false
 });
 
 export default (state = initialState, action) => {
@@ -20,37 +21,51 @@ export default (state = initialState, action) => {
         case 'typesystem/CHANGE_TAB':
             return state.set('currentTab', action.currentTab)
         case 'typesystem/CHANGE_ACTIVE_TAG':
-            return state.set('activeTag', action.tag.key).set('activeTagName', action.tag.label);
-        // case 'typesystem/SHOW_ADD_AREA':
-        //     return state.set('showAddArea', action.isShow);
+            return state.set('activeTag', action.tag.value)
+                        .set('activeTagName', action.tag.label);
         case 'typesystem/CLEAN_SEARCH_LIST':
             return state.set('isSearch', false)
                         .set('searchKeyword', '')
                         .set('prevKeyword', '')
-                        .set('searchResultList', []);
+                        .set('searchResultList', List([]));
         case 'typesystem/RESET_TAGLIST':
             return state.set('activeTag', null)
                         .set('activeTagName', null);
         case 'typesystem/GET_TAGLIST_OK':
-            return state.set('tagList', action.payload);
+            return state.set('tagList', Map(action.payload));
         case 'typesystem/CHANGE_SEARCH_KEYWORD':
             return state.set('searchKeyword', action.searchKeyword);
         case 'typesystem/SEARCH_OK':
             return state.set('isSearch', true)
                         .set('prevKeyword', action.payload.keyword)
-                        .set('searchResultList', action.payload.list);
+                        .set('searchResultList', List(action.payload.list));
         case 'typesystem/TRIGGER_CHECK_MODAL':
             return state.set('checkModal', action.isShow);
         case 'typesystem/SET_EDIT_VALUE':
-            return state.set('formData', fromJS(action.payload));
-        case 'typesystem/CHANGE_FIELDS':
-            const {key, value} = action.data;
-            return state.setIn(['formData', key], value);
+            return state.set('lastFormData', fromJS(action.payload))
+                        .set('currentFormIsUpdate', false)
+                        .set('formData', fromJS(action.payload));
+        case 'typesystem/MERGE_FIELDS_VALUES':
+            return state.set('formData', state.get('formData').merge(action.data))
+                        .set('currentFormIsUpdate', true);
         case 'typesystem/CANCEL_SELECTED_TAG':
-            const newFormData = state.get('formData').map(x => '');
-            return state.set('formData',newFormData);
+            return state.set('lastFormData', Map({}))
+                        .set('currentFormIsUpdate', false);
+        case 'typesystem/UPADTE_TAGLIST':
+            const {handle, tab, ...rest} = action;
+            if (handle === 'delete') return state.updateIn(['tagList', tab], x => {
+                x.splice(rest.index, 1);
+                return x
+            })
+            return state.updateIn(['tagList', tab], x => {
+                x.push({key: rest.value, value: rest.value, label: rest.label})
+                return x
+            });
+        case 'typesystem/RESET_FIELD_VALUES':
+            const newFormData = state.get('formData').map(x => ({value: undefined}));
+            return state.set('formData', newFormData)
+                        .set('currentFormIsUpdate', true);
         default:
             return state;
     }
-
 };
