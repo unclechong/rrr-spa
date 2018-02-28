@@ -120,7 +120,7 @@ function* addTag(action){
         const tagValue = yield call(typesystemApi.addTag, params);
         //添加成功
         action.CB();
-        yield put({type: 'typesystem/UPADTE_TAGLIST', handle: 'add', value: '1111', tab: currentTab, label: action.fieldvalues.typeName});
+        yield put({type: 'typesystem/UPADTE_TAGLIST', handle: 'add', value: tagValue, tab: currentTab, label: action.fieldvalues.typeName});
         yield call(cancelSelectedTag);
     } catch(error){
         yield put({type: 'FETCH_FAILED', error});

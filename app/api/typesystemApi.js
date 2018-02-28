@@ -36,6 +36,6 @@ export default class typesystemApi {
     static async addTag(params={}){
         // const result = await sendPost('/type/getOne?config_id=13', 'post', true, params);
         const result = await sendPost('/type/addOne?config_id=13', 'post', false, params);
-        return true
+        return result
     }
 }
