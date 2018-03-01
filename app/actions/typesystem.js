@@ -43,29 +43,29 @@ export const updateTag = (fieldvalues, CB) => ({
 
 
 //normal actions
-export const changeActiveTag = tag => ({
-    type: 'typesystem/CHANGE_ACTIVE_TAG',
-    tag
-})
+// export const changeActiveTag = tag => ({
+//     type: 'typesystem/CHANGE_ACTIVE_TAG',
+//     tag
+// })
 
 export const mergeFieldsValues = data => ({
     type: 'typesystem/MERGE_FIELDS_VALUES',
     data
 })
 
-export const changedFields = data => ({
-    type: 'typesystem/CHANGE_FIELDS_VALUES',
-    data
-})
+// export const changedFields = data => ({
+//     type: 'typesystem/CHANGE_FIELDS_VALUES',
+//     data
+// })
 
 // export const showAddArea = isShow => ({
 //     type:'typesystem/SHOW_ADD_AREA',
 //     isShow
 // })
 
-export const resetTaglist = () => ({
-    type:'typesystem/RESET_TAGLIST'
-})
+// export const resetTaglist = () => ({
+//     type:'typesystem/RESET_TAGLIST'
+// })
 
 export const changeSearchKeyword = searchKeyword => ({
     type:'typesystem/CHANGE_SEARCH_KEYWORD',
@@ -77,17 +77,17 @@ export const needCloseEditArea = flag => ({
     flag
 })
 
-export const triggerCheckModal = isShow => ({
-    type:'typesystem/TRIGGER_CHECK_MODAL',
-    isShow
-})
+// export const triggerCheckModal = isShow => ({
+//     type:'typesystem/TRIGGER_CHECK_MODAL',
+//     isShow
+// })
 
-export const cancelSelectedTag = () => {
-    return (dispatch,getState) => {
-        dispatch(resetTaglist());
-        dispatch(cleanFormValues());
-    }
-}
+// export const cancelSelectedTag = () => {
+//     return (dispatch,getState) => {
+//         dispatch(resetTaglist());
+//         dispatch(cleanFormValues());
+//     }
+// }
 
 export const cleanFormValues = () => ({
     type:'typesystem/RESET_FIELD_VALUES'

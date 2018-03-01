@@ -4,6 +4,7 @@ const { Option, OptGroup } = Select;
 const { TextArea } = Input;
 // const SHOW_ALL = TreeSelect.SHOW_ALL;
 import UploadForm from './uploadform';
+import './index.css';
 
 const formItemLayout = {
     labelCol: { span: 4 },

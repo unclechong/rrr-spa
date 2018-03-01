@@ -30,7 +30,6 @@ export default class typesystemApi {
                 returnObj[k] = {value: v};
             }
         })
-        console.log(result);
         return returnObj
     }
 

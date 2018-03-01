@@ -239,7 +239,6 @@ export default class TypeSystem extends React.Component {
                     form.options = options;
                 }
             });
-            console.log(formList);
             return formList
         }else return formListMap[currentTab]
     }

@@ -11,7 +11,7 @@ const initialState = fromJS({
     checkModal: false,
     searchKeyword: '',
     prevKeyword: '',
-    formData: {username: '',desc: '',img444: ''},
+    formData: {},
     lastFormData: {},
     currentFormIsUpdate: false
 });
