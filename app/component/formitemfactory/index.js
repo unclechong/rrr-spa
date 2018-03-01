@@ -1,6 +1,6 @@
 import { Input, Button, Form, Select,TreeSelect } from 'antd';
 const FormItem = Form.Item;
-const Option = Select.Option;
+const { Option, OptGroup } = Select;
 const { TextArea } = Input;
 // const SHOW_ALL = TreeSelect.SHOW_ALL;
 import UploadForm from './uploadform';
@@ -27,7 +27,7 @@ const returnFormItem = (getFieldDecorator, itemData) => {
     const {label, id, type, key} = itemData;
     if (type === 'inputArea') {
         return (
-            <FormItem {...formItemLayout} label={label} key={key}>
+            <FormItem {...formItemLayout} label={label} key={key} hasFeedback>
                 {getFieldDecorator(id, {
                     // initialValue:'1',
                     rules: [{
@@ -41,7 +41,7 @@ const returnFormItem = (getFieldDecorator, itemData) => {
         )
     }else if (type === 'input') {
         return (
-            <FormItem {...formItemLayout} label={label} key={key}>
+            <FormItem {...formItemLayout} label={label} key={key} hasFeedback>
                 {getFieldDecorator(id, {
                     // initialValue:'1',
                     rules: [{
@@ -69,35 +69,24 @@ const returnFormItem = (getFieldDecorator, itemData) => {
             </FormItem>
         )
     }else if (type === 'select') {
+        const {message, mode, placeholder, selectGroup, options} = itemData;
         return (
-            <FormItem {...formItemLayout} label={label} key={key}>
+            <FormItem {...formItemLayout} label={label} key={key} hasFeedback>
                 {getFieldDecorator(id, {
                     rules: [{
                         validator: checkFieldNull ,
-                        message: itemData.message || `请选择${label}`,
+                        message: message || `请选择${label}`,
                     }]
                 })(
-                    <Select placeholder={itemData.placeholder || `请选择${label}`} style={{width:'100%'}}>
+                    <Select mode={mode || null} placeholder={placeholder || `请选择${label}`} style={{width:'100%'}}>
                         {
-                            itemData.options.map(option=><Option value={option.value} key={option.value}>{option.label}</Option>)
-                        }
-                    </Select>
-                )}
-            </FormItem>
-        )
-    }else if (type === 'multiple') {
-        return (
-            <FormItem {...formItemLayout} label={label} key={key}>
-                {getFieldDecorator(id, {
-                    rules: [{
-                        validator: checkFieldNull ,
-                        message: itemData.message || `请选择${label}`,
-                        type: 'array'
-                    }]
-                })(
-                    <Select mode="multiple" allowClear placeholder={itemData.placeholder || `请选择${label}`} style={{width:'100%'}}>
-                        {
-                            itemData.options.map(option=><Option value={option.value} key={option.value}>{option.label}</Option>)
+                            selectGroup?options.map(group=>{
+                                return <OptGroup label={group.label} key={group.key}>
+                                    {group.children.map(option=>{
+                                        return <Option value={option.value} key={option.value}>{option.label}</Option>
+                                    })}
+                                </OptGroup>
+                            }):options.map(option=><Option value={option.value} key={option.value}>{option.label}</Option>)
                         }
                     </Select>
                 )}

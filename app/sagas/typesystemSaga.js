@@ -32,18 +32,27 @@ function* canelCurrentEditHandle(handle) {
     const needCheck = yield select(state => state.get('typesystem').get('currentFormIsUpdate'));
     if (needCheck) {
         yield put({type: 'typesystem/TRIGGER_CHECK_MODAL', isShow: true});
-        function* handleCancel(){
-            if (handle) {
-                const flag = yield take('typesystem/TRIGGER_CHECK_MODAL');
-                if (!flag.isShow) {
-                    yield put(handle);
-                }
-            }
-        }
-        const listenCancel = yield fork(handleCancel);
-        yield take('typesystem/NEED_CLOSE_EDIT_AREA');
-        yield cancel(listenCancel);
+        // function* handleCancel(){
+        //     if (handle) {
+        //         const flag = yield take('typesystem/TRIGGER_CHECK_MODAL');
+        //         if (!flag.isShow) {
+        //             yield put(handle);
+        //         }
+        //     }
+        // }
+        // const listenCancel = yield fork(handleCancel);
+        const action = yield take('typesystem/NEED_CLOSE_EDIT_AREA');
         yield put({type: 'typesystem/TRIGGER_CHECK_MODAL', isShow: false});
+        // yield cancel(listenCancel);
+        if (action.flag) return true
+        else {
+            if (handle) {
+                yield put(handle);
+            }
+            return false
+        }
+    }else {
+        return true
     }
 }
 
@@ -59,28 +68,10 @@ function* changeTab({currentTab}) {
 function* handleEditTag(tag) {
     // const typesystem = yield select(state => state.get('typesystem').toJS());
     // const {activeTag, currentTab} = typesystem;
-    yield call(canelCurrentEditHandle);
-    yield put({type: 'typesystem/CHANGE_ACTIVE_TAG', tag: {value: tag.value, label: tag.label}});
-    // const params = {type: activeTag, value: currentTab};
-    const params = {mongoId: tag.value};
-    try {
-        const data = yield call(typesystemApi.getTagDesc, params);
-        yield put({type: 'typesystem/SET_EDIT_VALUE', payload: data});
-    } catch(error){
-        yield put({type: 'FETCH_FAILED', error});
-    }
-}
-
-function* editTag({tag}) {
-    const typesystem = yield select(state => state.get('typesystem').toJS());
-    const {activeTag, currentTab, currentFormIsUpdate} = typesystem;
-    if (currentFormIsUpdate) {
-        yield call(canelCurrentEditHandle);
-    }
-    if (activeTag === tag.value) {
-        yield call(cancelSelectedTag);
-    }else {
-        yield put({type: 'typesystem/CHANGE_ACTIVE_TAG', tag: {value: tag.value, label: tag.label}});
+    const flag = yield call(canelCurrentEditHandle);
+    if (flag) {
+        yield put({type: 'typesystem/CHANGE_ACTIVE_TAG', tag: {value: tag.value, label: tag.label, index: 0}});
+        // const params = {type: activeTag, value: currentTab};
         const params = {mongoId: tag.value};
         try {
             const data = yield call(typesystemApi.getTagDesc, params);
@@ -97,19 +88,44 @@ function* cancelSelectedTag(){
     yield put({type: 'typesystem/CANCEL_SELECTED_TAG'});
 }
 
-function* deleteTag(action) {
-    yield call(canelCurrentEditHandle);
+function* editTag({tag, index}) {
     const typesystem = yield select(state => state.get('typesystem').toJS());
-    const {activeTag, currentTab} = typesystem;
-    const params = {mongoId: activeTag};
-    try {
-        yield call(typesystemApi.deleteTag, params);
-        //删除成功
-        action.CB();
-        yield put({type: 'typesystem/UPADTE_TAGLIST', handle: 'delete', value: activeTag, tab: currentTab, index: action.index});
-        yield call(cancelSelectedTag);
-    } catch(error){
-        yield put({type: 'FETCH_FAILED', error});
+    const {activeTag, currentTab, currentFormIsUpdate} = typesystem;
+    let flag = true;
+    if (currentFormIsUpdate) {
+        flag = yield call(canelCurrentEditHandle);
+    }
+    if (flag) {
+        if (activeTag === tag.value) {
+            yield call(cancelSelectedTag);
+        }else {
+            yield put({type: 'typesystem/CHANGE_ACTIVE_TAG', tag: {value: tag.value, label: tag.label, index}});
+            const params = {mongoId: tag.value};
+            try {
+                const data = yield call(typesystemApi.getTagDesc, params);
+                yield put({type: 'typesystem/SET_EDIT_VALUE', payload: data});
+            } catch(error){
+                yield put({type: 'FETCH_FAILED', error});
+            }
+        }
+    }
+}
+
+function* deleteTag(action) {
+    const flag = yield call(canelCurrentEditHandle);
+    if (flag) {
+        const typesystem = yield select(state => state.get('typesystem').toJS());
+        const {activeTag, currentTab, currentTagIndex} = typesystem;
+        const params = {mongoId: activeTag};
+        try {
+            yield call(typesystemApi.deleteTag, params);
+            //删除成功
+            action.CB();
+            yield put({type: 'typesystem/UPADTE_TAGLIST', handle: 'delete', value: activeTag, tab: currentTab, index: currentTagIndex});
+            yield call(cancelSelectedTag);
+        } catch(error){
+            yield put({type: 'FETCH_FAILED', error});
+        }
     }
 }
 
@@ -118,9 +134,33 @@ function* addTag(action){
     const params = {...action.fieldvalues, type: currentTab};
     try {
         const tagValue = yield call(typesystemApi.addTag, params);
+        let typeName = action.fieldvalues.typeName;
+        if (currentTab === 'relationType') {
+            typeName = typeName + `（${action.fieldvalues.entityType_start.typeName} - ${action.fieldvalues.entityType_end.typeName}）`;
+        }
         //添加成功
         action.CB();
-        yield put({type: 'typesystem/UPADTE_TAGLIST', handle: 'add', value: tagValue, tab: currentTab, label: action.fieldvalues.typeName});
+        yield put({type: 'typesystem/UPADTE_TAGLIST', handle: 'add', value: tagValue, tab: currentTab, label: typeName});
+        yield call(cancelSelectedTag);
+    } catch(error){
+        yield put({type: 'FETCH_FAILED', error});
+    }
+}
+
+function* updateTag(action){
+    const currentTab = yield select(state => state.getIn(['typesystem', 'currentTab']));
+    const activeTag = yield select(state => state.getIn(['typesystem', 'activeTag']));
+    const currentTagIndex = yield select(state => state.getIn(['typesystem', 'currentTagIndex']));
+    const params = {...action.fieldvalues, type: currentTab, mongoId:activeTag};
+    try {
+        const tagValue = yield call(typesystemApi.updateTag, params);
+        let typeName = action.fieldvalues.typeName;
+        if (currentTab === 'relationType') {
+            typeName = typeName + `（${action.fieldvalues.entityType_start.typeName} - ${action.fieldvalues.entityType_end.typeName}）`;
+        }
+        //添加成功
+        action.CB();
+        yield put({type: 'typesystem/UPADTE_TAGLIST', handle: 'edit', index: currentTagIndex, tab: currentTab, label: typeName});
         yield call(cancelSelectedTag);
     } catch(error){
         yield put({type: 'FETCH_FAILED', error});
@@ -134,7 +174,8 @@ function* watchCreateLesson() {
         takeLatest('typesystem/saga/CHANGE_TAB', changeTab),
         takeLatest('typesystem/saga/EDIT_TAG', editTag),
         takeLatest('typesystem/saga/DELETE_TAG', deleteTag),
-        takeLatest('typesystem/saga/ADD_TAG', addTag)
+        takeLatest('typesystem/saga/ADD_TAG', addTag),
+        takeLatest('typesystem/saga/UPDATE_TAG', updateTag)
     ];
 }
 

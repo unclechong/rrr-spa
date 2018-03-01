@@ -15,14 +15,14 @@ export const search = params => ({
     params
 })
 
-export const editTag = tag => ({
+export const editTag = (tag, index) => ({
     type: 'typesystem/saga/EDIT_TAG',
-    tag
+    tag,
+    index
 })
 
-export const deleteActiveTag = (index, CB) => ({
+export const deleteActiveTag = CB => ({
     type: 'typesystem/saga/DELETE_TAG',
-    index,
     CB
 })
 
@@ -31,6 +31,14 @@ export const addTag = (fieldvalues, CB) => ({
     fieldvalues,
     CB
 })
+
+export const updateTag = (fieldvalues, CB) => ({
+    type: 'typesystem/saga/UPDATE_TAG',
+    fieldvalues,
+    CB
+})
+
+
 
 
 
@@ -64,8 +72,9 @@ export const changeSearchKeyword = searchKeyword => ({
     searchKeyword
 })
 
-export const needCloseEditArea = () => ({
-    type:'typesystem/NEED_CLOSE_EDIT_AREA'
+export const needCloseEditArea = flag => ({
+    type:'typesystem/NEED_CLOSE_EDIT_AREA',
+    flag
 })
 
 export const triggerCheckModal = isShow => ({

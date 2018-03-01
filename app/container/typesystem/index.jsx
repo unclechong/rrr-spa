@@ -77,44 +77,20 @@ const formListMap = {
         },
         {
             label:'对象1',
-            id:'obj1',
-            key:'7',
+            id:'entityType_start',
+            key:'relationType_3',
             type:'select',
-            options:[
-                {
-                    label:'opt1',
-                    value:'o1'
-                },
-                {
-                    label:'opt2',
-                    value:'o2'
-                },
-                {
-                    label:'opt3',
-                    value:'o3'
-                }
-            ]
+            selectGroup: true,
+            options:[]
         },
         {
             label:'对象2',
-            key:'8',
-            id:'obj2',
+            key:'relationType_4',
+            id:'entityType_end',
             type:'select',
-            options:[
-                {
-                    label:'opt1',
-                    value:'o1'
-                },
-                {
-                    label:'opt2',
-                    value:'o2'
-                },
-                {
-                    label:'opt3',
-                    value:'o3'
-                }
-            ]
-        },
+            selectGroup: true,
+            options:[]
+        }
     ],
     attributionType:[
         {
@@ -124,54 +100,60 @@ const formListMap = {
             type:'input'
         },
         {
-            label:'对象1',
-            key:'102',
-            id:'obj1',
+            label:'值',
+            key:'attributionType_2',
+            id:'attrValueType',
             type:'select',
             options:[
                 {
-                    label:'opt1',
-                    value:'o1'
+                    label:'整数值',
+                    value:'int'
                 },
                 {
-                    label:'opt2',
-                    value:'o2'
+                    label:'浮点值',
+                    value:'float'
                 },
                 {
-                    label:'opt3',
-                    value:'o3'
+                    label:'布尔值',
+                    value:'bool'
+                },
+                {
+                    label:'日期时间',
+                    value:'datetime'
+                },
+                {
+                    label:'日期',
+                    value:'date'
+                },
+                {
+                    label:'时间',
+                    value:'time'
+                },
+                {
+                    label:'字符串',
+                    value:'string'
+                },
+                {
+                    label:'范围型',
+                    value:'range'
+                },
+                {
+                    label:'Map型',
+                    value:'map'
                 }
             ]
         },
         {
-            label:'单选',
-            key:'8911',
-            id:'obj2',
-            type:'treeselect',
-            treeData:[{
-              label: 'Node1',
-              value: '0-0',
-              key: '0-0',
-              disabled:true,
-              // isLeaf:true,
-              children: [{
-                label: 'Child Node1',
-                value: '0-0-1',
-                key: '0-0-1',
-              }, {
-                label: 'Child Node2',
-                value: '0-0-2',
-                key: '0-0-2',
-              }],
-            }, {
-            disabled:true,
-              label: 'Node2',
-              value: '0-1',
-              key: '0-1',
-            }]
+            label:'所属对象',
+            key:'attributionType_3',
+            id:'belongedType',
+            type:'select',
+            mode:'multiple',
+            selectGroup: true,
+            options:[]
         },
         {
-            label:'描述',
+            label:'备注',
             key:'attributionType_4',
             id:'typeDescription',
             type:'inputArea'
@@ -204,7 +186,7 @@ export default class TypeSystem extends React.Component {
     constructor(props){
         super(props)
 
-        this.currentTagIndex = 0;
+        // this.currentTagIndex = 0;
     }
 
     componentDidMount(){
@@ -215,7 +197,7 @@ export default class TypeSystem extends React.Component {
     tabOnChange = (e) => {
         //切换tab
         this.props.actions.changeTab(e);
-        this.currentTagIndex = 0;
+        // this.currentTagIndex = 0;
     }
 
     handleSearchEvent = (keyword) => {
@@ -227,7 +209,7 @@ export default class TypeSystem extends React.Component {
         if (keyword === this.props.typesystem.prevKeyword) return
         //搜索
         this.props.actions.search({keyword,type:this.props.typesystem.currentTab});
-        this.currentTagIndex = 0;
+        // this.currentTagIndex = 0;
     }
 
     taglistOnClick = (activeTag,e,index) => {
@@ -235,23 +217,35 @@ export default class TypeSystem extends React.Component {
         // if (activeTag === this.props.typesystem.activeTag) {
         //     this.props.actions.cancelSelectedTag();
         // }else {
-            this.currentTagIndex = index;
-            this.props.actions.editTag(e);
+            this.props.actions.editTag(e, index);
         // }
     }
 
-    // addCurrentType = (isEdit) => {
-    //     if (!isEdit) {
-    //         this.props.actions.showAddArea(true);
-    //     }else {
-    //         this.props.actions.showEditArea(data=>{
-    //             this.props.form.setFieldsValue(data);
-    //         });
-    //     }
-    // }
+    getFormList = () => {
+        const {tagList, currentTab} = this.props.typesystem;
+        if (currentTab === 'relationType' || currentTab === 'attributionType') {
+            const options = [{
+                label: tabMap['entityType'],
+                key: 'entityType',
+                children: tagList['entityType'].map(item=>({...item, value: item.value+'|'+item.label}))
+            },{
+                label: tabMap['attributionType'],
+                key: 'attributionType',
+                children: tagList['attributionType'].map(item=>({...item, value: item.value+'|'+item.label}))
+            }];
+            const formList = formListMap[currentTab];
+            formList.map(form=>{
+                if (form.id === 'entityType_start' || form.id === 'entityType_end' || form.id === 'belongedType') {
+                    form.options = options;
+                }
+            });
+            console.log(formList);
+            return formList
+        }else return formListMap[currentTab]
+    }
 
     deleteCurrentType = () => {
-        this.props.actions.deleteActiveTag(this.currentTagIndex,()=>{
+        this.props.actions.deleteActiveTag(()=>{
             message.success('删除成功');
         });
     }
@@ -261,26 +255,54 @@ export default class TypeSystem extends React.Component {
         this.props.form.validateFields(
             (err,values) => {
                 if (!err) {
-                    this.props.actions.addTag(values, ()=>{
-                        message.success('添加成功');
-                    });
+                    let params = values;
+                    if (this.props.typesystem.currentTab === 'relationType') {
+                        const {entityType_end, entityType_start, ...rest} = values;
+                        params = {...rest,
+                            entityType_end: {
+                                mongoId: entityType_end.split('|')[0],
+                                typeName: entityType_end.split('|')[1]},
+                            entityType_start: {
+                                mongoId: entityType_start.split('|')[0],
+                                typeName: entityType_start.split('|')[1]
+                            }
+                        }
+                    }else if(this.props.typesystem.currentTab === 'attributionType'){
+                        const {belongedType, ...rest} = values;
+                        params = {...rest, belongedType:belongedType.map(i=>{
+                            const [_f, _b] = i.split('|');
+                            return {
+                                mongoId: _f,
+                                typeName: _b
+                            }
+                        })};
+                    }
+                    const isAdd = !this.props.typesystem.activeTag;
+                    if (isAdd) {
+                        this.props.actions.addTag(params, ()=>{
+                            message.success('添加成功');
+                        });
+                    }else {
+                        this.props.actions.updateTag(params, ()=>{
+                            message.success('编辑成功');
+                        });
+                    }
                 }
             },
         );
     }
 
     checkModalHandleCancel = () => {
-        this.props.actions.triggerCheckModal(false);
+        this.props.actions.needCloseEditArea(false);
     }
 
     checkModalHandleOk = () => {
-        this.props.actions.needCloseEditArea();
+        this.props.actions.needCloseEditArea(true);
     }
 
     //清空form
     formCancel = () => {
         this.props.actions.cleanFormValues();
-        // this.props.form.setFieldsValue({img:''})
     }
 
     //带两个参数，返回类型
@@ -294,7 +316,7 @@ export default class TypeSystem extends React.Component {
                 <div>
                     <FormItemFactory
                         getFieldDecorator={getFieldDecorator}
-                        formList={formListMap[this.props.typesystem.currentTab]}
+                        formList={this.getFormList()}
                         elseData={elseData}
                         onSubmit={this.formCheck}
                         onCancel={this.formCancel}
@@ -307,7 +329,6 @@ export default class TypeSystem extends React.Component {
     render() {
         const {typesystem:{activeTag,activeTagName,isSearch,searchResultList,searchKeyword,
             currentTab,currentFormIsUpdate,tagList,checkModal}} = this.props;
-        console.log('in render');
         const renderTagList = isSearch?searchResultList:tagList[currentTab] || [];
         const SearchInput = (
             <Search
@@ -323,8 +344,8 @@ export default class TypeSystem extends React.Component {
         const areaLeft = (
             <Tabs activeKey={currentTab} className='ts-main-area-left-tab' onChange={e=>{this.tabOnChange(e)}}>
                 <TabPane tab="实体" key="entityType"></TabPane>
-                <TabPane tab="事件" key="eventType"></TabPane>
                 <TabPane tab="关系" key="relationType"></TabPane>
+                <TabPane tab="事件" key="eventType"></TabPane>
                 <TabPane tab="属性" key="attributionType"></TabPane>
             </Tabs>
         )

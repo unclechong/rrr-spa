@@ -22,8 +22,15 @@ export default class typesystemApi {
         const {isdel, mongoId, type, ...rest} = result;
         const returnObj = {};
         _.forOwn(rest, (v, k)=>{
-            returnObj[k] = {value: v};
+            if (k === 'entityType_end' || k === 'entityType_start') {
+                returnObj[k] = {value: v.mongoId+'|'+v.typeName};
+            }else if (k === 'belongedType') {
+                returnObj[k] = {value: v.map(_v=>_v.mongoId+'|'+_v.typeName)};
+            }else {
+                returnObj[k] = {value: v};
+            }
         })
+        console.log(result);
         return returnObj
     }
 
@@ -36,6 +43,12 @@ export default class typesystemApi {
     static async addTag(params={}){
         // const result = await sendPost('/type/getOne?config_id=13', 'post', true, params);
         const result = await sendPost('/type/addOne?config_id=13', 'post', false, params);
+        return result
+    }
+
+    static async updateTag(params={}){
+        // const result = await sendPost('/type/getOne?config_id=13', 'post', true, params);
+        const result = await sendPost('/type/updateOne?config_id=13', 'post', false, params);
         return result
     }
 }

@@ -4,6 +4,7 @@ const initialState = fromJS({
     activeTag: null,
     activeTagName: null,
     currentTab: 'entityType',
+    currentTagIndex: 0,
     tagList: {},
     isSearch: false,
     searchResultList: [],
@@ -19,10 +20,12 @@ export default (state = initialState, action) => {
 
     switch (action.type) {
         case 'typesystem/CHANGE_TAB':
-            return state.set('currentTab', action.currentTab)
+            return state.set('currentTab', action.currentTab);
         case 'typesystem/CHANGE_ACTIVE_TAG':
-            return state.set('activeTag', action.tag.value)
-                        .set('activeTagName', action.tag.label);
+            const {tag: {value, label, index}} = action;
+            return state.set('activeTag', value)
+                        .set('activeTagName', label)
+                        .set('currentTagIndex', index);
         case 'typesystem/CLEAN_SEARCH_LIST':
             return state.set('isSearch', false)
                         .set('searchKeyword', '')
@@ -30,7 +33,8 @@ export default (state = initialState, action) => {
                         .set('searchResultList', List([]));
         case 'typesystem/RESET_TAGLIST':
             return state.set('activeTag', null)
-                        .set('activeTagName', null);
+                        .set('activeTagName', null)
+                        .set('currentTagIndex', null);
         case 'typesystem/GET_TAGLIST_OK':
             return state.set('tagList', Map(action.payload));
         case 'typesystem/CHANGE_SEARCH_KEYWORD':
@@ -57,8 +61,12 @@ export default (state = initialState, action) => {
                 x.splice(rest.index, 1);
                 return x
             })
-            return state.updateIn(['tagList', tab], x => {
+            else if (handle === 'add') return state.updateIn(['tagList', tab], x => {
                 x.push({key: rest.value, value: rest.value, label: rest.label})
+                return x
+            })
+            else if (handle === 'edit') return state.updateIn(['tagList', tab], x => {
+                x[rest.index].label = rest.label;
                 return x
             });
         case 'typesystem/RESET_FIELD_VALUES':
