@@ -9,7 +9,7 @@ import * as actions from 'actions/typesystem';
 
 import PageContainer from 'app_component/pagecontainer';
 import TagList from 'app_component/taglist';
-import FormItemFactory from 'app_component/FormItemFactory';
+import FormItemFactory from 'app_component/formitemfactory';
 import './index.css';
 
 const tabMap = {
