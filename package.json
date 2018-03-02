@@ -6,7 +6,8 @@
     "scripts": {
         "mock": "node ./mock/server.js",
         "dev-w": "set NODE_ENV=dev && webpack-dev-server --progress --colors --content-base ./build",
-        "build-w": "set NODE_ENV=production && webpack -p --config ./webpack.config.production.js --progress --colors"
+        "build-w": "set NODE_ENV=production && webpack -p --config ./webpack.config.prod.js --progress --colors",
+        "start-w": "npm run build-w && nodemon ./server/index.js"
     },
     "author": "zyz",
     "license": "ISC",
@@ -24,6 +25,7 @@
         "babel-preset-stage-0": "^6.24.1",
         "csjs": "^1.1.0",
         "css-loader": "^0.28.9",
+        "html-webpack-plugin": "^3.0.4",
         "less": "^2.7.3",
         "less-loader": "^4.0.5",
         "react-loadable": "^5.3.1",
@@ -31,12 +33,16 @@
         "style-loader": "^0.18.2",
         "url-loader": "^0.5.9",
         "webpack": "^3.8.1",
-        "webpack-dev-server": "^2.6.1"
+        "webpack-dev-server": "^2.6.1",
+        "clean-webpack-plugin": "^0.1.18"
     },
     "dependencies": {
         "antd": "^3.1.6",
         "axios": "^0.17.1",
         "babel-runtime": "^6.26.0",
+        "koa": "^2.4.1",
+        "koa-static": "^4.0.2",
+        "koa-views": "^6.1.4",
         "lodash": "^4.17.5",
         "react": "^16.2.0",
         "react-dom": "^16.2.0",
