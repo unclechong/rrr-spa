@@ -1,5 +1,5 @@
 import appConf from '../conf';
-
+console.log(appConf.SERVER_URL);
 const sendPost = (path, method='get', isJson=false, params, onError) => {
     const sendParams = method=='get'?{params}:params;
     const proxyParams = {

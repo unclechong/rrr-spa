@@ -4,6 +4,7 @@ const webpack = require('webpack');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+console.log(JSON.stringify(JSON.parse((process.env.NODE_ENV == 'dev') || 'false')));
 module.exports = {
 
     entry: {
@@ -37,7 +38,7 @@ module.exports = {
         }),
         // 代码中区分开发、生产环境
         new webpack.DefinePlugin({
-            __PROD__: JSON.stringify(JSON.parse((process.env.NODE_ENV == 'production') || 'false'))
+            __DEV__: JSON.stringify(JSON.parse((process.env.NODE_ENV == 'dev') || 'false'))
         }),
         // 压缩代码
         new webpack.optimize.UglifyJsPlugin({
