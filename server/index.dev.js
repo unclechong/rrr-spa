@@ -1,32 +1,11 @@
-const Koa = require('koa')
-const app = new Koa()
-const views = require('koa-views');
-const path = require('path');
+const Koa = require('koa');
+const app = new Koa();
 const cors = require('koa2-cors');
 const bodyParser = require('koa-bodyparser');
 const axios = require('axios');
-
-const SERVER_URL = 'http://192.168.1.253:8088/supermind/api';
+var fs = require("fs");
 
 app.use(bodyParser());
-
-app.use(require('koa-static')(path.join(__dirname, '../build')));
-
-app.use(views(path.join(__dirname, '../views'), {
-    extension: 'html'
-}));
-
-app.use(async (ctx, next) => {
-    const start = new Date();
-    await next();
-    const ms = new Date() - start;
-    console.log(`${ctx.method} ${ctx.url} - ${ms}ms`);
-});
-
-app.use(async (ctx) => {
-    await ctx.render('index.html');
-});
-
 // 具体参数我们在后面进行解释
 app.use(cors({
     origin: function (ctx) {
@@ -41,12 +20,15 @@ app.use(cors({
     allowHeaders: ['Content-Type', 'Authorization', 'Accept'],
 }))
 
+
+const URL = 'http://192.168.1.253:8088/supermind/api';
+
 //当请求时GET请求时，显示表单让用户填写
 app.use(async(ctx)=>{
     if(ctx.url === '/supermind/api' && ctx.method==='POST'){
         let {rest, params, method, keyPath} = ctx.request.body;
         //rest 暂未转化成 URL 参数
-        const postURL = SERVER_URL + keyPath + '?config_id=14';
+        const postURL = URL + keyPath + '?config_id=14';
         const data = await axios.post(postURL, params);
         ctx.body = data.data;
     }else{
@@ -59,4 +41,6 @@ app.use(async(ctx)=>{
     }
 });
 
-app.listen(7770);
+app.listen(7771,()=>{
+    console.log('[demo] server is starting at port 3000');
+})

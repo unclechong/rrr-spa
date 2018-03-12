@@ -5,7 +5,7 @@
     "main": "index.js",
     "scripts": {
         "mock": "node ./mock/server.js",
-        "dev-w": "set NODE_ENV=dev && webpack-dev-server --progress --colors --content-base ./build",
+        "dev-w": "set NODE_ENV=dev && webpack-dev-server --progress --colors",
         "build-w": "set NODE_ENV=production && webpack -p --config ./webpack.config.prod.js --progress --colors",
         "start-w": "npm run build-w && nodemon ./server/index.js",
         "start": "nodemon ./server/index.js"
@@ -42,8 +42,10 @@
         "axios": "^0.17.1",
         "babel-runtime": "^6.26.0",
         "koa": "^2.4.1",
+        "koa-bodyparser": "^4.2.0",
         "koa-static": "^4.0.2",
         "koa-views": "^6.1.4",
+        "koa2-cors": "^2.0.5",
         "lodash": "^4.17.5",
         "react": "^16.2.0",
         "react-dom": "^16.2.0",

@@ -3,7 +3,7 @@ import sendPost from './commonApi';
 export default class typesystemApi {
 
     static async getTagList(params={}){
-        const data = await sendPost('/type/getTypeList?config_id=13', 'post', false, params);
+        const data = await sendPost('/type/getTypeList', 'post', false, params);
         // const data = await sendPost('/test/test.json', 'get', true, params);
         let taglist = {};
         _.forOwn(data,(v,k)=>{
@@ -18,7 +18,7 @@ export default class typesystemApi {
     };
 
     static async getTagDesc(params={}){
-        const result = await sendPost('/type/getOne?config_id=13', 'post', false, params);
+        const result = await sendPost('/type/getOne', 'post', false, params);
         const {isdel, mongoId, type, ...rest} = result;
         const returnObj = {};
         _.forOwn(rest, (v, k)=>{
@@ -35,19 +35,19 @@ export default class typesystemApi {
 
     static async deleteTag(params={}){
         // const result = await sendPost('/type/getOne?config_id=13', 'post', true, params);
-        const result = await sendPost('/type/deleteOne?config_id=13', 'post', false, params);
+        const result = await sendPost('/type/deleteOne', 'post', false, params);
         return true
     }
 
     static async addTag(params={}){
         // const result = await sendPost('/type/getOne?config_id=13', 'post', true, params);
-        const result = await sendPost('/type/addOne?config_id=13', 'post', false, params);
+        const result = await sendPost('/type/addOne', 'post', false, params);
         return result
     }
 
     static async updateTag(params={}){
         // const result = await sendPost('/type/getOne?config_id=13', 'post', true, params);
-        const result = await sendPost('/type/updateOne?config_id=13', 'post', false, params);
+        const result = await sendPost('/type/updateOne', 'post', false, params);
         return result
     }
 }

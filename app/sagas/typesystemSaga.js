@@ -57,12 +57,16 @@ function* canelCurrentEditHandle(handle) {
 }
 
 function* changeTab({currentTab}) {
-    // yield call(canelCurrentEditHandle);
     const taglist = yield select(state => state.get('typesystem').get('tagList').toJS());
     const tag = taglist[currentTab][0];
-    yield call(handleEditTag, tag);
-    yield put({type: 'typesystem/CLEAN_SEARCH_LIST'});
+    if (tag) {
+        yield call(handleEditTag, tag);
+        yield put({type: 'typesystem/CLEAN_SEARCH_LIST'});
+    }else {
+        yield call(cancelSelectedTag);
+    }
     yield put({type: 'typesystem/CHANGE_TAB', currentTab});
+
 }
 
 function* handleEditTag(tag) {
