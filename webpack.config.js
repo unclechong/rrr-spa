@@ -2,7 +2,6 @@ const path = require('path')
 const ROOT_PATH = path.resolve(__dirname);
 const webpack = require('webpack');
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-console.log(JSON.stringify(JSON.parse((process.env.NODE_ENV == 'dev') || 'false')));
 module.exports = {
     // devtool: 'cheap-module-eval-source-map',
     // entry: ["babel-polyfill", "./app/index"],

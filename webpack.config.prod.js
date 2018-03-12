@@ -4,7 +4,6 @@ const webpack = require('webpack');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-console.log(JSON.stringify(JSON.parse((process.env.NODE_ENV == 'dev') || 'false')));
 module.exports = {
 
     entry: {
