@@ -2,7 +2,7 @@ const Koa = require('koa')
 const app = new Koa()
 const views = require('koa-views');
 const path = require('path');
-const cors = require('koa2-cors');
+// const cors = require('koa2-cors');
 const bodyParser = require('koa-bodyparser');
 const axios = require('axios');
 
