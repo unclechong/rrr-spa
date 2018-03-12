@@ -8,6 +8,7 @@
         "dev-w": "set NODE_ENV=dev&& webpack-dev-server --progress --colors",
         "build-w": "set NODE_ENV=production&& webpack -p --config ./webpack.config.prod.js --progress --colors",
         "start-w": "npm run build-w && nodemon ./server/index.js",
+        "start-l": "npm run build-w && node ./server/index.js",
         "start": "nodemon ./server/index.js"
     },
     "author": "zyz",
