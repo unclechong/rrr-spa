@@ -1,5 +1,4 @@
 import appConf from '../conf';
-console.log(appConf.SERVER_URL);
 const sendPost = (path, method='get', isJson=false, params, onError) => {
     const sendParams = method=='get'?{params}:params;
     const proxyParams = {
@@ -21,7 +20,6 @@ const sendPost = (path, method='get', isJson=false, params, onError) => {
     )
     .then(res=>{
         const {data: {header,body}} = res;
-        console.log(res);
         // return header.code === '0' || header.code === 0 ? {body} : {status: false, message: message, data: {}}
         if (header.code === '0' || header.code === 0) {
             return body || {}

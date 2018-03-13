@@ -25,14 +25,14 @@ const checkFieldNull = (rule, value, callback) => {
 }
 
 const returnFormItem = (getFieldDecorator, itemData) => {
-    const {label, id, type, key} = itemData;
+    const {label, id, type, key, required} = itemData;
     if (type === 'inputArea') {
         return (
-            <FormItem {...formItemLayout} label={label} key={key} hasFeedback>
+            <FormItem {...formItemLayout} label={label} key={key} hasFeedback={required}>
                 {getFieldDecorator(id, {
                     // initialValue:'1',
                     rules: [{
-                        validator: checkFieldNull ,
+                        validator: required?checkFieldNull:null ,
                         message: itemData.message || `请输入${label}`,
                     }],
                 })(
@@ -61,7 +61,7 @@ const returnFormItem = (getFieldDecorator, itemData) => {
                     valuePropName:'img',
                     // initialValue:'',
                     rules: [{
-                        validator: checkFieldNull ,
+                        validator: itemData.required?checkFieldNull:null,
                         message: itemData.message || `请上传图片`,
                     }],
                 })(

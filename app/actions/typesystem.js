@@ -1,5 +1,3 @@
-import { fromJS } from 'immutable';
-
 //register saga
 export const changeTab = currentTab => ({
     type: 'typesystem/saga/CHANGE_TAB',
@@ -37,6 +35,11 @@ export const updateTag = (fieldvalues, CB) => ({
     fieldvalues,
     CB
 })
+
+export const wantAddTag = () => ({
+    type: 'typesystem/saga/WANT_ADD_TAG'
+})
+
 
 
 

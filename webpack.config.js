@@ -106,10 +106,10 @@ module.exports = {
         historyApiFallback: true,                    //配置路由后   解决刷新页面后失去路由问题
         hot:true,                                    //这个坑逼hot不能加， 加完不更新后页面不能自动刷新
         progress: true,                              //显示打包进程
-        contentBase: './build',
+        contentBase: './build'
         // colors:true,
         // host:'192.168.1.132',
-        port:'8088'
+        // port:'8088'
         // proxy: {
         //      '/api': {
         //          target: 'http://192.168.1.156',

@@ -1,6 +1,5 @@
-import { Tabs, Input, Button, Form, Upload, Modal, message } from 'antd';
+import { Input, Button, Form, Upload, Modal, message } from 'antd';
 const FormItem = Form.Item;
-const TabPane = Tabs.TabPane;
 const { TextArea,Search } = Input;
 
 import {connect} from 'react-redux'
@@ -9,6 +8,7 @@ import * as actions from 'actions/typesystem';
 
 import PageContainer from 'app_component/pagecontainer';
 import TagList from 'app_component/taglist';
+import WrapTabs from 'app_component/tabs';
 import FormItemFactory from 'app_component/formitemfactory';
 import './index.css';
 
@@ -18,6 +18,13 @@ const tabMap = {
     relationType:'关系',
     attributionType:'属性'
 }
+
+const TAB_LIST = Object.keys(tabMap).map(i=>{
+    return {
+        name:tabMap[i],
+        key:i
+    }
+})
 
 const mapStateToProps = state => {
     return {typesystem: state.get('typesystem').toJS()}
@@ -39,13 +46,15 @@ const formListMap = {
             label:'描述',
             key:'entityType_2',
             id:'typeDescription',
-            type:'inputArea'
+            type:'inputArea',
+            required:false,
         },
         {
             label:'图片',
             key:'entityType_3',
             id:'photo_base64',
-            type:'uploadImg'
+            type:'uploadImg',
+            required:false,
         }
     ],
     eventType:[
@@ -59,7 +68,8 @@ const formListMap = {
             label:'描述',
             key:'eventType_2',
             id:'typeDescription',
-            type:'inputArea'
+            type:'inputArea',
+            required:false,
         }
     ],
     relationType:[
@@ -73,7 +83,8 @@ const formListMap = {
             label:'描述',
             key:'relationType_2',
             id:'typeDescription',
-            type:'inputArea'
+            type:'inputArea',
+            required:false,
         },
         {
             label:'对象1',
@@ -156,7 +167,8 @@ const formListMap = {
             label:'备注',
             key:'attributionType_4',
             id:'typeDescription',
-            type:'inputArea'
+            type:'inputArea',
+            required:false,
         }
     ]
 }
@@ -197,6 +209,7 @@ export default class TypeSystem extends React.Component {
     tabOnChange = (e) => {
         //切换tab
         this.props.actions.changeTab(e);
+
         // this.currentTagIndex = 0;
     }
 
@@ -225,13 +238,13 @@ export default class TypeSystem extends React.Component {
         const {tagList, currentTab} = this.props.typesystem;
         if (currentTab === 'relationType' || currentTab === 'attributionType') {
             const options = [{
-                label: tabMap['entityType'],
+                label: tabMap['entityType'] + '类型',
                 key: 'entityType',
                 children: tagList['entityType'].map(item=>({...item, value: item.value+'|'+item.label}))
             },{
-                label: tabMap['attributionType'],
-                key: 'attributionType',
-                children: tagList['attributionType'].map(item=>({...item, value: item.value+'|'+item.label}))
+                label: tabMap['eventType'] + '类型',
+                key: 'eventType',
+                children: tagList['eventType'].map(item=>({...item, value: item.value+'|'+item.label}))
             }];
             const formList = formListMap[currentTab];
             formList.map(form=>{
@@ -240,7 +253,8 @@ export default class TypeSystem extends React.Component {
                 }
             });
             return formList
-        }else return formListMap[currentTab]
+        }
+        return formListMap[currentTab]
     }
 
     deleteCurrentType = () => {
@@ -304,6 +318,10 @@ export default class TypeSystem extends React.Component {
         this.props.actions.cleanFormValues();
     }
 
+    wantAddTag = () => {
+        this.props.actions.wantAddTag();
+    }
+
     //带两个参数，返回类型
     //是否是编辑， 如果是编辑状态，将参数填写去，是添加状态返回空的form
     getEditArea = (isAdd) => {
@@ -340,21 +358,16 @@ export default class TypeSystem extends React.Component {
                 style={{marginBottom:10}}
             />
         )
-        const areaLeft = (
-            <Tabs activeKey={currentTab} className='ts-main-area-left-tab' onChange={e=>{this.tabOnChange(e)}}>
-                <TabPane tab="实体" key="entityType"></TabPane>
-                <TabPane tab="关系" key="relationType"></TabPane>
-                <TabPane tab="事件" key="eventType"></TabPane>
-                <TabPane tab="属性" key="attributionType"></TabPane>
-            </Tabs>
-        )
         const editOrAdd = !!activeTag?'编辑':'添加';
-        // <div className='ts-mainarea-right-logo'>supermind</div>
         return (
             <PageContainer
                 areaLeft = {
                     <div style={{height:'100%'}}>
-                        {areaLeft}
+                        <WrapTabs
+                            tabList={TAB_LIST}
+                            tabOnChange={e=>{this.tabOnChange(e)}}
+                            currentTab={currentTab}
+                        />
                         {SearchInput}
                         <TagList
                             style={{maxHeight:'70%'}}
@@ -373,6 +386,7 @@ export default class TypeSystem extends React.Component {
                         <div className='ts-mainarea-right-title'>
                             当前：{tabMap[currentTab]}{activeTagName?` / ${activeTagName}`:''}
                             <span style={{float:'right'}}>
+                                <Button style={{marginRight:10}} type='primary' onClick={this.wantAddTag} >新增{tabMap[currentTab]}类型</Button>
                                 <Button style={{marginRight:10,color:'red'}} onClick={this.deleteCurrentType} disabled={isSearch?true:!activeTag}>删除{tabMap[currentTab]}类型</Button>
                             </span>
                         </div>

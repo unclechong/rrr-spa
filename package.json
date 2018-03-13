@@ -48,6 +48,7 @@
         "koa-views": "^6.1.4",
         "koa2-cors": "^2.0.5",
         "lodash": "^4.17.5",
+        "rc-queue-anim": "^1.4.1",
         "react": "^16.2.0",
         "react-dom": "^16.2.0",
         "react-redux": "^5.0.5",

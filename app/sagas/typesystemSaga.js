@@ -171,6 +171,17 @@ function* updateTag(action){
     }
 }
 
+function* wantAddTag(){
+    const needCheck = yield select(state => state.get('typesystem').get('currentFormIsUpdate'));
+    let flag = true;
+    if (needCheck) {
+        flag = yield call(canelCurrentEditHandle);
+    }
+    if (flag) {
+        yield call(cancelSelectedTag);
+    }
+}
+
 function* watchCreateLesson() {
     yield[
         takeLatest('typesystem/saga/GET_TARGET_LIST', initTypesystem),
@@ -179,7 +190,9 @@ function* watchCreateLesson() {
         takeLatest('typesystem/saga/EDIT_TAG', editTag),
         takeLatest('typesystem/saga/DELETE_TAG', deleteTag),
         takeLatest('typesystem/saga/ADD_TAG', addTag),
-        takeLatest('typesystem/saga/UPDATE_TAG', updateTag)
+        takeLatest('typesystem/saga/UPDATE_TAG', updateTag),
+        takeLatest('typesystem/saga/WANT_ADD_TAG', wantAddTag)
+
     ];
 }
 
