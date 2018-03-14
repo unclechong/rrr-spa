@@ -1,0 +1,56 @@
+.test:hover>.aaa{
+    color: blue
+}
+.df-left-tree-title-opt{
+    float: right;
+    margin-right: 10px;
+    color: #3963b2;
+    display: none;
+}
+.ant-collapse-item:hover .df-left-tree-title-opt{
+    display: inline-block;
+}
+.dd-mainarea-right-title{
+    height: 45px;
+    width: 100%;
+    line-height: 45px;
+    font-size: 14px;
+    background: #fff;
+    box-shadow: 2px 2px 5px #868685;
+    -moz-box-shadow: 2px 2px 5px #868685;
+    -webkit-box-shadow: 2px 2px 5px #868685;
+    padding-left: 10px;
+    margin-bottom: 15px;
+}
+.dd-mainarea-right-body{
+    width: 100%;
+    background: #fff;
+    box-shadow: 2px 2px 5px #868685;
+    -moz-box-shadow: 2px 2px 5px #868685;
+    -webkit-box-shadow: 2px 2px 5px #868685;
+    padding: 10px;
+}
+.dd-mainarea-right-body-title{
+    font-size: 16px;
+    font-weight: bold;
+    height: 33px;
+    border-bottom: 1px solid #d9d9d9;
+    margin-bottom: 10px;
+}
+
+
+
+/* child01 */
+.df-table-columns-line{
+    text-align: center;
+}
+
+.df-child01-table-class .ant-table-thead > tr > th{
+    text-align: center;
+}
+
+/* child02 */
+.df-child01-radio-class .ant-radio-button-wrapper-checked{
+    background: #3963b2;
+    color: #fff
+}

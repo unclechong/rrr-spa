@@ -1,0 +1,40 @@
+.ant-tree .wt-wrap-class .ant-tree-node-content-wrapper {
+    width: 93%
+}
+
+.ant-tree .wt-wrap-class .ant-tree-node-content-wrapper .ant-tree-title{
+    width: 100%
+}
+
+.wt-tree-title-right{
+    float: left;
+    display: none;
+}
+
+.wt-wrap-class:hover .wt-tree-title-right{
+    display: inline-block;
+}
+
+.wt-tree-title-right{
+    float: right;
+    margin-right: 10px;
+}
+
+.ant-tree .wt-wrap-class .ant-tree-node-content-wrapper.ant-tree-node-selected{
+    color: #3963b2;
+    border-left: 3px solid #3963b2;
+    padding-left: 10px;
+    box-shadow: 2px 2px 5px #868685;
+    -webkit-box-shadow: 2px 2px 5px #868685;
+    background: #fff;
+}
+
+.ant-tree .wt-wrap-class .ant-tree-node-content-wrapper:hover {
+    box-shadow: 2px 2px 5px #868685;
+    -webkit-box-shadow: 2px 2px 5px #868685;
+    background: #fff
+}
+
+.ant-tree .wt-wrap-class .ant-tree-node-content-wrapper{
+    border-radius: 0px;
+}
