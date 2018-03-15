@@ -1,5 +1,4 @@
 import { Input, Button, Form, Upload, Modal, message } from 'antd';
-const FormItem = Form.Item;
 const { TextArea,Search } = Input;
 
 import {connect} from 'react-redux'
@@ -9,7 +8,9 @@ import * as actions from 'actions/typesystem';
 import PageContainer from 'app_component/pagecontainer';
 import TagList from 'app_component/taglist';
 import WrapTabs from 'app_component/tabs';
+import Card from 'app_component/card';
 import FormItemFactory from 'app_component/formitemfactory';
+
 import './index.css';
 
 const tabMap = {
@@ -301,7 +302,7 @@ export default class TypeSystem extends React.Component {
                         });
                     }
                 }
-            },
+            }
         );
     }
 
@@ -328,18 +329,20 @@ export default class TypeSystem extends React.Component {
         const { getFieldDecorator } = this.props.form;
         const elseData = {isUpdate: this.props.typesystem.currentFormIsUpdate, isAdd}
         return (
-            <div className='ts-mainarea-right-body'>
-                <div className='ts-mainarea-right-body-title'>{tabMap[this.props.typesystem.currentTab]}类型{isAdd?'添加':'编辑'}</div>
-                <div>
-                    <FormItemFactory
-                        getFieldDecorator={getFieldDecorator}
-                        formList={this.getFormList()}
-                        elseData={elseData}
-                        onSubmit={this.formCheck}
-                        onCancel={this.formCancel}
-                    />
-                </div>
-            </div>
+            <Card
+                title={tabMap[this.props.typesystem.currentTab]+'类型'+ isAdd?'添加':'编辑'}
+                body={
+                    <div>
+                        <FormItemFactory
+                            getFieldDecorator={getFieldDecorator}
+                            formList={this.getFormList()}
+                            elseData={elseData}
+                            onSubmit={this.formCheck}
+                            onCancel={this.formCancel}
+                        />
+                    </div>
+                }
+            />
         )
     }
 
@@ -387,7 +390,7 @@ export default class TypeSystem extends React.Component {
                             当前：{tabMap[currentTab]}{activeTagName?` / ${activeTagName}`:''}
                             <span style={{float:'right'}}>
                                 <Button style={{marginRight:10}} type='primary' onClick={this.wantAddTag} >新增{tabMap[currentTab]}类型</Button>
-                                <Button style={{marginRight:10,color:'red'}} onClick={this.deleteCurrentType} disabled={isSearch?true:!activeTag}>删除{tabMap[currentTab]}类型</Button>
+                                <Button style={{marginRight:10}} type="danger" onClick={this.deleteCurrentType} disabled={isSearch?true:!activeTag}>删除{tabMap[currentTab]}类型</Button>
                             </span>
                         </div>
                         {this.getEditArea(!activeTag)}

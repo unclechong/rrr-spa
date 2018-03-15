@@ -61,7 +61,7 @@ const WrapApp = (props)=>{
                 <Route path={`${props.match.path}`} exact component={AsyncHomePage} />
                 <Route path={`${props.match.path}/type`} exact component={AsyncTypeSystem} />
                 <Route path={`${props.match.path}/graph`} exact component={AsyncKnowledgeGraph} />
-                <Route path={`${props.match.path}/data`} exact component={AsyncDataFusion} />
+                <Route path={`${props.match.path}/data`} component={AsyncDataFusion} />
                 <Route path={`${props.match.path}/repair`} exact component={AsyncArtificialCorrection} />
                 <Route path={`${props.match.path}/user`} exact component={AsyncUser} />
                 <Redirect to="/error/404" />

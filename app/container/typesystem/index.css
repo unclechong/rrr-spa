@@ -10,31 +10,6 @@
     padding-left: 10px;
     margin-bottom: 15px;
 }
-/* .ts-mainarea-right-title:hover .ts-mainarea-right-body:hover{
-    box-shadow: 2px 5px 10px #868685;
-    -moz-box-shadow: 2px 5px 10px #868685;
-    -webkit-box-shadow: 2px 5px 10px #868685;
-} */
-.ts-mainarea-right-body{
-    width: 100%;
-    background: #fff;
-    box-shadow: 2px 2px 5px #868685;
-    -moz-box-shadow: 2px 2px 5px #868685;
-    -webkit-box-shadow: 2px 2px 5px #868685;
-    padding: 10px;
-}
-/* .ts-mainarea-right-body:hover{
-    box-shadow: 2px 5px 10px #868685;
-    -moz-box-shadow: 2px 5px 10px #868685;
-    -webkit-box-shadow: 2px 5px 10px #868685;
-} */
-.ts-mainarea-right-body-title{
-    font-size: 16px;
-    font-weight: bold;
-    height: 33px;
-    border-bottom: 1px solid #d9d9d9;
-    margin-bottom: 10px;
-}
 .ts-mainarea-right-logo{
     text-align: center;
     margin-top: 200px;

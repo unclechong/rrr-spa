@@ -21,8 +21,10 @@ export default class BaseLayout extends React.PureComponent{
 
     render(){
         const {children,location: { pathname },match} = this.props;
-        const pathArr = pathname.split('/').slice(1);
-        const currentMenuKey = pathArr.join('_');
+        const pathArr = pathname.split('/');
+        //兼容有子页面路由
+        const splitPathArr = pathArr.length > 2?pathArr.slice(1,3):pathArr.slice(1);
+        const currentMenuKey = splitPathArr.join('_');
         this.prveMenuKey = currentMenuKey;
         return (
             <Layout style={{

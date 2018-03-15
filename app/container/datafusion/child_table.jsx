@@ -1,4 +1,7 @@
 import { Table } from 'antd';
+import { Link } from 'react-router-dom';
+
+import Card from 'app_component/card';
 
 const dataSource = [{
     key:'1',
@@ -23,7 +26,12 @@ export default class Child01 extends React.Component{
     constructor(props){
         super(props)
 
-        const column = this.props.type === 'databaseSource'?{
+        //拿到页面类型，并拼接出跳转详情的PATH
+        const {url: currentPath} = this.props.match;
+        const matchUrlArr = currentPath.split('/').slice(1,4);
+        const matchUrl = matchUrlArr.join('/');
+        this.pageType = matchUrlArr[2];
+        const column = this.pageType === 'db'?{
             title: '抽取知识',
             dataIndex: 'extractTask',
             key: 'extractTask',
@@ -68,7 +76,7 @@ export default class Child01 extends React.Component{
             className: 'df-table-columns-line',
             render: (text, record) => (
                 <span style={{color: '#3963b2',cursor: 'pointer'}}>
-                    <span style={{marginRight: 15}}>详情</span>
+                    <span style={{marginRight: 15}}><Link to={`/${matchUrl}/detail`}>详情</Link></span>
                     <span>删除</span>
                 </span>
             )
@@ -77,17 +85,17 @@ export default class Child01 extends React.Component{
 
     render(){
         return(
-            <div className='dd-mainarea-right-body'>
-                <div className='dd-mainarea-right-body-title'>文档库</div>
-                <div>
+            <Card
+                title={this.pageType==='db'?'数据列表':'文档库'}
+                body={
                     <Table
                         dataSource={dataSource}
                         columns={this.columns}
                         bordered
                         className='df-child01-table-class'
                     />
-                </div>
-            </div>
+                }
+            />
         )
     }
 }

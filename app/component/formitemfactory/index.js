@@ -4,9 +4,11 @@ const { Option, OptGroup } = Select;
 const { TextArea } = Input;
 // const SHOW_ALL = TreeSelect.SHOW_ALL;
 import UploadForm from './uploadform';
+import HasBtnSelect from './hasBtnSelect';
+
 import './index.css';
 
-const formItemLayout = {
+const defaultFormItemLayout = {
     labelCol: { span: 4 },
     wrapperCol: { span: 8 },
 };
@@ -24,11 +26,12 @@ const checkFieldNull = (rule, value, callback) => {
     }
 }
 
-const returnFormItem = (getFieldDecorator, itemData) => {
-    const {label, id, type, key, required} = itemData;
+const returnFormItem = (getFieldDecorator, itemData, layout) => {
+    const {label, id, type, key, required, hasBtn} = itemData;
+    const formItemLayout = layout || defaultFormItemLayout;
     if (type === 'inputArea') {
         return (
-            <FormItem {...formItemLayout} label={label} key={key} hasFeedback={required}>
+            <FormItem {...formItemLayout} label={label} key={key} hasFeedback={hasBtn?false:required}>
                 {getFieldDecorator(id, {
                     // initialValue:'1',
                     rules: [{
@@ -36,7 +39,10 @@ const returnFormItem = (getFieldDecorator, itemData) => {
                         message: itemData.message || `请输入${label}`,
                     }],
                 })(
-                    <TextArea placeholder={itemData.placeholder || `请输入${label}`} autosize={{ minRows: 2, maxRows: 6 }} />
+                    <div>
+                        <TextArea placeholder={itemData.placeholder || `请输入${label}`} autosize={{ minRows: 2, maxRows: 6 }} style={{width: hasBtn?'75%':'100%'}}/>
+                        {hasBtn}
+                    </div>
                 )}
             </FormItem>
         )
@@ -121,20 +127,43 @@ const returnFormItem = (getFieldDecorator, itemData) => {
                 )}
             </FormItem>
         )
+    }else if (type === 'button') {
+        return (
+            <FormItem {...formItemLayout} label={label} key={key}>
+                {getFieldDecorator(id, {
+                    rules: [{}]
+                })(
+                    <Button type="dashed">{itemData.buttonName}</Button>
+                )}
+            </FormItem>
+        )
+    }else if (type === 'hasBtnSelect') {
+        return (
+            <FormItem {...formItemLayout} label={label} key={key}>
+                {getFieldDecorator(id, {
+                    rules: [{
+                        validator: checkFieldNull ,
+                        message: itemData.message || `请选择${label}`,
+                    }]
+                })(
+                    <HasBtnSelect {...itemData} />
+                )}
+            </FormItem>
+        )
     }
 }
 
-const FormItemFactory = ({getFieldDecorator,formList,onSubmit,onCancel,elseData}) => {
-    const {isAdd, isUpdate} = elseData;
+const FormItemFactory = ({getFieldDecorator, formList, onSubmit, onCancel, elseData, noBtn=false, formItemLayout}) => {
+    const {isAdd, isUpdate} = elseData || {};
     return (
         <div>
             {
-                formList.map(item=>returnFormItem(getFieldDecorator,item))
+                formList.map(item=>returnFormItem(getFieldDecorator, item, formItemLayout))
             }
-            <FormItem {...formTailLayout}>
+            {noBtn?null:<FormItem {...formTailLayout}>
                 <Button type="primary" icon="check" style={{marginRight:'7%'}} onClick={onSubmit} disabled={isAdd?false:!isUpdate}>{isAdd?'添加':'保存'}</Button>
                 <Button icon="close" onClick={onCancel}>清空</Button>
-            </FormItem>
+            </FormItem>}
         </div>
     )
 }

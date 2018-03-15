@@ -25,10 +25,10 @@ const renderTreeNodes = (data) => {
     });
 }
 
-const WrapTree = ({treeData, onSelect}) => {
+const WrapTree = ({treeData, onSelect, selectedKeys}) => {
     // loadData={this.onLoadData
     return (
-        <Tree onSelect={onSelect}>
+        <Tree onSelect={onSelect} selectedKeys={selectedKeys}>
             {renderTreeNodes(treeData)}
         </Tree>
     )
