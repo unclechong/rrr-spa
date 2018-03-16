@@ -133,7 +133,7 @@ const returnFormItem = (getFieldDecorator, itemData, layout) => {
                 {getFieldDecorator(id, {
                     rules: [{}]
                 })(
-                    <Button type="dashed">{itemData.buttonName}</Button>
+                    <Button type="dashed" onClick={itemData.onClick}>{itemData.buttonName}</Button>
                 )}
             </FormItem>
         )

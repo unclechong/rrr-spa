@@ -12,13 +12,49 @@ export const getTreeData = () => ({
 })
 
 
-
-
-
-
-
-
+//normal actions
 export const changeTreeSelect = value => ({
     type: 'datafusion/CHANGE_TREE_SELECT',
     value
 })
+
+
+
+
+
+
+//db add module actions
+export const startMappingConf = () => ({
+    type: 'datafusionChildDbAdd/saga/START_MAPPING_CONF',
+})
+
+
+export const triggerModal = isShow => ({
+    type: 'datafusionChildDbAdd/TRIGGER_MODAL',
+    isShow
+})
+
+
+
+export const handleMappingStep = status => ({
+    type: 'datafusionChildDbAdd/HANDLE_MAPPING_STEP',
+    status
+})
+
+export const changeSelectTreeNode = arg => ({
+    type: 'datafusionChildDbAdd/CHANGE_SELECT_TREE_NODE',
+    arg
+})
+
+export const addMappingSelect = step => ({
+    type: 'datafusionChildDbAdd/MERGE_MAPPING_SELECT_DATA',
+    step
+})
+
+
+export const cancelMappingConf = () => {
+    return (dispatch,getState) => {
+        dispatch(triggerModal(false));
+        dispatch(handleMappingStep('reset'));
+    }
+}

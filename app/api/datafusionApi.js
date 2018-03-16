@@ -14,4 +14,19 @@ export default class datafusionApi {
         return {documentSource, databaseSource}
     };
 
+
+
+    //db add child API
+    static async getMappingDataInStep1(params={}){
+        // const result = await sendPost('./test/tree.json', 'get', true, params);
+        const treeData = [
+            { title: 'Expand to load', key: '0' },
+            { title: 'Expand to load', key: '1' , children:[{ title: 'Expand to load', key: '1-0' }]},
+            { title: 'Tree Node', key: '2', isLeaf: true },
+        ]
+
+        return treeData
+    };
+
+
 }

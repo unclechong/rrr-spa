@@ -1,0 +1,36 @@
+.com-list-body{
+    background: #f7f7f7;
+    height: 418px;
+    overflow: auto;
+}
+.com-list-body ul{
+    list-style-type:none;
+    margin: 0px;
+    text-align: left;
+    padding: 10px 10px 1px 10px;
+}
+.com-list-body ul li{
+    height: 25px;
+    line-height: 25px;
+    background: #fff;
+    padding: 0px 10px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    text-overflow:ellipsis;
+    white-space: nowrap;
+    color: #3963b2;
+    border-left: 3px solid #3963b2;
+    box-shadow: 2px 2px 5px #868685;
+    -moz-box-shadow: 2px 2px 5px #868685;
+    -webkit-box-shadow: 2px 2px 5px #868685;
+}
+.com-list-body::-webkit-scrollbar {
+    width: 6px;
+    background-color: #f7f7f7;
+}
+.com-list-body::-webkit-scrollbar-track {
+    background-color: #f7f7f7;
+}
+.com-list-body::-webkit-scrollbar-thumb {
+    background: #999;
+}
