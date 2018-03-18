@@ -34,6 +34,12 @@ export const triggerModal = isShow => ({
     isShow
 })
 
+export const onLoadStep1TreeData = treeData => ({
+    type: 'datafusionChildDbAdd/ONLOAD_STEP1_TREE_DATA',
+    treeData
+})
+
+
 
 
 export const handleMappingStep = status => ({

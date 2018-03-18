@@ -159,22 +159,16 @@ export default class Child03 extends React.Component{
     }
 
     onLoadData = (treeNode) => {
-      return new Promise((resolve) => {
         if (treeNode.props.children) {
-          resolve();
-          return;
+            return;
         }
-        setTimeout(() => {
-          treeNode.props.dataRef.children = [
+        treeNode.props.dataRef.children = [
             { title: 'Child Node', key: `${treeNode.props.eventKey}-0` },
             { title: 'Child Node', key: `${treeNode.props.eventKey}-1` },
-          ];
-          this.setState({
-            treeData: [...this.state.treeData],
-          });
-          resolve();
-        }, 1000);
-      });
+        ];
+
+console.log(this.props.datafusionChildDbAdd);
+        this.props.actions.onLoadStep1TreeData(this.props.datafusionChildDbAdd.step1TreeData)
     }
 
     renderTreeNodes = (data) => {
