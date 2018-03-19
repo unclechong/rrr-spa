@@ -221,7 +221,7 @@ export default class Child03 extends React.Component{
             const addName = MCSelectValue[step][0].label;
             const [[firArr], [secArr]] = this.mappingConfTreeSplitArr;
             const listArr = [{
-                name: `${addName}/${firArr.props.title}        ${secArr.props.title}`,
+                name: <span>{`${addName}/${firArr.props.title}`}<span style={{marginLeft: 20}}>{secArr.props.title}</span></span>,
                 value: `${firArr.key}|${secArr.key}`,
                 key: `${firArr.key}|${secArr.key}`
             }]
