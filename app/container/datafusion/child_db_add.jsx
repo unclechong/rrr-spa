@@ -1,4 +1,4 @@
-import { Steps, Form, Row, Col, Button, Alert, Modal, Divider, Select, Tag, Tree } from 'antd';
+import { Steps, Form, Row, Col, Button, Alert, Modal, Divider, Select, Tag, Tree, message } from 'antd';
 const Step = Steps.Step;
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -8,6 +8,7 @@ import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux';
 import * as actions from 'actions/datafusion';
 import QueueAnim from 'rc-queue-anim';
+import { fromJS } from 'immutable';
 
 import Card from 'app_component/card';
 import List from 'app_component/list';
@@ -112,12 +113,19 @@ export default class Child03 extends React.Component{
 
         //bind mapping conf btn callback
         FORM_ITEM_LIST[2][2].onClick = this.handleMappingConf;
+
+        //左侧选择列表选中的的标签的信息{name:..., key:..., value:...}, 右侧选中的树需要将此列表拼接成需要的数据，上一步下一步将会被清空
+        this.mappingConfTreeSplitArr = [];
+        // 步骤一中，左侧树选中的节点的KEY，由于是多选，并且可以多次添加，由这个变量去校验左侧树的disable，在点击右侧清空按钮时一并清空
+        this.selectableArr = [];
+    }
+
+    componentDidMount(){
+        this.props.actions.startMappingConf();
     }
 
     onSubmit = () => {
-
         this.props.form.validateFields(
-
             (err,values) => {
                 console.log(values);
                 if (!err) {
@@ -131,51 +139,57 @@ export default class Child03 extends React.Component{
         );
     }
 
-    onClean = () => {
-
-    }
-
     //进入 mapping 配置
     handleMappingConf = () => {
         this.props.actions.startMappingConf();
     }
 
-
-    mappingConfNext = () => {
-        console.log('in modal ok');
-        this.props.actions.handleMappingStep('next');
+    mappingConfNext = step => {
+        const {mappingSelectData} = this.props.dbAdd;
+        if (!mappingSelectData[step].length && (step === 0 || step === 1)) {
+            message.info('请先选择');
+            return
+        }
+        this.mappingConfTreeSplitArr = [];
+        this.props.actions.mappingConfNext('next');
     }
 
     mappingConfPrev = () => {
+        this.mappingConfTreeSplitArr = [];
         this.props.actions.handleMappingStep('prev');
     }
 
     handleModalCancel = () => {
+        this.mappingConfTreeSplitArr = [];
         this.props.actions.cancelMappingConf();
     }
 
-    mappingConfSelectChange = (e) => {
-        console.log(e);
+    MCSelectChange = (e,index=null) => {
+        this.props.actions.handleMCSelectChange({value:e,index});
     }
 
     onLoadData = (treeNode) => {
-        if (treeNode.props.children) {
-            return;
-        }
-        treeNode.props.dataRef.children = [
-            { title: 'Child Node', key: `${treeNode.props.eventKey}-0` },
-            { title: 'Child Node', key: `${treeNode.props.eventKey}-1` },
-        ];
 
-console.log(this.props.datafusionChildDbAdd);
-        this.props.actions.onLoadStep1TreeData(this.props.datafusionChildDbAdd.step1TreeData)
+        return new Promise((resolve) => {
+            if (treeNode.props.children) {
+                resolve();
+                return;
+            }
+
+             treeNode.props.dataRef.children = [
+                 { title: `${treeNode.props.eventKey}-0`, key: `${treeNode.props.eventKey}-0` },
+                 { title: `${treeNode.props.eventKey}-1`, key: `${treeNode.props.eventKey}-1` },
+             ];
+             this.props.actions.onLoadStep1TreeData(this.props.dbAdd.step0TreeData);
+             resolve();
+        })
     }
 
     renderTreeNodes = (data) => {
         return data.map((item) => {
             if (item.children) {
                 return (
-                    <TreeNode title={item.title} key={item.key} dataRef={item}>
+                    <TreeNode {...item} dataRef={item}>
                         {this.renderTreeNodes(item.children)}
                     </TreeNode>
                 );
@@ -185,47 +199,109 @@ console.log(this.props.datafusionChildDbAdd);
         });
     }
 
-    handelStep1OnSelect = (step, node, e) => {
-        const selectNodes = e.selectedNodes.map(node=>({
-            name: node.props.title,
-            key: node.key
-        }))
-        this.props.actions.changeSelectTreeNode({step, selectNodes})
+    handelMCTreeSelect = (step, selectNodes, e, index=null) => {
+        if (step === 0) {
+            this.mappingConfTreeSplitArr = e.selectedNodes;
+        }else {
+            this.mappingConfTreeSplitArr[index] = e.selectedNodes;
+        }
+        this.props.actions.changeSelectTreeNode({step, selectNodes, index})
     }
 
-    addMappingSelect = (step) => {
-        this.props.actions.addMappingSelect(step)
+    addMCTreeSelect = (step) => {
+        if (step === 0) {
+            const listArr = this.mappingConfTreeSplitArr.map(_node=>({
+                name: _node.props.title,
+                value: _node.key,
+                key: _node.key
+            }))
+            this.props.actions.addMappingSelect({listArr, treeData: this.formatTreeData(false)});
+        }else {
+            const {MCSelectValue, mappingSelectData} = this.props.dbAdd;
+            const addName = MCSelectValue[step][0].label;
+            const [[firArr], [secArr]] = this.mappingConfTreeSplitArr;
+            const listArr = [{
+                name: `${addName}/${firArr.props.title}        ${secArr.props.title}`,
+                value: `${firArr.key}|${secArr.key}`,
+                key: `${firArr.key}|${secArr.key}`
+            }]
+            const currentValue = listArr[0].value;
+            const loopData = mappingSelectData[step];
+            for (let i = 0; i < loopData.length; i++) {
+                const hasValue = loopData[i].value;
+                if (currentValue === hasValue) {
+                    message.info('请勿重复添加！');
+                    return
+                }
+            }
+            this.props.actions.addMappingSelectOther({listArr});
+        }
+
+    }
+
+    formatTreeData = (selectable) => {
+        const selectValueArr = this.props.dbAdd.MCTreeSelectValue[0];
+        if(!selectable){
+            this.selectableArr = this.selectableArr.concat(selectValueArr);
+        }
+        const treeData = this.props.dbAdd.step0TreeData;
+        let newTreeData = fromJS(treeData);
+        this.selectableArr.map(nodeKey => {
+            const setInStr = nodeKey.replace(/-/g, ',children,');
+            const setInArr = setInStr.split(',');
+            newTreeData = newTreeData.updateIn(setInArr, val=>{
+                return val.set('selectable', selectable)
+            })
+        })
+
+        return newTreeData.toJS()
+    }
+
+    handleCleanMappingSelectData = () => {
+
+        this.props.actions.cleanMappingSelectData({treeData: this.formatTreeData(true)});
+        this.selectableArr = [];
+    }
+
+    cleanMCSelectDataStepOther = () =>{
+        this.props.actions.cleanMCSelectDataStepOther();
     }
 
     renderMappingConfChild = (step, mappingSelectData) => {
-        const {selectTreeNode, step1TreeData} = this.props.dbAdd;
+        const {selectTreeNode, step0TreeData, MCTreeSelectValue, step1TreeData, MCSelectValue} = this.props.dbAdd;
         if (step === 0) {
             return (
                 <Row gutter={16}>
                     <Col xl={7} offset={7}>
                         <Label label='概念类型' />
-                        <Select style={{width: 250, marginBottom: 10}} onChange={this.mappingConfSelectChange}>
+                        <Select
+                            style={{width: 250, marginBottom: 10}}
+                            key='step_0_select'
+                            labelInValue
+                            value={MCSelectValue[0]}
+                            onChange={e=>{this.MCSelectChange(e,null)}}>
                             <Option value="entity">实体</Option>
                             <Option value="event">事件</Option>
                         </Select>
                         <Label label='概念' />
-                        <div style={{height: 350,width: 250, border: '1px solid #e8e8e8'}}>
+                        <div style={{height: 350,width: 250, border: '1px solid #e8e8e8', overflow: 'auto'}}>
                             <Tree
                                 loadData={this.onLoadData}
+                                selectedKeys={MCTreeSelectValue[0]}
                                 multiple
-                                onSelect={(index, e)=>{this.handelStep1OnSelect(0, index, e)}}
+                                onSelect={(index, e)=>{this.handelMCTreeSelect(0, index, e)}}
                             >
-                                {this.renderTreeNodes(step1TreeData || [])}
+                                {this.renderTreeNodes(step0TreeData || [])}
                             </Tree>
                         </div>
                     </Col>
                     <Col xl={3} style={{paddingTop: 94}}>
-                        <Button type='primary' disabled={!selectTreeNode[0].length} onClick={()=>{this.addMappingSelect(0)}}>确定</Button>
+                        <Button type='primary' disabled={!MCTreeSelectValue[0].length} onClick={()=>{this.addMCTreeSelect(0)}}>确定</Button>
                     </Col>
                     <Col xl={7}>
-                        <Label label='已选概念' hasBtn={<Tag color="red">清空</Tag>} />
+                        <Label label='已选概念' hasBtn={<Tag color="red" onClick={this.handleCleanMappingSelectData}>清空</Tag>} />
                         <List
-                            style={{width: 250}}
+                            style={{width: '90%'}}
                             list={mappingSelectData[step]}
                         />
                     </Col>
@@ -236,31 +312,55 @@ console.log(this.props.datafusionChildDbAdd);
                 <Row gutter={16}>
                     <Col xl={7} >
                         <Label label='概念列表' />
-                        <Select style={{width: 250, marginBottom: 10}} onChange={this.mappingConfSelectChange}>
-                            <Option value="entity">上一步选择的类型</Option>
+                        <Select
+                            style={{width: 250, marginBottom: 10}}
+                            value={MCSelectValue[1][0]}
+                            labelInValue
+                            key='step_1_select'
+                            onChange={e=>{this.MCSelectChange(e,'0')}}
+                        >
+                            {
+                                mappingSelectData[0].map(opt=><Option value={opt.value} key={opt.key}>{opt.name}</Option>)
+                            }
                         </Select>
                         <Label label='属性' />
                         <div style={{height: 350,width: 250, border: '1px solid #e8e8e8'}}>
-
+                            <Tree
+                                key='step_1_tree'
+                                selectedKeys={MCTreeSelectValue[1][0]}
+                                onSelect={(index, e)=>{this.handelMCTreeSelect(1, index, e, 0)}}
+                            >
+                                {this.renderTreeNodes(step1TreeData[0] || [])}
+                            </Tree>
                         </div>
                     </Col>
-                    <Col xl={7} >
+                    <Col xl={7}>
                         <Label label='数据表' />
-                        <Select style={{width: 250, marginBottom: 10}} onChange={this.mappingConfSelectChange}>
+                        <Select
+                            style={{width: 250, marginBottom: 10}}
+                            key='step_1_select_2'
+                            onChange={this.mappingConfSelectChange}
+                        >
                             <Option value="entity">数据资产表</Option>
                         </Select>
                         <Label label='字段名' />
                         <div style={{height: 350,width: 250, border: '1px solid #e8e8e8'}}>
-
+                            <Tree
+                                key='step_1_tree_2'
+                                selectedKeys={MCTreeSelectValue[1][1]}
+                                onSelect={(index, e)=>{this.handelMCTreeSelect(1, index, e, 1)}}
+                            >
+                                {this.renderTreeNodes(step1TreeData[1] || [])}
+                            </Tree>
                         </div>
                     </Col>
                     <Col xl={3} style={{paddingTop: 94}}>
-                        <Button type='primary'>确定</Button>
+                        <Button type='primary' disabled={!(MCTreeSelectValue[1][0].length && MCTreeSelectValue[1][1].length)} onClick={()=>{this.addMCTreeSelect(1)}}>确定</Button>
                     </Col>
                     <Col xl={7}>
-                        <Label label='概念/属性－字段名' hasBtn={<Tag color="red">清空</Tag>} />
+                        <Label label='概念/属性－字段名' hasBtn={<Tag color="red" onClick={this.cleanMCSelectDataStepOther}>清空</Tag>} />
                         <List
-                            style={{width: 250}}
+                            style={{width: '90%'}}
                             list={mappingSelectData[step]}
                         />
                     </Col>
@@ -340,7 +440,6 @@ console.log(this.props.datafusionChildDbAdd);
 
     render(){
         const {currentStep, modalVisible, modalConfirmLoading, mappingConfStep, mappingSelectData} = this.props.dbAdd;
-        console.log(this.props.dbAdd);
         return (
             <div>
                 <Card
@@ -401,7 +500,7 @@ console.log(this.props.datafusionChildDbAdd);
                     footer={
                         <div>
                             {mappingConfStep>0?<Button onClick={this.mappingConfPrev}>上一步</Button>:null}
-                            <Button type='primary' onClick={this.mappingConfNext}>{mappingConfStep===3?'完成':'下一步'}</Button>
+                            <Button type='primary' onClick={()=>{this.mappingConfNext(mappingConfStep)}}>{mappingConfStep===3?'完成':'下一步'}</Button>
                         </div>
                     }
                 >

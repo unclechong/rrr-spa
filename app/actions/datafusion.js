@@ -28,6 +28,9 @@ export const startMappingConf = () => ({
     type: 'datafusionChildDbAdd/saga/START_MAPPING_CONF',
 })
 
+export const mappingConfNext = () => ({
+    type: 'datafusionChildDbAdd/saga/MAPPING_CONG_NEXT',
+})
 
 export const triggerModal = isShow => ({
     type: 'datafusionChildDbAdd/TRIGGER_MODAL',
@@ -35,32 +38,51 @@ export const triggerModal = isShow => ({
 })
 
 export const onLoadStep1TreeData = treeData => ({
-    type: 'datafusionChildDbAdd/ONLOAD_STEP1_TREE_DATA',
-    treeData
+    type: 'datafusionChildDbAdd/ONLOAD_STEP0_TREE_DATA',
+    payload:treeData
 })
-
-
-
 
 export const handleMappingStep = status => ({
     type: 'datafusionChildDbAdd/HANDLE_MAPPING_STEP',
     status
 })
 
-export const changeSelectTreeNode = arg => ({
+export const changeSelectTreeNode = args => ({
     type: 'datafusionChildDbAdd/CHANGE_SELECT_TREE_NODE',
-    arg
+    args
 })
 
-export const addMappingSelect = step => ({
+export const handleMCSelectChange = args => ({
+    type: 'datafusionChildDbAdd/HANDLE_MC_SLEECT_CHANGE',
+    args
+})
+
+//mapping cong step 1
+export const addMappingSelect = args => ({
     type: 'datafusionChildDbAdd/MERGE_MAPPING_SELECT_DATA',
-    step
+    args
+})
+
+//mapping cong step 2,3,4
+export const addMappingSelectOther = args => ({
+    type: 'datafusionChildDbAdd/MERGE_MAPPING_SELECT_DATA_OTHER',
+    args
+})
+
+
+export const cleanMappingSelectData = args => ({
+    type: 'datafusionChildDbAdd/CLEAN_MAPPING_SELECT_DATA',
+    args
+})
+
+export const cleanMCSelectDataStepOther = () => ({
+    type: 'datafusionChildDbAdd/CLEAN_MAPPING_SELECT_DATA_OTHER'
 })
 
 
 export const cancelMappingConf = () => {
     return (dispatch,getState) => {
-        dispatch(triggerModal(false));
         dispatch(handleMappingStep('reset'));
+        dispatch(triggerModal(false));
     }
 }

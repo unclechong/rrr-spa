@@ -26,7 +26,19 @@ function* changeTab({currentTab}){
 function* db_add_startMappingConf(){
     const treeData = yield call(datafusionApi.getMappingDataInStep1);
     yield put({type: 'datafusionChildDbAdd/TRIGGER_MODAL', isShow: true});
-    yield put({type: 'datafusionChildDbAdd/GET_MAPPING_DATA_OK', payload: treeData});
+    yield put({type: 'datafusionChildDbAdd/ONLOAD_STEP0_TREE_DATA', payload: treeData});
+}
+
+function* db_add_mappingConfNext(){
+    const mappingSelectData = yield select(state => state.getIn(['datafusionChildDbAdd', 'mappingSelectData']).toJS());
+    const mappingConfStep = yield select(state => state.getIn(['datafusionChildDbAdd', 'mappingConfStep']));
+    const {value: selectValue, name: selectLabel} = mappingSelectData[mappingConfStep][0];
+    const treeData = yield call(datafusionApi.getMappingDataInStep1);
+
+    // 上面步骤条+1
+    yield put({type: 'datafusionChildDbAdd/ONLOAD_STEP'+ (mappingConfStep+1) + '_TREE_DATA', status: 'next', payload: treeData});
+    yield put({type: 'datafusionChildDbAdd/HANDLE_MAPPING_STEP', status: 'next'});
+    yield put({type: 'datafusionChildDbAdd/HANDLE_MC_SLEECT_CHANGE', args: {value:{key: selectValue, label: selectLabel}, index: 0}});
 }
 
 function* watchCreateLesson() {
@@ -34,7 +46,9 @@ function* watchCreateLesson() {
         takeLatest('datafusion/saga/CHANGE_TAB', changeTab),
         takeLatest('datafusion/saga/GET_TREE_DATA', getTreeData),
         takeLatest('datafusion/saga/INIT_DATA_FUSION', initDataFusion),
-        takeLatest('datafusionChildDbAdd/saga/START_MAPPING_CONF', db_add_startMappingConf)
+        takeLatest('datafusionChildDbAdd/saga/START_MAPPING_CONF', db_add_startMappingConf),
+        takeLatest('datafusionChildDbAdd/saga/MAPPING_CONG_NEXT', db_add_mappingConfNext)
+
 
     ];
 }
