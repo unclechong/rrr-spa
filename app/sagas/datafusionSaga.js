@@ -32,13 +32,29 @@ function* db_add_startMappingConf(){
 function* db_add_mappingConfNext(){
     const mappingSelectData = yield select(state => state.getIn(['datafusionChildDbAdd', 'mappingSelectData']).toJS());
     const mappingConfStep = yield select(state => state.getIn(['datafusionChildDbAdd', 'mappingConfStep']));
-    const {value: selectValue, name: selectLabel} = mappingSelectData[mappingConfStep][0];
-    const treeData = yield call(datafusionApi.getMappingDataInStep1);
+    const nextMappingConfStep = mappingConfStep + 1;
+    if (nextMappingConfStep === 1 || nextMappingConfStep === 3) {
+        const {value: selectValue, name: selectLabel} = mappingSelectData[mappingConfStep][0];
+        const treeData = yield call(datafusionApi.getMappingDataInStep1);
 
-    // 上面步骤条+1
-    yield put({type: 'datafusionChildDbAdd/ONLOAD_STEP'+ (mappingConfStep+1) + '_TREE_DATA', status: 'next', payload: treeData});
-    yield put({type: 'datafusionChildDbAdd/HANDLE_MAPPING_STEP', status: 'next'});
-    yield put({type: 'datafusionChildDbAdd/HANDLE_MC_SLEECT_CHANGE', args: {value:{key: selectValue, label: selectLabel}, index: 0}});
+        // 上面步骤条+1
+        yield put({type: 'datafusionChildDbAdd/ONLOAD_STEP'+ nextMappingConfStep + '_TREE_DATA', status: 'next', payload: treeData});
+        yield put({type: 'datafusionChildDbAdd/HANDLE_MAPPING_STEP', status: 'next'});
+        yield put({type: 'datafusionChildDbAdd/HANDLE_MC_SLEECT_CHANGE', args: {value:{key: selectValue, label: selectLabel}, index: 0}});
+    }else if (nextMappingConfStep === 2) {
+        const {value: selectValue, name: selectLabel} = mappingSelectData[mappingConfStep][0];
+        const selectOptionsData = yield call(datafusionApi.getStep3SelectOptionsData);
+        yield put({type: 'datafusionChildDbAdd/INIT_STEP2_SELECT_OPTION', args: {selectOptionsData}});
+        const firstOptions = selectOptionsData[0];
+        // 先获取上面的关系数据，然后用关系数据中的第一条在去获取下面的treedata
+        const treeData = yield call(datafusionApi.getMappingDataInStep1);
+
+        // 上面步骤条+1
+        yield put({type: 'datafusionChildDbAdd/ONLOAD_STEP'+ nextMappingConfStep + '_TREE_DATA', status: 'next', payload: treeData});
+        yield put({type: 'datafusionChildDbAdd/HANDLE_MAPPING_STEP', status: 'next'});
+        yield put({type: 'datafusionChildDbAdd/HANDLE_MC_SLEECT_CHANGE', args: {value:{key: firstOptions.value, label: firstOptions.label}, index: 0}});
+    }
+
 }
 
 function* watchCreateLesson() {

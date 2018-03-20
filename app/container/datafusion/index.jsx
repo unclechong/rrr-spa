@@ -13,6 +13,7 @@ import WrapTree from 'app_component/tree';
 import Child01 from './child_table.jsx';
 import Child02 from './child_db_detail.jsx';
 import Child03 from './child_db_add.jsx';
+import Child04 from './child_dml_add.jsx';
 
 import './index.css';
 
@@ -107,6 +108,7 @@ export default class DataFusion extends React.Component{
                             <Route exact path={`${this.props.match.path}/db/list`} component={Child01} />
                             <Route exact path={`${this.props.match.path}/db/detail`} component={Child02} />
                             <Route exact path={`${this.props.match.path}/db/add`} component={Child03} />
+                            <Route exact path={`${this.props.match.path}/dml/add`} component={Child04} />
                             <Redirect to={`${this.props.match.path}/db/list`} />
                         </Switch>
 

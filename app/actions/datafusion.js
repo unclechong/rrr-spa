@@ -19,7 +19,9 @@ export const changeTreeSelect = value => ({
 })
 
 
-
+export const currentComponentLeave = () => ({
+    type: 'datafusionChildDbAdd/CURRENT_COMPONENT_LEAVE'
+})
 
 
 
@@ -86,3 +88,11 @@ export const cancelMappingConf = () => {
         dispatch(triggerModal(false));
     }
 }
+
+
+
+
+//add dml actions
+export const addNewDmlNextStep = () => ({
+    type: 'datafusionChildDbAdd/ADD_NEW_DML_NEXT_STEP'
+})

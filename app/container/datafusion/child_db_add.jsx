@@ -121,7 +121,11 @@ export default class Child03 extends React.Component{
     }
 
     componentDidMount(){
-        this.props.actions.startMappingConf();
+        // this.props.actions.startMappingConf();
+    }
+
+    componentWillUnmount(){
+        this.props.actions.currentComponentLeave();
     }
 
     onSubmit = () => {
@@ -129,10 +133,8 @@ export default class Child03 extends React.Component{
             (err,values) => {
                 console.log(values);
                 if (!err) {
-                    if (this.state.currentStep !== 2) {
-                        this.setState({
-                            currentStep:++this.state.currentStep
-                        })
+                    if (this.props.dbAdd.currentStep !== 2) {
+                        console.log('进入下一步');
                     }
                 }
             }
@@ -220,11 +222,28 @@ export default class Child03 extends React.Component{
             const {MCSelectValue, mappingSelectData} = this.props.dbAdd;
             const addName = MCSelectValue[step][0].label;
             const [[firArr], [secArr]] = this.mappingConfTreeSplitArr;
-            const listArr = [{
-                name: <span>{`${addName}/${firArr.props.title}`}<span style={{marginLeft: 20}}>{secArr.props.title}</span></span>,
-                value: `${firArr.key}|${secArr.key}`,
-                key: `${firArr.key}|${secArr.key}`
-            }]
+            let listArr = null;
+            if (step === 1) {
+                listArr = [{
+                    name: <span>{`${addName}/${firArr.props.title}`}<span style={{marginLeft: 20}}>{secArr.props.title}</span></span>,
+                    value: `${firArr.key}|${secArr.key}`,
+                    key: `${firArr.key}|${secArr.key}`
+                }]
+            }else if(step === 2) {
+                listArr = [{
+                    name: `${addName}（${firArr.props.title} - ${secArr.props.title}）`,
+                    value: `${firArr.key}|${secArr.key}`,
+                    key: `${firArr.key}|${secArr.key}`
+                }]
+            }else if(step === 3) {
+                const _index = addName.indexOf('（');
+                listArr = [{
+                    name: <span>{`${addName.substring(0,_index)}/${firArr.props.title}`}<span style={{marginLeft: 20}}>{secArr.props.title}</span></span>,
+                    value: `${firArr.key}|${secArr.key}`,
+                    key: `${firArr.key}|${secArr.key}`
+                }]
+            }
+
             const currentValue = listArr[0].value;
             const loopData = mappingSelectData[step];
             for (let i = 0; i < loopData.length; i++) {
@@ -268,7 +287,8 @@ export default class Child03 extends React.Component{
     }
 
     renderMappingConfChild = (step, mappingSelectData) => {
-        const {selectTreeNode, step0TreeData, MCTreeSelectValue, step1TreeData, MCSelectValue} = this.props.dbAdd;
+        const {selectTreeNode, step0TreeData, MCTreeSelectValue, step1TreeData, MCSelectValue,
+            step2SelectOptionsData, step2TreeData, step3TreeData} = this.props.dbAdd;
         if (step === 0) {
             return (
                 <Row gutter={16}>
@@ -371,12 +391,26 @@ export default class Child03 extends React.Component{
                 <Row gutter={16}>
                     <Col xl={7} >
                         <Label label='关系列表' />
-                        <Select style={{width: 250, marginBottom: 10}} onChange={this.mappingConfSelectChange}>
-                            <Option value="entity">上一步选择的类型</Option>
+                        <Select
+                            style={{width: 250, marginBottom: 10}}
+                            value={MCSelectValue[2][0]}
+                            labelInValue
+                            key='step_2_select'
+                            onChange={e=>{this.MCSelectChange(e,'0')}}
+                        >
+                            {
+                                step2SelectOptionsData.map(opt=><Option value={opt.value} key={opt.key}>{opt.label}</Option>)
+                            }
                         </Select>
                         <Label label='包含实体1' />
                         <div style={{height: 350,width: 250, border: '1px solid #e8e8e8'}}>
-
+                            <Tree
+                                key='step_2_tree'
+                                selectedKeys={MCTreeSelectValue[2][0]}
+                                onSelect={(index, e)=>{this.handelMCTreeSelect(2, index, e, 0)}}
+                            >
+                                {this.renderTreeNodes(step2TreeData[0] || [])}
+                            </Tree>
                         </div>
                     </Col>
                     <Col xl={7} >
@@ -384,17 +418,23 @@ export default class Child03 extends React.Component{
 
                         <Label label='包含实体2' />
                         <div style={{height: 350,width: 250, border: '1px solid #e8e8e8'}}>
-
+                            <Tree
+                                key='step_2_tree_2'
+                                selectedKeys={MCTreeSelectValue[2][1]}
+                                onSelect={(index, e)=>{this.handelMCTreeSelect(2, index, e, 1)}}
+                            >
+                                {this.renderTreeNodes(step2TreeData[1] || [])}
+                            </Tree>
                         </div>
                     </Col>
                     <Col xl={3} style={{paddingTop: 94}}>
-                        <Button type='primary'>确定</Button>
+                        <Button type='primary' disabled={!(MCTreeSelectValue[2][0].length && MCTreeSelectValue[2][1].length)} onClick={()=>{this.addMCTreeSelect(2)}}>确定</Button>
                     </Col>
                     <Col xl={7}>
-                        <Label label='实体1－关系－实体2' hasBtn={<Tag color="red">清空</Tag>} />
+                        <Label label='关系（实体1 － 实体2）' hasBtn={<Tag color="red" onClick={this.cleanMCSelectDataStepOther}>清空</Tag>} />
                         <List
-                            style={{width: 250}}
-                            list={[{name:'qq',key:'qq'},{name:'3',key:'2'},{name:'22222222222223333333333333333333322222222222',key:'3'}]}
+                            style={{width: '90%'}}
+                            list={mappingSelectData[step]}
                         />
                     </Col>
                 </Row>
@@ -404,12 +444,26 @@ export default class Child03 extends React.Component{
                 <Row gutter={16}>
                     <Col xl={7} >
                         <Label label='概念列表' />
-                        <Select style={{width: 250, marginBottom: 10}} onChange={this.mappingConfSelectChange}>
-                            <Option value="entity">上一步选择的类型</Option>
+                        <Select
+                            style={{width: 250, marginBottom: 10}}
+                            value={MCSelectValue[3][0]}
+                            labelInValue
+                            key='step_3_select'
+                            onChange={e=>{this.MCSelectChange(e,'0')}}
+                        >
+                            {
+                                mappingSelectData[2].map(opt=><Option value={opt.value} key={opt.key}>{opt.name}</Option>)
+                            }
                         </Select>
                         <Label label='属性/边属性' />
                         <div style={{height: 350,width: 250, border: '1px solid #e8e8e8'}}>
-
+                            <Tree
+                                key='step_3_tree'
+                                selectedKeys={MCTreeSelectValue[3][0]}
+                                onSelect={(index, e)=>{this.handelMCTreeSelect(3, index, e, 0)}}
+                            >
+                                {this.renderTreeNodes(step3TreeData[0] || [])}
+                            </Tree>
                         </div>
                     </Col>
                     <Col xl={7} >
@@ -419,17 +473,23 @@ export default class Child03 extends React.Component{
                         </Select>
                         <Label label='字段名' />
                         <div style={{height: 350,width: 250, border: '1px solid #e8e8e8'}}>
-
+                            <Tree
+                                key='step_3_tree_2'
+                                selectedKeys={MCTreeSelectValue[3][1]}
+                                onSelect={(index, e)=>{this.handelMCTreeSelect(3, index, e, 1)}}
+                            >
+                                {this.renderTreeNodes(step3TreeData[1] || [])}
+                            </Tree>
                         </div>
                     </Col>
                     <Col xl={3} style={{paddingTop: 94}}>
-                        <Button type='primary'>确定</Button>
+                        <Button type='primary' disabled={!(MCTreeSelectValue[3][0].length && MCTreeSelectValue[3][1].length)} onClick={()=>{this.addMCTreeSelect(3)}}>确定</Button>
                     </Col>
                     <Col xl={7}>
-                        <Label label='概念/属性/边属性－字段名' hasBtn={<Tag color="red">清空</Tag>} />
+                        <Label label='概念/属性/边属性－字段名' hasBtn={<Tag color="red" onClick={this.cleanMCSelectDataStepOther}>清空</Tag>} />
                         <List
-                            style={{width: 250}}
-                            list={[{name:'qq',key:'qq'},{name:'3',key:'2'},{name:'22222222222223333333333333333333322222222222',key:'3'}]}
+                            style={{width: '90%'}}
+                            list={mappingSelectData[step]}
                         />
                     </Col>
                 </Row>
