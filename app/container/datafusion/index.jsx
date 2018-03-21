@@ -12,8 +12,16 @@ import WrapTree from 'app_component/tree';
 
 import Child01 from './child_table.jsx';
 import Child02 from './child_db_detail.jsx';
-import Child03 from './child_db_add.jsx';
+
 import Child04 from './child_dml_add.jsx';
+import Child05 from './child_dml_edit_1.jsx';
+import Child06 from './child_dml_edit_2.jsx';
+import Child07 from './child_dml_edit_3.jsx';
+
+import Child03 from './child_db_add.jsx';
+import Child08 from './child_db_edit_1.jsx';
+import Child09 from './child_db_edit_2.jsx';
+import Child10 from './child_db_edit_3.jsx';
 
 import './index.css';
 
@@ -64,6 +72,15 @@ export default class DataFusion extends React.Component{
         }
     }
 
+    handleTagEdit = (e,type) => {
+        e.stopPropagation();
+        const _type = type[0].substring(0,1)==='1'?'db':'dml';
+        const jumpPath = `${this.props.match.path+'/'+_type}/edit/baseinfo`;
+        if (this.props.location.pathname !== jumpPath) {
+            this.props.history.push(jumpPath);
+        }
+    }
+
     render(){
         const {datafusion: {currentTab, treeData, treeSelectValue}} = this.props;
         const dsPanelName = <span>文档库<span className='df-left-tree-title-opt' onClick={e=>{this.handleAddTreeItem(e, 'dml')}}><Icon type="plus" />添加</span></span>
@@ -99,7 +116,7 @@ export default class DataFusion extends React.Component{
                     <div>
                         <div className='dd-mainarea-right-title'>
                             <span style={{float:'right'}}>
-                                <Button style={{marginRight:10}} type='primary' disabled={!treeSelectValue.length}>编辑分类</Button>
+                                <Button style={{marginRight:10}} type='primary' disabled={!treeSelectValue.length} onClick={(e)=>{this.handleTagEdit(e,treeSelectValue)}}>编辑分类</Button>
                                 <Button style={{marginRight:10}} type="danger" disabled={!treeSelectValue.length}>删除类型</Button>
                             </span>
                         </div>
@@ -109,6 +126,15 @@ export default class DataFusion extends React.Component{
                             <Route exact path={`${this.props.match.path}/db/detail`} component={Child02} />
                             <Route exact path={`${this.props.match.path}/db/add`} component={Child03} />
                             <Route exact path={`${this.props.match.path}/dml/add`} component={Child04} />
+
+                            <Route exact path={`${this.props.match.path}/dml/edit/baseinfo`} component={Child05} />
+                            <Route exact path={`${this.props.match.path}/dml/edit/datasource`} component={Child06} />
+                            <Route exact path={`${this.props.match.path}/dml/edit/modalconf`} component={Child07} />
+
+                            <Route exact path={`${this.props.match.path}/db/edit/baseinfo`} component={Child08} />
+                            <Route exact path={`${this.props.match.path}/db/edit/sourceinfo`} component={Child09} />
+                            <Route exact path={`${this.props.match.path}/db/edit/mappingconf`} component={Child10} />
+
                             <Redirect to={`${this.props.match.path}/db/list`} />
                         </Switch>
 
