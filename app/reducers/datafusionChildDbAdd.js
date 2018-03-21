@@ -21,6 +21,8 @@ export default (state = initialState, action) => {
     switch (action.type) {
         case 'datafusionChildDbAdd/TRIGGER_MODAL':
             return state.set('modalVisible', action.isShow);
+        case 'datafusionChildDbAdd/ADD_NEW_DB_NEXT_STEP':
+            return state.set('currentStep', state.get('currentStep')+1);
         case 'datafusionChildDbAdd/HANDLE_MAPPING_STEP':
             if (action.status === 'next') return state.set('mappingConfStep', mappingConfStep+1);
             else if (action.status === 'prev') return state.set('mappingConfStep', mappingConfStep-1);

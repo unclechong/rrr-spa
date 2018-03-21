@@ -39,6 +39,11 @@ export const triggerModal = isShow => ({
     isShow
 })
 
+//add dml actions
+export const addNewDbNextStep = () => ({
+    type: 'datafusionChildDbAdd/ADD_NEW_DB_NEXT_STEP'
+})
+
 export const onLoadStep1TreeData = treeData => ({
     type: 'datafusionChildDbAdd/ONLOAD_STEP0_TREE_DATA',
     payload:treeData

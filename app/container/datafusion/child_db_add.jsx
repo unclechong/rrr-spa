@@ -134,7 +134,7 @@ export default class Child03 extends React.Component{
                 console.log(values);
                 if (!err) {
                     if (this.props.dbAdd.currentStep !== 2) {
-                        console.log('进入下一步');
+                        this.props.actions.addNewDbNextStep()
                     }
                 }
             }
