@@ -11,12 +11,17 @@ export const getTreeData = () => ({
     type: 'datafusion/saga/GET_TREE_DATA'
 })
 
+export const changeTreeSelect = args => ({
+    type: 'datafusion/saga/CHANGE_TREE_SELECT',
+    args
+})
+
+export const handleTagEdit = () => ({
+    type: 'datafusion/saga/TAG_EDIT_DATA'
+})
+
 
 //normal actions
-export const changeTreeSelect = value => ({
-    type: 'datafusion/CHANGE_TREE_SELECT',
-    value
-})
 
 
 export const currentComponentLeave = () => ({
@@ -100,4 +105,22 @@ export const cancelMappingConf = () => {
 //add dml actions
 export const addNewDmlNextStep = () => ({
     type: 'datafusionChildDbAdd/ADD_NEW_DML_NEXT_STEP'
+})
+
+
+
+//edit db actions
+export const getCurrentTagData = args => ({
+    type: 'datafusionChildDbEdit/saga/GET_CURRENT_TAG_DATA',
+    args
+})
+
+export const setFieldsValues = args => ({
+    type: 'datafusionChildDbEdit/SET_FIELDS_VALUES',
+    args
+})
+
+export const mergeFieldsValues = args => ({
+    type: 'datafusionChildDbEdit/MERGE_FIELDS_VALUES',
+    args
 })

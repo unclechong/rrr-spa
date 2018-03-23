@@ -21,7 +21,7 @@ app.use(cors({
 }))
 
 
-const URL = 'http://192.168.1.253:8088/supermind/api';
+const URL = 'http://192.168.1.180:8088/supermind/api';
 
 //当请求时GET请求时，显示表单让用户填写
 app.use(async(ctx)=>{
@@ -29,8 +29,26 @@ app.use(async(ctx)=>{
         let {rest, params, method, keyPath} = ctx.request.body;
         //rest 暂未转化成 URL 参数
         const postURL = URL + keyPath + '?config_id=14';
-        const data = await axios.post(postURL, params);
-        ctx.body = data.data;
+        try{
+            const data = await axios.post(postURL, params);
+            ctx.body = data.data;
+        }catch (err) {
+            if (err.response.status === 500) {
+                ctx.body = {
+                    header: {
+                        code: 0,
+                        message: 'server 500'
+                    }
+                };
+            }else {
+                ctx.body = {
+                    header: {
+                        code: 0,
+                        message: `other server error ---${err.response.status}`
+                    }
+                };
+            }
+        }
     }else{
         ctx.body = {
             header: {

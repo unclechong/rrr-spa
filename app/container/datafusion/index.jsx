@@ -8,9 +8,12 @@ import { Route, Switch, Redirect } from 'react-router-dom';
 
 import PageContainer from 'app_component/pagecontainer';
 import WrapTabs from 'app_component/tabs';
+import List from 'app_component/list';
 import WrapTree from 'app_component/tree';
 
-import Child01 from './child_table.jsx';
+import Child01 from './child_db_list.jsx';
+import Child11 from './child_dml_list.jsx';
+
 import Child02 from './child_db_detail.jsx';
 
 import Child04 from './child_dml_add.jsx';
@@ -45,6 +48,10 @@ const mapDispatchToProps = dispatch => ({
 
 @connect(mapStateToProps, mapDispatchToProps)
 export default class DataFusion extends React.Component{
+    constructor(props){
+        super(props)
+
+    }
 
     componentDidMount(){
         this.props.actions.initDataFusion();
@@ -58,31 +65,37 @@ export default class DataFusion extends React.Component{
 
     // 类型, id, key
     handleTreeOnSelect = (type, value, index) => {
+        const jumpPath = `${this.props.match.path+'/'+type}/list`;
+        this.goPage(jumpPath);
         //不能进行反选
         if (index.length) {
-            this.props.actions.changeTreeSelect(index);
+            this.props.actions.changeTreeSelect({index,value});
         }
     }
 
     handleAddTreeItem = (e, type) => {
         e.stopPropagation();
         const jumpPath = `${this.props.match.path+'/'+type}/add`;
-        if (this.props.location.pathname !== jumpPath) {
-            this.props.history.push(jumpPath);
-        }
+        this.goPage(jumpPath);
     }
 
-    handleTagEdit = (e,type) => {
+    handleTagEdit = (e,type,value) => {
         e.stopPropagation();
         const _type = type[0].substring(0,1)==='1'?'db':'dml';
         const jumpPath = `${this.props.match.path+'/'+_type}/edit/baseinfo`;
+
+        this.props.actions.handleTagEdit();
+        setTimeout(()=>{this.goPage(jumpPath)},2000)
+    }
+
+    goPage = (jumpPath) => {
         if (this.props.location.pathname !== jumpPath) {
             this.props.history.push(jumpPath);
         }
     }
 
     render(){
-        const {datafusion: {currentTab, treeData, treeSelectValue}} = this.props;
+        const {datafusion: {currentTab, treeData, treeSelectValue, treeNodeDetail, tagEditData}} = this.props;
         const dsPanelName = <span>文档库<span className='df-left-tree-title-opt' onClick={e=>{this.handleAddTreeItem(e, 'dml')}}><Icon type="plus" />添加</span></span>
         const dbPanelName = <span>数据库<span className='df-left-tree-title-opt' onClick={e=>{this.handleAddTreeItem(e, 'db')}}><Icon type="plus" />添加</span></span>
         return(
@@ -94,50 +107,65 @@ export default class DataFusion extends React.Component{
                             tabOnChange={e=>{this.tabOnChange(e)}}
                             currentTab={currentTab}
                         />
-                        <Collapse bordered={false} defaultActiveKey={['databaseSource']}>
-                            <Panel header={dsPanelName} key="documentSource" style={{borderBottom: 'none'}}>
-                                <WrapTree
-                                    treeData={treeData.documentSource}
-                                    selectedKeys={treeSelectValue}
-                                    onSelect={(e,data)=>{this.handleTreeOnSelect('documentSource', data.node.props.value, e)}}
-                                />
-                            </Panel>
-                            <Panel header={dbPanelName} key="databaseSource" style={{borderBottom: 'none'}}>
-                                <WrapTree
-                                    treeData={treeData.databaseSource || []}
-                                    selectedKeys={treeSelectValue}
-                                    onSelect={(e,data)=>{this.handleTreeOnSelect('databaseSource', data.node.props.value, e)}}
-                                />
-                            </Panel>
-                        </Collapse>
+                        {
+                            currentTab==='dataSource'?<Collapse bordered={false} defaultActiveKey={['databaseSource']}>
+                                <Panel header={dsPanelName} key="documentSource" style={{borderBottom: 'none'}}>
+                                    <WrapTree
+                                        treeData={treeData.documentSource}
+                                        selectedKeys={treeSelectValue}
+                                        onSelect={(e,data)=>{this.handleTreeOnSelect('dml', data.node.props.value, e)}}
+                                    />
+                                </Panel>
+                                <Panel header={dbPanelName} key="databaseSource" style={{borderBottom: 'none'}}>
+                                    <WrapTree
+                                        treeData={treeData.databaseSource || []}
+                                        selectedKeys={treeSelectValue}
+                                        onSelect={(e,data)=>{this.handleTreeOnSelect('db', data.node.props.value, e)}}
+                                    />
+                                </Panel>
+                            </Collapse>:<List
+                                style={{width: '100%'}}
+                                size='large'
+                                list={[{key:1,name:'111111'},{key:2,name:'2222222222'},{key:3,name:'333333333'}]}
+                            />
+                        }
+
                     </div>
                 }
                 areaRight = {
                     <div>
                         <div className='dd-mainarea-right-title'>
-                            <span style={{float:'right'}}>
-                                <Button style={{marginRight:10}} type='primary' disabled={!treeSelectValue.length} onClick={(e)=>{this.handleTagEdit(e,treeSelectValue)}}>编辑分类</Button>
-                                <Button style={{marginRight:10}} type="danger" disabled={!treeSelectValue.length}>删除类型</Button>
-                            </span>
+                            {
+                                currentTab==='dataSource'?<span style={{float:'right'}}>
+                                    <Button style={{marginRight:10}} type='primary' disabled={!treeSelectValue.length} onClick={(e)=>{this.handleTagEdit(e,treeSelectValue)}}>编辑分类</Button>
+                                    <Button style={{marginRight:10}} type="danger" disabled={!treeSelectValue.length}>删除类型</Button>
+                                </span>:<span style={{float:'right'}}>
+                                    <Button style={{marginRight:10}} type="danger">清空任务</Button>
+                                </span>
+                            }
                         </div>
-                        <Switch>
-                            <Route exact path={`${this.props.match.path}/dml/list`} component={Child01} />
-                            <Route exact path={`${this.props.match.path}/db/list`} component={Child01} />
-                            <Route exact path={`${this.props.match.path}/db/detail`} component={Child02} />
-                            <Route exact path={`${this.props.match.path}/db/add`} component={Child03} />
-                            <Route exact path={`${this.props.match.path}/dml/add`} component={Child04} />
+                        {
+                            currentTab==='dataSource'?<Switch>
+                                <Route exact path={`${this.props.match.path}/dml/list`} render={(prop) => <Child11 {...prop} datasource={treeNodeDetail}/>} />
+                                <Route exact path={`${this.props.match.path}/db/list`} render={(prop) => <Child01 {...prop} datasource={treeNodeDetail}/>} />
+                                <Route path={`${this.props.match.path}/db/detail/:id`} component={Child02} />
+                                <Route exact path={`${this.props.match.path}/db/add`} component={Child03} />
+                                <Route exact path={`${this.props.match.path}/dml/add`} component={Child04} />
 
-                            <Route exact path={`${this.props.match.path}/dml/edit/baseinfo`} component={Child05} />
-                            <Route exact path={`${this.props.match.path}/dml/edit/datasource`} component={Child06} />
-                            <Route exact path={`${this.props.match.path}/dml/edit/modalconf`} component={Child07} />
+                                <Route exact path={`${this.props.match.path}/dml/edit/baseinfo`} component={Child05} />
+                                <Route exact path={`${this.props.match.path}/dml/edit/datasource`} component={Child06} />
+                                <Route exact path={`${this.props.match.path}/dml/edit/modalconf`} component={Child07} />
 
-                            <Route exact path={`${this.props.match.path}/db/edit/baseinfo`} component={Child08} />
-                            <Route exact path={`${this.props.match.path}/db/edit/sourceinfo`} component={Child09} />
-                            <Route exact path={`${this.props.match.path}/db/edit/mappingconf`} component={Child10} />
 
-                            <Redirect to={`${this.props.match.path}/db/list`} />
-                        </Switch>
+                                    <Route exact path={`${this.props.match.path}/db/edit/baseinfo`} render={(prop) => <Child08 {...prop} datasource={tagEditData}/>} />
+                                    <Route exact path={`${this.props.match.path}/db/edit/sourceinfo`} component={Child09} />
+                                    <Route exact path={`${this.props.match.path}/db/edit/mappingconf`} component={Child10} />
 
+
+
+                                <Redirect to={`${this.props.match.path}/db/list`} />
+                            </Switch>:null
+                        }
                     </div>
                 }
             />

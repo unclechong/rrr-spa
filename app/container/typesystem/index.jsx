@@ -35,7 +35,7 @@ const mapDispatchToProps = dispatch => ({
     actions: bindActionCreators(actions, dispatch)
 });
 
-const formListMap = {
+const FORM_ITEM_LIST = {
     entityType:[
         {
             label:'名称',
@@ -174,10 +174,10 @@ const formListMap = {
     ]
 }
 
-const bindFieldValues = (formListMap,props) => {
+const bindFieldValues = (FORM_ITEM_LIST,props) => {
     let fieldObj = {};
     const currentTab = props.typesystem.currentTab;
-        formListMap[currentTab].map(formItem=>{
+        FORM_ITEM_LIST[currentTab].map(formItem=>{
             fieldObj[formItem.id] = Form.createFormField({
                 ...props.typesystem.formData[formItem.id]
             })
@@ -191,7 +191,7 @@ const bindFieldValues = (formListMap,props) => {
         props.actions.mergeFieldsValues(changedFields);
     },
     mapPropsToFields(props) {
-        return bindFieldValues(formListMap,props)
+        return bindFieldValues(FORM_ITEM_LIST,props)
     }
 })
 export default class TypeSystem extends React.Component {
@@ -247,7 +247,7 @@ export default class TypeSystem extends React.Component {
                 key: 'eventType',
                 children: tagList['eventType'].map(item=>({...item, value: item.value+'|'+item.label}))
             }];
-            const formList = formListMap[currentTab];
+            const formList = FORM_ITEM_LIST[currentTab];
             formList.map(form=>{
                 if (form.id === 'entityType_start' || form.id === 'entityType_end' || form.id === 'belongedType') {
                     form.options = options;
@@ -255,7 +255,7 @@ export default class TypeSystem extends React.Component {
             });
             return formList
         }
-        return formListMap[currentTab]
+        return FORM_ITEM_LIST[currentTab]
     }
 
     deleteCurrentType = () => {
@@ -389,7 +389,7 @@ export default class TypeSystem extends React.Component {
                         <div className='ts-mainarea-right-title'>
                             当前：{tabMap[currentTab]}{activeTagName?` / ${activeTagName}`:''}
                             <span style={{float:'right'}}>
-                                <Button style={{marginRight:10}} type='primary' onClick={this.wantAddTag} >新增{tabMap[currentTab]}类型</Button>
+                                <Button style={{marginRight:10}} type='primary' onClick={this.wantAddTag}>新增{tabMap[currentTab]}类型</Button>
                                 <Button style={{marginRight:10}} type="danger" onClick={this.deleteCurrentType} disabled={isSearch?true:!activeTag}>删除{tabMap[currentTab]}类型</Button>
                             </span>
                         </div>

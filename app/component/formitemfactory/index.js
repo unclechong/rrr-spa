@@ -40,7 +40,7 @@ const returnFormItem = (getFieldDecorator, itemData, layout) => {
                     }],
                 })(
                     <div>
-                        <TextArea placeholder={itemData.placeholder || `请输入${label}`} autosize={{ minRows: 2, maxRows: 6 }} style={{width: hasBtn?'73%':'100%'}}/>
+                        <TextArea placeholder={itemData.placeholder || `请输入${label}`} autosize={{ minRows: 2, maxRows: 6 }} style={{width: hasBtn?'70%':'100%'}}/>
                         {hasBtn}
                     </div>
                 )}

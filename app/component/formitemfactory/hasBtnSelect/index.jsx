@@ -30,7 +30,7 @@ export default class HasBtnSelect extends React.Component{
                     mode={mode || null}
                     value={this.state.value}
                     placeholder={placeholder || `请选择${label}`}
-                    style={{width:hasBtn?'73%':'100%'}}
+                    style={{width:hasBtn?'70%':'100%'}}
                     onChange={this.onChange}
                 >
                     {

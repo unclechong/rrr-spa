@@ -4,7 +4,10 @@ import datafusionApi from 'app_api/datafusionApi';
 
 function* initDataFusion(){
     const treeData = yield call(getTreeData);
-    yield put({type: 'datafusion/CHANGE_TREE_SELECT', value: [treeData.databaseSource[0].key]})
+    yield put({type: 'datafusion/CHANGE_TREE_SELECT', args: {index: [treeData.databaseSource[0].key], value: treeData.databaseSource[0].value}});
+    const mongoId = treeData.databaseSource[0].value;
+    const treeNodeDetail = yield call(datafusionApi.getTreeNodeDetail,{mongoId});
+    yield put({type: 'datafusion/SET_TREENODE_DETAIL', payload: treeNodeDetail})
 }
 
 
@@ -15,6 +18,9 @@ function* getTreeData(){
 }
 
 function* changeTab({currentTab}){
+    // if (currentTab==='taskManage') {
+    //     yield put({type: 'datafusionChildDbAdd/CURRENT_COMPONENT_LEAVE'});
+    // }
     yield put({type: 'datafusion/CHANGE_TAB', currentTab});
 }
 
@@ -57,11 +63,25 @@ function* db_add_mappingConfNext(){
 
 }
 
+function* changeTreeSelect({args}){
+    // const treeNodeDetail = yield call(datafusionApi.getTreeNodeDetail,{mongoId:args.value});
+    yield put({type: 'datafusion/CHANGE_TREE_SELECT', args})
+    // yield put({type: 'datafusion/SET_TREENODE_DETAIL', payload: treeNodeDetail})
+}
+
+function* handleTagEdit(){
+    const selectTreeNodeValue = yield select(state => state.getIn(['datafusion', 'selectTreeNodeValue']));
+    const data = yield call(datafusionApi.getDbItemEditInfo, {mongoId: selectTreeNodeValue});
+    yield put({type: 'datafusion/TAG_EDIT_DATA', payload: data})
+}
+
 function* watchCreateLesson() {
     yield[
         takeLatest('datafusion/saga/CHANGE_TAB', changeTab),
         takeLatest('datafusion/saga/GET_TREE_DATA', getTreeData),
         takeLatest('datafusion/saga/INIT_DATA_FUSION', initDataFusion),
+        takeLatest('datafusion/saga/TAG_EDIT_DATA', handleTagEdit),
+        takeLatest('datafusion/saga/CHANGE_TREE_SELECT', changeTreeSelect),
         takeLatest('datafusionChildDbAdd/saga/START_MAPPING_CONF', db_add_startMappingConf),
         takeLatest('datafusionChildDbAdd/saga/MAPPING_CONG_NEXT', db_add_mappingConfNext)
 

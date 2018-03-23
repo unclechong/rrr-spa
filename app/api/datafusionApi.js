@@ -3,33 +3,39 @@ import sendPost from './commonApi';
 export default class datafusionApi {
 
     static async getTreeData(params={}){
-        // const result = await sendPost('./test/tree.json', 'get', true, params);
-        const result = {
-            "databaseSource": [
-                {
-                    "mongoId": "5aa64cb2848cd544ed491a4a",
-                    "sourceName": "数据库1"
-                }
-            ],
-            "documentSource": [
-                {
-                    "mongoId": "5aa64c7e848cd544ed491a48",
-                    "sourceName": "文档类型1"
-                },
-                {
-                    "mongoId": "5aa64c97848cd544ed491a49",
-                    "sourceName": "文档类型2"
-                }
-            ]
-        }
+        const result = await sendPost('/dataSource/getSourceList', 'post', false, params);
 
         const documentSource = result.documentSource.map((child, index)=>({title: child.sourceName, key: '0-'+index, value: child.mongoId}));
         const databaseSource = result.databaseSource.map((child, index)=>({title: child.sourceName, key: '1-'+index, value: child.mongoId}));
 
-        // const documentSource = result.documentSource.map((child, index)=>({label: child.sourceName, key: child.mongoId, value: child.mongoId}));
-        // const databaseSource = result.databaseSource.map((child, index)=>({label: child.sourceName, key: child.mongoId, value: child.mongoId}));
-
         return {documentSource, databaseSource}
+    };
+
+    static async getTreeNodeDetail(params={}){
+        const result = await sendPost('/dataSource/getOne', 'post', false, params);
+        result.dataList.map((item, index)=>{
+            item.key = item.dataId;
+            item.no = index+1;
+        })
+        return result.dataList
+    };
+
+    static async getDbItemDetail(params={}){
+        const result = await sendPost('/dataSource/getOneDetail', 'post', false, params);
+        result.knowledge.entity.map((item, index)=>{
+            item.key = index+'entity';
+            item.no = index+1;
+        })
+        result.knowledge.event.map((item, index)=>{
+            item.key = index+'event';
+            item.no = index+1;
+        })
+        return result
+    };
+
+    static async getDbItemEditInfo(params={}){
+        const result = await sendPost('/dataSource/getOneInfo', 'post', false, params);
+        return result
     };
 
 
