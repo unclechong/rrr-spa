@@ -37,8 +37,29 @@ export default class Child08 extends React.Component{
     //     return false
     // }
 
+    formData(data){
+        const {attribution, entity, event, relation, relationAttr} = data;
+        const entityMap = {};
+        entity.map(item=>{
+            entityMap[item.id] = item.typeName;
+        })
+        return {
+            entity: entity.map(item=>item.typeName),
+            attribution: [].concat.apply([],Object.keys(attribution).map(key=>{
+                return attribution[key].map(item=>`${entityMap[key]}/${item.typeName} - ${item.fields[0]}`)
+            })),
+            relation: relation.map(item=>`${entityMap[item.start]} - ${item.typeName} - ${entityMap[item.end]}`),
+            relationAttr
+        }
+    }
+
     render(){
         const {tagEditData,editStep} = this.props.dbEdit;
+        let childData = {...tagEditData.dataProcessingTaskInfo};
+
+        if (editStep === 3) {
+            childData = {...childData, tableData: this.formData(tagEditData.dataProcessingTaskInfo.d2rPattern)};
+        }
         return(
             <QueueAnim animConfig={[
                     { opacity: [1, 0], translateY: [0, 50] },
@@ -49,7 +70,7 @@ export default class Child08 extends React.Component{
                     (()=>{
                         if (editStep === 1) return <Child01 dataSource={tagEditData} onClickNext={this.props.actions.editTagNext} />
                         else if(editStep === 2) return <Child02 dataSource={tagEditData.dataBusTaskInfo} />
-                        else if(editStep === 3) return <Child03 dataSource={tagEditData.dataProcessingTaskInfo} />
+                        else if(editStep === 3) return <Child03 dataSource={childData} />
                     })()
                 }
             </QueueAnim>

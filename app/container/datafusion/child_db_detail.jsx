@@ -6,22 +6,6 @@ import Card from 'app_component/card';
 
 import datafusionApi from 'app_api/datafusionApi';
 
-const dataSource = [{
-    key:'1',
-    index: '1',
-    concept: '胡彦斌32444444444',
-    instance: '1993-01-02',
-    prop: '12121',
-    value: '1sadsdasdas',
-}, {
-    key:'2',
-    index: '2',
-    concept: '2323',
-    instance: '1993-01-02',
-    prop: '12121',
-    value: '1sadsdasdas',
-}];
-
 
 export default class Child02 extends React.Component{
 

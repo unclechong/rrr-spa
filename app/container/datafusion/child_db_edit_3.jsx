@@ -1,7 +1,6 @@
-import { Button, Form } from 'antd';
+import { Button, Form, Table } from 'antd';
 
 import QueueAnim from 'rc-queue-anim';
-import { Link } from 'react-router-dom';
 
 import Card from 'app_component/card';
 import FormItemFactory from 'app_component/formitemfactory';
@@ -28,6 +27,50 @@ const FORM_ITEM_LIST = [
     }
 ]
 
+const TABLE_COULMNS = [
+    {
+        title:'NO',
+        key:'index',
+        dataIndex:'index',
+        className: 'df-table-columns-line',
+        width: '8%'
+    },{
+        title:'类型',
+        key:'type',
+        dataIndex:'type',
+        width: '10%',
+        className: 'df-table-columns-line'
+    },{
+        title:'描述',
+        key:'desc',
+        dataIndex:'desc',
+        className: 'df-table-columns-line'
+    }
+]
+
+const TABLE_DATA = [{
+    key:'entity',
+    index: '1',
+    type: '实体',
+    desc: null
+}, {
+    key:'attribution',
+    index: '2',
+    type: '属性',
+    desc: null
+}, {
+    key:'relation',
+    index: '3',
+    type: '关系',
+    desc: null
+}, {
+    key:'relationAttr',
+    index: '4',
+    type: '边属性',
+    desc: null
+}]
+
+
 @Form.create()
 export default class Child03 extends React.Component{
 
@@ -44,6 +87,10 @@ export default class Child03 extends React.Component{
     }
 
     render(){
+        const dataSource = this.props.dataSource;
+        TABLE_DATA.map(item=>{
+            item.desc = _.join(dataSource.tableData[item.key],'; ');
+        })
         return(
             <Card
                 key='child_dml_edit_3'
@@ -55,7 +102,21 @@ export default class Child03 extends React.Component{
                             getFieldDecorator={this.props.form.getFieldDecorator}
                             formList={FORM_ITEM_LIST}
                         />
+                        <QueueAnim animConfig={[
+                                { opacity: [1, 0], translateY: [0, 50] },
+                                { opacity: [1, 0], translateY: [0, -50] }
+                            ]}
+                        >
+                            <Table
+                                style={{width:'80%',marginLeft:'10%'}}
+                                dataSource={TABLE_DATA}
+                                columns={TABLE_COULMNS}
+                                bordered
+                                className='df-child01-table-class'
+                            />
+                        </QueueAnim>
                     </div>
+
                 }
             />
         )
