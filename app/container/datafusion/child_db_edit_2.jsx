@@ -9,68 +9,61 @@ import FormItemFactory from 'app_component/formitemfactory';
 const FORM_ITEM_LIST = [
     {
         label:'任务名称',
-        id:'task_name_2',
-        key:'task_name_2',
+        id:'jobName',
+        key:'jobName',
         type:'input'
     }, {
         label:'任务类型',
-        key:'task_type_2',
-        id:'task_type_2',
+        key:'jobType',
+        id:'jobType',
         type:'select',
-        options:[
-            {
-                label:'总量任务',
-                value:'all'
-            }, {
-                label:'增量任务',
-                value:'else'
-            }
-        ]
+        options:[]
     }, {
         label:'文档类型',
-        key:'dml_type_2',
-        id:'dml_type_2',
+        key:'docType',
+        id:'docType',
         type:'select',
-        options:[
-            {
-                label:'TBT通报',
-                value:'TBT'
-            }
-        ]
+        options:[]
     }, {
         label:'API地址',
-        key:'API_2',
-        id:'API_2',
-        type:'inputArea',
+        key:'dataBusUrl',
+        id:'dataBusUrl',
+        type:'hasBtnInputArea',
         required:true,
         hasBtn:<Button style={{float: 'right'}} type="dashed">样例数据</Button>
     }
 ]
 
 @Form.create()
-export default class Child09 extends React.Component{
+export default class Child02 extends React.Component{
+
+    componentDidMount(){
+        const tagEditData = this.props.dataSource;
+        if(Object.keys(tagEditData).length){
+            const {dataBusUrl, docType, jobName, jobType} = tagEditData;
+            FORM_ITEM_LIST[1].options = [{label:jobType,value:jobType,key:111}];
+            FORM_ITEM_LIST[2].options = [{label:docType,value:docType,key:222}];
+
+            const params = {dataBusUrl, docType, jobName, jobType};
+            this.props.form.setFieldsValue(params)
+        }
+    }
 
     render(){
         return(
-            <QueueAnim animConfig={[
-                    { opacity: [1, 0], translateY: [0, 50] },
-                    { opacity: [1, 0], translateY: [0, -50] }
-                ]}
-            >
-                <Card
-                    key='child_dml_edit_2'
-                    title='数据库信息编辑'
-                    body={
-                        <div>
-                            <FormItemFactory
-                                noBtn={true}
-                                getFieldDecorator={this.props.form.getFieldDecorator}
-                                formList={FORM_ITEM_LIST}
-                            />
-                        </div>
-                    }
-                />
-            </QueueAnim>
+            <Card
+                key='child_dml_edit_2'
+                title='数据库信息编辑'
+                body={
+                    <div>
+                        <FormItemFactory
+                            noBtn={true}
+                            getFieldDecorator={this.props.form.getFieldDecorator}
+                            formList={FORM_ITEM_LIST}
+                        />
+                    </div>
+                }
+            />
         )
     }
 }

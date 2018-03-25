@@ -9,20 +9,15 @@ import FormItemFactory from 'app_component/formitemfactory';
 const FORM_ITEM_LIST = [
     {
         label:'任务名称',
-        id:'task_name_3',
-        key:'task_name_3',
+        id:'jobName',
+        key:'jobName',
         type:'input'
     }, {
         label:'模型',
-        key:'module_3',
-        id:'module_3',
+        key:'modelName',
+        id:'modelName',
         type:'hasBtnSelect',
-        options:[
-            {
-                label:'D2R',
-                value:'D2R'
-            }
-        ],
+        options:[],
         hasBtn:<Button style={{float: 'right', marginTop: 4}} type="dashed">样例数据</Button>
     }, {
         label:'映射关系',
@@ -34,29 +29,35 @@ const FORM_ITEM_LIST = [
 ]
 
 @Form.create()
-export default class Child09 extends React.Component{
+export default class Child03 extends React.Component{
+
+    componentDidMount(){
+        const tagEditData = this.props.dataSource;
+        if(Object.keys(tagEditData).length){
+            const {modelName, jobName} = tagEditData;
+            FORM_ITEM_LIST[0].options = [{label:jobName,value:jobName,key:111}];
+            FORM_ITEM_LIST[1].options = [{label:modelName,value:modelName,key:222}];
+
+            const params = {modelName, jobName};
+            this.props.form.setFieldsValue(params)
+        }
+    }
 
     render(){
         return(
-            <QueueAnim animConfig={[
-                    { opacity: [1, 0], translateY: [0, 50] },
-                    { opacity: [1, 0], translateY: [0, -50] }
-                ]}
-            >
-                <Card
-                    key='child_dml_edit_3'
-                    title='数据库信息编辑'
-                    body={
-                        <div>
-                            <FormItemFactory
-                                noBtn={true}
-                                getFieldDecorator={this.props.form.getFieldDecorator}
-                                formList={FORM_ITEM_LIST}
-                            />
-                        </div>
-                    }
-                />
-            </QueueAnim>
+            <Card
+                key='child_dml_edit_3'
+                title='数据库信息编辑'
+                body={
+                    <div>
+                        <FormItemFactory
+                            noBtn={true}
+                            getFieldDecorator={this.props.form.getFieldDecorator}
+                            formList={FORM_ITEM_LIST}
+                        />
+                    </div>
+                }
+            />
         )
     }
 }

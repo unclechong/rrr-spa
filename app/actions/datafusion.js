@@ -115,6 +115,11 @@ export const getCurrentTagData = args => ({
     args
 })
 
+export const editTagNext = args => ({
+    type: 'datafusionChildDbEdit/EDIT_TAG_NEXT',
+    args
+})
+
 export const setFieldsValues = args => ({
     type: 'datafusionChildDbEdit/SET_FIELDS_VALUES',
     args

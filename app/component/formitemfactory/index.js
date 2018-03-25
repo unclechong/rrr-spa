@@ -5,6 +5,7 @@ const { TextArea } = Input;
 // const SHOW_ALL = TreeSelect.SHOW_ALL;
 import UploadForm from './uploadform';
 import HasBtnSelect from './hasBtnSelect';
+import HasBtnInputArea from './HasBtnInputArea';
 
 import './index.css';
 
@@ -43,6 +44,19 @@ const returnFormItem = (getFieldDecorator, itemData, layout) => {
                         <TextArea placeholder={itemData.placeholder || `请输入${label}`} autosize={{ minRows: 2, maxRows: 6 }} style={{width: hasBtn?'70%':'100%'}}/>
                         {hasBtn}
                     </div>
+                )}
+            </FormItem>
+        )
+    }else if (type === 'hasBtnInputArea') {
+        return (
+            <FormItem {...formItemLayout} label={label} key={key}>
+                {getFieldDecorator(id, {
+                    rules: [{
+                        validator: checkFieldNull ,
+                        message: itemData.message || `请选择${label}`,
+                    }]
+                })(
+                    <HasBtnInputArea {...itemData} />
                 )}
             </FormItem>
         )

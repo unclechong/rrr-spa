@@ -22,7 +22,7 @@ import Child06 from './child_dml_edit_2.jsx';
 import Child07 from './child_dml_edit_3.jsx';
 
 import Child03 from './child_db_add.jsx';
-import Child08 from './child_db_edit_1.jsx';
+import Child08 from './child_db_edit.jsx';
 import Child09 from './child_db_edit_2.jsx';
 import Child10 from './child_db_edit_3.jsx';
 
@@ -82,10 +82,9 @@ export default class DataFusion extends React.Component{
     handleTagEdit = (e,type,value) => {
         e.stopPropagation();
         const _type = type[0].substring(0,1)==='1'?'db':'dml';
-        const jumpPath = `${this.props.match.path+'/'+_type}/edit/baseinfo`;
-
-        this.props.actions.handleTagEdit();
-        setTimeout(()=>{this.goPage(jumpPath)},2000)
+        const jumpPath = `${this.props.match.path+'/'+_type}/edit/${value}`;
+        this.goPage(jumpPath);
+        // this.props.actions.handleTagEdit();
     }
 
     goPage = (jumpPath) => {
@@ -94,8 +93,9 @@ export default class DataFusion extends React.Component{
         }
     }
 
+
     render(){
-        const {datafusion: {currentTab, treeData, treeSelectValue, treeNodeDetail, tagEditData}} = this.props;
+        const {datafusion: {currentTab, treeData, treeSelectValue, treeNodeDetail, tagEditData, selectTreeNodeValue}} = this.props;
         const dsPanelName = <span>文档库<span className='df-left-tree-title-opt' onClick={e=>{this.handleAddTreeItem(e, 'dml')}}><Icon type="plus" />添加</span></span>
         const dbPanelName = <span>数据库<span className='df-left-tree-title-opt' onClick={e=>{this.handleAddTreeItem(e, 'db')}}><Icon type="plus" />添加</span></span>
         return(
@@ -137,7 +137,7 @@ export default class DataFusion extends React.Component{
                         <div className='dd-mainarea-right-title'>
                             {
                                 currentTab==='dataSource'?<span style={{float:'right'}}>
-                                    <Button style={{marginRight:10}} type='primary' disabled={!treeSelectValue.length} onClick={(e)=>{this.handleTagEdit(e,treeSelectValue)}}>编辑分类</Button>
+                                    <Button style={{marginRight:10}} type='primary' disabled={!treeSelectValue.length} onClick={(e)=>{this.handleTagEdit(e,treeSelectValue, selectTreeNodeValue)}}>编辑分类</Button>
                                     <Button style={{marginRight:10}} type="danger" disabled={!treeSelectValue.length}>删除类型</Button>
                                 </span>:<span style={{float:'right'}}>
                                     <Button style={{marginRight:10}} type="danger">清空任务</Button>
@@ -157,9 +157,7 @@ export default class DataFusion extends React.Component{
                                 <Route exact path={`${this.props.match.path}/dml/edit/modalconf`} component={Child07} />
 
 
-                                    <Route exact path={`${this.props.match.path}/db/edit/baseinfo`} render={(prop) => <Child08 {...prop} datasource={tagEditData}/>} />
-                                    <Route exact path={`${this.props.match.path}/db/edit/sourceinfo`} component={Child09} />
-                                    <Route exact path={`${this.props.match.path}/db/edit/mappingconf`} component={Child10} />
+                                <Route exact path={`${this.props.match.path}/db/edit/:id`} component={Child08} />
 
 
 

@@ -69,10 +69,11 @@ function* changeTreeSelect({args}){
     // yield put({type: 'datafusion/SET_TREENODE_DETAIL', payload: treeNodeDetail})
 }
 
-function* handleTagEdit(){
-    const selectTreeNodeValue = yield select(state => state.getIn(['datafusion', 'selectTreeNodeValue']));
-    const data = yield call(datafusionApi.getDbItemEditInfo, {mongoId: selectTreeNodeValue});
-    yield put({type: 'datafusion/TAG_EDIT_DATA', payload: data})
+function* handleTagEdit({args}){
+    // console.log(args.id);
+    // const selectTreeNodeValue = yield select(state => state.getIn(['datafusion', 'selectTreeNodeValue']));
+    const data = yield call(datafusionApi.getDbItemEditInfo, {mongoId: args.id});
+    yield put({type: 'datafusionChildDbEdit/GET_CURRENT_TAG_DATA_OK', payload: data})
 }
 
 function* watchCreateLesson() {
@@ -80,7 +81,9 @@ function* watchCreateLesson() {
         takeLatest('datafusion/saga/CHANGE_TAB', changeTab),
         takeLatest('datafusion/saga/GET_TREE_DATA', getTreeData),
         takeLatest('datafusion/saga/INIT_DATA_FUSION', initDataFusion),
-        takeLatest('datafusion/saga/TAG_EDIT_DATA', handleTagEdit),
+        takeLatest('datafusionChildDbEdit/saga/GET_CURRENT_TAG_DATA', handleTagEdit),
+        // takeLatest('datafusion/saga/TAG_EDIT_DATA', handleTagEdit),
+
         takeLatest('datafusion/saga/CHANGE_TREE_SELECT', changeTreeSelect),
         takeLatest('datafusionChildDbAdd/saga/START_MAPPING_CONF', db_add_startMappingConf),
         takeLatest('datafusionChildDbAdd/saga/MAPPING_CONG_NEXT', db_add_mappingConfNext)

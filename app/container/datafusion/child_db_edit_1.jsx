@@ -26,51 +26,28 @@ const FORM_ITEM_LIST = [
         key:'jobName',
         id:'jobName',
         type:'hasBtnSelect',
-        options:[],
-        hasBtn:<Link to='/supermind/data/db/edit/sourceinfo'><Button style={{float: 'right', marginTop: 4}} type="dashed">修改</Button></Link>
+        options:[]
     },
     {
         label:'模型定义',
         key:'modelName',
         id:'modelName',
         type:'hasBtnSelect',
-        options:[],
-        hasBtn:<Link to='/supermind/data/db/edit/mappingconf'><Button style={{float: 'right', marginTop: 4}} type="dashed">修改</Button></Link>
+        options:[]
     }
 ]
 
-const mapStateToProps = state => {
-    return {datafusion: state.get('datafusion').toJS()}
-}
+@Form.create()
+export default class Child01 extends React.Component{
 
-const mapDispatchToProps = dispatch => ({
-    actions: bindActionCreators(actions, dispatch)
-});
-
-
-const bindFieldValues = (FORM_ITEM_LIST,props) => {
-    let fieldObj = {};
-        FORM_ITEM_LIST.map(formItem=>{
-            fieldObj[formItem.id] = Form.createFormField({
-                ...props.datafusion.formData['step1'][formItem.id]
-            })
-        })
-    return fieldObj
-}
-
-@connect(mapStateToProps, mapDispatchToProps)
-@Form.create({
-    onFieldsChange(props, changedFields) {
-        props.actions.mergeFieldsValues({index:'1',data:changedFields});
-    },
-    mapPropsToFields(props) {
-        return bindFieldValues(FORM_ITEM_LIST,props)
+    constructor(props){
+        super(props);
+        FORM_ITEM_LIST[2].hasBtn = <Button style={{float: 'right', marginTop: 4}} type="dashed" onClick={()=>{this.props.onClickNext({step:2})}}>修改</Button>
+        FORM_ITEM_LIST[3].hasBtn = <Button style={{float: 'right', marginTop: 4}} type="dashed" onClick={()=>{this.props.onClickNext({step:3})}}>修改</Button>
     }
-})
-export default class Child05 extends React.Component{
 
     componentDidMount(){
-        const {tagEditData} = this.props.datafusion;
+        const tagEditData = this.props.dataSource;
         if(Object.keys(tagEditData).length){
             const {sourceName, sourceDescription, dataBusTaskInfo:{jobName}, dataProcessingTaskInfo:{modelName}} = tagEditData;
             FORM_ITEM_LIST[2].options = [{label:jobName,value:jobName,key:111}];
@@ -82,10 +59,11 @@ export default class Child05 extends React.Component{
                 jobName:jobName,
                 modelName:modelName
             }
-            console.log(params,FORM_ITEM_LIST);
-            this.props.actions.setFieldsValues({index:'step1',data:params})
+            this.props.form.setFieldsValue(params)
         }
     }
+
+
 
     render(){
         return(
