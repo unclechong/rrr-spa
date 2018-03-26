@@ -13,6 +13,7 @@ function* initDataFusion(){
 
 function* getTreeData(){
     const treeData = yield call(datafusionApi.getTreeData);
+    console.log(treeData);
     yield put({type: 'datafusion/GET_TREE_DATA_OK', payload: treeData});
     return treeData
 }
@@ -64,9 +65,9 @@ function* db_add_mappingConfNext(){
 }
 
 function* changeTreeSelect({args}){
-    // const treeNodeDetail = yield call(datafusionApi.getTreeNodeDetail,{mongoId:args.value});
+    const treeNodeDetail = yield call(datafusionApi.getTreeNodeDetail,{mongoId:args.value});
     yield put({type: 'datafusion/CHANGE_TREE_SELECT', args})
-    // yield put({type: 'datafusion/SET_TREENODE_DETAIL', payload: treeNodeDetail})
+    yield put({type: 'datafusion/SET_TREENODE_DETAIL', payload: treeNodeDetail})
 }
 
 function* handleTagEdit({args}){
@@ -75,16 +76,55 @@ function* handleTagEdit({args}){
     const data = yield call(datafusionApi.getDbItemEditInfo, {mongoId: args.id});
     yield put({type: 'datafusionChildDbEdit/GET_CURRENT_TAG_DATA_OK', payload: data})
 }
+//
+// function* addNewTag(){
+//     yield put({type: 'datafusion/CHANGE_TREE_SELECT', args:{index: [], value: null}})
+// }
+
+function* hanleNewTagSave({args}){
+    const {step, data} = args;
+    if (step === 1 || step === '1') {
+        const result = yield call(datafusionApi.handleAddNewTagSave, {...args.data});
+        const treeData = yield select(state => state.getIn(['datafusion', 'treeData']).toJS());
+        const _index = _.last(_.last(treeData.databaseSource).key.split('-'))
+        const _key =`1-${Number(_index)+1}`;
+        treeData.databaseSource.push({
+            title: data.sourceName,
+            key: _key,
+            value: result
+        })
+        yield put({type: 'datafusion/MERGE_TREE_DATA', payload: treeData});
+        yield put({type: 'datafusionChildDbAdd/ADD_NEW_DB_NEXT_STEP', args: {data: {id: result, ...args.data}, index: '0'}});
+    }else if(step === 2 || step === '2'){
+        const result = yield call(datafusionApi.handleAddNewTagSave2, args.data);
+        yield put({type: 'datafusionChildDbAdd/ADD_NEW_DB_NEXT_STEP', args: {data: args.data, index: '1'}});
+    }else if(step === 3 || step === '3') {
+        console.log('in 3');
+    }
+}
+
+function* showExample({args}){
+    const result = yield call(datafusionApi.getOneSamples, args.data);
+    if (Object.keys(result).length) {
+        yield put({type:'datafusionChildDbAdd/GET_EXAMPLE_DATA_OK', payload: result})
+    }else {
+        args.CB();
+    }
+
+}
 
 function* watchCreateLesson() {
     yield[
         takeLatest('datafusion/saga/CHANGE_TAB', changeTab),
         takeLatest('datafusion/saga/GET_TREE_DATA', getTreeData),
         takeLatest('datafusion/saga/INIT_DATA_FUSION', initDataFusion),
-        takeLatest('datafusionChildDbEdit/saga/GET_CURRENT_TAG_DATA', handleTagEdit),
-        // takeLatest('datafusion/saga/TAG_EDIT_DATA', handleTagEdit),
-
+        // takeLatest('datafusion/saga/ADD_NEW_TAG', addNewTag),
         takeLatest('datafusion/saga/CHANGE_TREE_SELECT', changeTreeSelect),
+
+        takeLatest('datafusionChildDbEdit/saga/GET_CURRENT_TAG_DATA', handleTagEdit),
+        takeLatest('datafusionChildDbAdd/saga/ADD_NEW_DB_NEXT_STEP', hanleNewTagSave),
+        takeLatest('datafusionChildDbAdd/saga/SHOW_EXAMPLE_DATA', showExample),
+
         takeLatest('datafusionChildDbAdd/saga/START_MAPPING_CONF', db_add_startMappingConf),
         takeLatest('datafusionChildDbAdd/saga/MAPPING_CONG_NEXT', db_add_mappingConfNext)
 

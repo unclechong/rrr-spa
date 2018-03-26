@@ -74,6 +74,15 @@ const TABLE_DATA = [{
 @Form.create()
 export default class Child03 extends React.Component{
 
+    constructor(props){
+        super(props)
+        FORM_ITEM_LIST[2].onClick = this.showMappingTable;
+
+        this.state = {
+            visible: true
+        }
+    }
+
     componentDidMount(){
         const tagEditData = this.props.dataSource;
         if(Object.keys(tagEditData).length){
@@ -84,6 +93,14 @@ export default class Child03 extends React.Component{
             const params = {modelName, jobName};
             this.props.form.setFieldsValue(params)
         }
+    }
+
+    showMappingTable = () => {
+        this.setState((prev)=>{
+            return {
+                visible: !prev.visible
+            }
+        })
     }
 
     render(){
@@ -102,18 +119,15 @@ export default class Child03 extends React.Component{
                             getFieldDecorator={this.props.form.getFieldDecorator}
                             formList={FORM_ITEM_LIST}
                         />
-                        <QueueAnim animConfig={[
-                                { opacity: [1, 0], translateY: [0, 50] },
-                                { opacity: [1, 0], translateY: [0, -50] }
-                            ]}
-                        >
-                            <Table
+                        <QueueAnim>
+                            {this.state.visible?<Table
+                                key={this.state.visible}
                                 style={{width:'80%',marginLeft:'10%'}}
                                 dataSource={TABLE_DATA}
                                 columns={TABLE_COULMNS}
                                 bordered
                                 className='df-child01-table-class'
-                            />
+                            />:null}
                         </QueueAnim>
                     </div>
 

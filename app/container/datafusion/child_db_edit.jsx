@@ -56,7 +56,6 @@ export default class Child08 extends React.Component{
     render(){
         const {tagEditData,editStep} = this.props.dbEdit;
         let childData = {...tagEditData.dataProcessingTaskInfo};
-
         if (editStep === 3) {
             childData = {...childData, tableData: this.formData(tagEditData.dataProcessingTaskInfo.d2rPattern)};
         }

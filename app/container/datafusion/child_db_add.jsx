@@ -1,4 +1,4 @@
-import { Steps, Form, Row, Col, Button, Alert, Modal, Divider, Select, Tag, Tree, message } from 'antd';
+import { Steps, Form, Row, Col, Button, Alert, Modal, Divider, Select, Tag, Tree, message, Icon } from 'antd';
 const Step = Steps.Step;
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -19,54 +19,48 @@ const FORM_ITEM_LIST = [
     [
         {
             label:'名称',
-            id:'name_1',
-            key:'name_1',
+            id:'sourceName',
+            key:'sourceName',
             type:'input'
         }, {
             label:'描述',
-            key:'desc_1',
-            id:'desc_1',
+            key:'sourceDescription',
+            id:'sourceDescription',
             type:'inputArea',
             required:false,
         }
     ], [
         {
             label:'任务名称',
-            id:'task_name_2',
-            key:'task_name_2',
+            id:'jobName',
+            key:'jobName',
             type:'input'
         }, {
             label:'任务类型',
-            key:'task_type_2',
-            id:'task_type_2',
+            key:'jobType',
+            id:'jobType',
             type:'select',
             options:[
                 {
-                    label:'总量任务',
-                    value:'all'
+                    label:'全量任务',
+                    value:'全量任务'
                 }, {
                     label:'增量任务',
-                    value:'else'
+                    value:'增量任务'
                 }
             ]
         }, {
             label:'文档类型',
-            key:'dml_type_2',
-            id:'dml_type_2',
+            key:'docType',
+            id:'docType',
             type:'select',
-            options:[
-                {
-                    label:'TBT通报',
-                    value:'TBT'
-                }
-            ]
+            options:[]
         }, {
             label:'API地址',
-            key:'API_2',
-            id:'API_2',
+            key:'dataBusUrl',
+            id:'dataBusUrl',
             type:'inputArea',
-            required:true,
-            hasBtn:<Button style={{float: 'right'}} type="dashed">样例数据</Button>
+            required:true
         }
     ], [
         {
@@ -113,6 +107,7 @@ export default class Child03 extends React.Component{
 
         //bind mapping conf btn callback
         FORM_ITEM_LIST[2][2].onClick = this.handleMappingConf;
+        FORM_ITEM_LIST[1][3].hasBtn = <Button style={{float: 'right'}} type="dashed" onClick={this.showExample}>样例数据</Button>;
 
         //左侧选择列表选中的的标签的信息{name:..., key:..., value:...}, 右侧选中的树需要将此列表拼接成需要的数据，上一步下一步将会被清空
         this.mappingConfTreeSplitArr = [];
@@ -131,14 +126,38 @@ export default class Child03 extends React.Component{
     onSubmit = () => {
         this.props.form.validateFields(
             (err,values) => {
-                console.log(values);
                 if (!err) {
-                    if (this.props.dbAdd.currentStep !== 2) {
-                        this.props.actions.addNewDbNextStep()
+                    if (this.props.dbAdd.currentStep === 0) {
+                        FORM_ITEM_LIST[1][2].options = [{label: values.sourceName, value: values.sourceName}]
+                        this.props.actions.addNewDbNextStep({step: 1, data: {source: 'databaseSource', ...values}})
+                    }else if (this.props.dbAdd.currentStep === 1) {
+                        const {dataBusUrl, docType, jobName, jobType} = values;
+                        const {id} = this.props.dbAdd.newTagData[0];
+                        // const {id} = {id:'5ab8b71d1e36be209c5a2ed1'};
+                        // 5ab8b71d1e36be209c5a2ed1
+                        this.props.actions.addNewDbNextStep({step: 2, data: {
+                            jobGroup: '数据微服务',
+                            jobDescription: '',
+                            jobType,
+                            jobName,
+                            jobDataMapInfo:{
+                                docType,
+                                source: 'databaseSource',
+                                dataSourceId: id,
+                                dataBusUrl
+                            }
+                        }})
                     }
                 }
             }
         );
+    }
+
+    showExample = () => {
+        const dataBusUrl = this.props.form.getFieldValue('dataBusUrl');
+        this.props.actions.showExample({data:{dataBusUrl,samplesTotal: '5'},CB:()=>{
+            message.error('API地址不正确或者此API地址下没有样例数据')
+        }})
     }
 
     //进入 mapping 配置
@@ -284,6 +303,14 @@ export default class Child03 extends React.Component{
 
     cleanMCSelectDataStepOther = () =>{
         this.props.actions.cleanMCSelectDataStepOther();
+    }
+
+    modal2NextContent = (status) => {
+        this.props.actions.modal2HandleContent({status})
+    }
+
+    handleModalCancel2 = () => {
+        this.props.actions.hideModal2()
     }
 
     renderMappingConfChild = (step, mappingSelectData) => {
@@ -499,7 +526,8 @@ export default class Child03 extends React.Component{
     }
 
     render(){
-        const {currentStep, modalVisible, modalConfirmLoading, mappingConfStep, mappingSelectData} = this.props.dbAdd;
+        const {currentStep, modalVisible, modalConfirmLoading, mappingConfStep, mappingSelectData, modalVisible2,
+                    modal2Data,modalCurrentConent} = this.props.dbAdd;
         return (
             <div>
                 <Card
@@ -576,6 +604,34 @@ export default class Child03 extends React.Component{
                             this.renderMappingConfChild(mappingConfStep, mappingSelectData)
                         }
 
+                    </div>
+                </Modal>
+                <Modal title='样例数据'
+                    key='example_modal'
+                    visible={modalVisible2}
+                    width='80%'
+                    closable={false}
+                    onCancel={this.handleModalCancel2}
+                    footer={
+                            <Button onClick={this.handleModalCancel2}>关闭</Button>
+                    }
+                >
+                    <div style={{height: 500}}>
+
+                        <div style={{height: 60}}>
+                            <div style={{float: 'left'}}>
+                                {`样例数据一共是${modal2Data.length}份，当前是第${modalCurrentConent+1}份`}
+                            </div>
+                            <Button.Group  style={{float: 'right'}}>
+                                <Button type="primary" onClick={()=>{this.modal2NextContent('prev')}}>
+                                    <Icon type="left" />上一份
+                                </Button>
+                                <Button type="primary" onClick={()=>{this.modal2NextContent('next')}}>
+                                    下一份<Icon type="right" />
+                                </Button>
+                            </Button.Group>
+                        </div>
+                        <div style={{overflow: 'auto', height: 425}} dangerouslySetInnerHTML={{__html:modal2Data.length?modal2Data[modalCurrentConent].content:null}}></div>
                     </div>
                 </Modal>
             </div>

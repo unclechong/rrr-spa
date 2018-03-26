@@ -17,10 +17,12 @@ export default (state = initialState, action) => {
         case 'datafusion/CHANGE_TAB':
             return state.set('currentTab', action.currentTab);
         case 'datafusion/GET_TREE_DATA_OK':
-            return state.set('treeData', action.payload);
+            return state.set('treeData', fromJS(action.payload));
         case 'datafusion/CHANGE_TREE_SELECT':
             return state.set('treeSelectValue', action.args.index)
                         .set('selectTreeNodeValue', action.args.value);
+        case 'datafusion/MERGE_TREE_DATA':
+            return state.set('treeData', fromJS(action.payload));
         case 'datafusionChildDbEdit/MERGE_FIELDS_VALUES':
             return state.setIn(['formData', action.args.index], state.get('formData').merge(action.args.data))
         case 'datafusionChildDbEdit/SET_FIELDS_VALUES':

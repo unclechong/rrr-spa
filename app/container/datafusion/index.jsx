@@ -5,6 +5,7 @@ import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux';
 import * as actions from 'actions/datafusion';
 import { Route, Switch, Redirect } from 'react-router-dom';
+import { List as List_I } from 'immutable';
 
 import PageContainer from 'app_component/pagecontainer';
 import WrapTabs from 'app_component/tabs';
@@ -55,6 +56,11 @@ export default class DataFusion extends React.Component{
 
     componentDidMount(){
         this.props.actions.initDataFusion();
+        const pathArr = this.props.location.pathname.split('/');
+        if (_.last(pathArr) === 'add') {
+            const _path = pathArr.slice(0,pathArr.length-1).join('/');
+            this.goPage(`${_path}/list`);
+        }
     }
 
     tabOnChange = (e) => {
@@ -77,6 +83,7 @@ export default class DataFusion extends React.Component{
         e.stopPropagation();
         const jumpPath = `${this.props.match.path+'/'+type}/add`;
         this.goPage(jumpPath);
+        this.props.actions.changeTreeSelectNoData({index: [], value: null});
     }
 
     handleTagEdit = (e,type,value) => {
@@ -96,6 +103,7 @@ export default class DataFusion extends React.Component{
 
     render(){
         const {datafusion: {currentTab, treeData, treeSelectValue, treeNodeDetail, tagEditData, selectTreeNodeValue}} = this.props;
+        console.log(treeSelectValue);
         const dsPanelName = <span>文档库<span className='df-left-tree-title-opt' onClick={e=>{this.handleAddTreeItem(e, 'dml')}}><Icon type="plus" />添加</span></span>
         const dbPanelName = <span>数据库<span className='df-left-tree-title-opt' onClick={e=>{this.handleAddTreeItem(e, 'db')}}><Icon type="plus" />添加</span></span>
         return(

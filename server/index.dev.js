@@ -30,6 +30,7 @@ app.use(async(ctx)=>{
         //rest 暂未转化成 URL 参数
         const postURL = URL + keyPath + '?config_id=14';
         try{
+            console.log(postURL);
             const data = await axios.post(postURL, params);
             ctx.body = data.data;
         }catch (err) {

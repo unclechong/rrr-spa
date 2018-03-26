@@ -20,12 +20,23 @@ export const handleTagEdit = () => ({
     type: 'datafusion/saga/TAG_EDIT_DATA'
 })
 
+export const addNewTag = () => ({
+    type: 'datafusion/saga/ADD_NEW_TAG'
+})
+
+
+
 
 //normal actions
 
 
 export const currentComponentLeave = () => ({
     type: 'datafusionChildDbAdd/CURRENT_COMPONENT_LEAVE'
+})
+
+export const changeTreeSelectNoData = args => ({
+    type: 'datafusion/CHANGE_TREE_SELECT',
+    args
 })
 
 
@@ -39,14 +50,36 @@ export const mappingConfNext = () => ({
     type: 'datafusionChildDbAdd/saga/MAPPING_CONG_NEXT',
 })
 
+export const addNewDbNextStep = args => ({
+    type: 'datafusionChildDbAdd/saga/ADD_NEW_DB_NEXT_STEP',
+    args
+})
+
+export const showExample = args => ({
+    type: 'datafusionChildDbAdd/saga/SHOW_EXAMPLE_DATA',
+    args
+})
+
+export const hideModal2 = args => ({
+    type: 'datafusionChildDbAdd/HIDE_MODAL2',
+    args
+})
+
+export const modal2HandleContent = args => ({
+    type: 'datafusionChildDbAdd/MODAL2_HANDLE_CONTENT',
+    args
+})
+
+
+
+
+
+
+
+//add dml actions
 export const triggerModal = isShow => ({
     type: 'datafusionChildDbAdd/TRIGGER_MODAL',
     isShow
-})
-
-//add dml actions
-export const addNewDbNextStep = () => ({
-    type: 'datafusionChildDbAdd/ADD_NEW_DB_NEXT_STEP'
 })
 
 export const onLoadStep1TreeData = treeData => ({

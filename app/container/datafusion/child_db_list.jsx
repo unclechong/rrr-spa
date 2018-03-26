@@ -23,29 +23,31 @@ export default class Child01 extends React.Component{
             title: '数据内容',
             dataIndex: 'data',
             key: 'data',
-            width: '35%',
+            width: '80%',
             className: 'df-table-columns-line'
-        }, {
-            title: '获取时间',
-            dataIndex: 'getTime',
-            key: 'getTime',
-            className: 'df-table-columns-line'
-        }, {
-            title: '抽取时间',
-            dataIndex: 'extractTime',
-            key: 'extractTime',
-            className: 'df-table-columns-line'
-        }, {
-            title: '抽取知识',
-            dataIndex: 'knowledgeCount',
-            key: 'knowledgeCount',
-            className: 'df-table-columns-line'
-        }, {
-            title: '文档来源',
-            dataIndex: 'docuSource',
-            key: 'docuSource',
-            className: 'df-table-columns-line'
-        }, {
+        },
+        //  {
+        //     title: '获取时间',
+        //     dataIndex: 'getTime',
+        //     key: 'getTime',
+        //     className: 'df-table-columns-line'
+        // }, {
+        //     title: '抽取时间',
+        //     dataIndex: 'extractTime',
+        //     key: 'extractTime',
+        //     className: 'df-table-columns-line'
+        // }, {
+        //     title: '抽取知识',
+        //     dataIndex: 'knowledgeCount',
+        //     key: 'knowledgeCount',
+        //     className: 'df-table-columns-line'
+        // }, {
+        //     title: '文档来源',
+        //     dataIndex: 'docuSource',
+        //     key: 'docuSource',
+        //     className: 'df-table-columns-line'
+        // },
+        {
             title: '操作',
             key: 'action',
             className: 'df-table-columns-line',
