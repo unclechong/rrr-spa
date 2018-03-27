@@ -115,7 +115,6 @@ export default class Child04 extends React.Component{
     onSubmit = () => {
         this.props.form.validateFields(
             (err,values) => {
-                console.log(values);
                 if (!err) {
                     if (this.props.dmlAdd.currentStep !== 2) {
                         this.props.actions.addNewDmlNextStep()

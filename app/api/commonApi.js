@@ -1,6 +1,8 @@
 import appConf from '../conf';
 const sendPost = (path, method='get', isJson=false, params, onError) => {
-    const sendParams = method=='get'?{params}:params;
+    // const sendParams = method=='get'?{params}:params;
+    const sendParams = params;
+
     const proxyParams = {
         params: sendParams,
         rest: {
@@ -30,7 +32,7 @@ const sendPost = (path, method='get', isJson=false, params, onError) => {
             console.log(err);
         });
     }else {
-        return axios[method.toLowerCase()](
+        return axios.post(
             // isJson?path:URL+path,
             appConf.SERVER_URL,
             proxyParams

@@ -82,9 +82,9 @@ export const triggerModal = isShow => ({
     isShow
 })
 
-export const onLoadStep1TreeData = treeData => ({
-    type: 'datafusionChildDbAdd/ONLOAD_STEP0_TREE_DATA',
-    payload:treeData
+export const onLoadStep1TreeData = args => ({
+    type: 'datafusionChildDbAdd/saga/ONLOAD_STEP0_TREE_DATA',
+    args
 })
 
 export const handleMappingStep = status => ({
@@ -98,7 +98,7 @@ export const changeSelectTreeNode = args => ({
 })
 
 export const handleMCSelectChange = args => ({
-    type: 'datafusionChildDbAdd/HANDLE_MC_SLEECT_CHANGE',
+    type: 'datafusionChildDbAdd/saga/HANDLE_MC_SLEECT_CHANGE',
     args
 })
 
@@ -107,6 +107,12 @@ export const addMappingSelect = args => ({
     type: 'datafusionChildDbAdd/MERGE_MAPPING_SELECT_DATA',
     args
 })
+
+// export const onLaodTreeData = args => ({
+//     type: 'datafusionChildDbAdd/ON_LOAD_TREE_DATA',
+//     args
+// })
+
 
 //mapping cong step 2,3,4
 export const addMappingSelectOther = args => ({

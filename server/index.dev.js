@@ -26,12 +26,14 @@ const URL = 'http://192.168.1.180:8088/supermind/api';
 //当请求时GET请求时，显示表单让用户填写
 app.use(async(ctx)=>{
     if(ctx.url === '/supermind/api' && ctx.method==='POST'){
-        let {rest, params, method, keyPath} = ctx.request.body;
+        let {rest, params, method, keyPath, method:_method} = ctx.request.body;
         //rest 暂未转化成 URL 参数
         const postURL = URL + keyPath + '?config_id=14';
         try{
             console.log(postURL);
-            const data = await axios.post(postURL, params);
+            console.log(JSON.stringify(params));
+
+            const data = await axios[_method](postURL, _method==='get'?{params}:params);
             ctx.body = data.data;
         }catch (err) {
             if (err.response.status === 500) {

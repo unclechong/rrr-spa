@@ -294,22 +294,69 @@ export default class datafusionApi {
 
 
     //db add child API
+
+    //数据库添加操作第一步
     static async handleAddNewTagSave(params={}){
         const result = await sendPost('/dataSource/addOne', 'post', false, params);
 
         return result
     };
-
+    //数据库添加操作第二步
     static async handleAddNewTagSave2(params={}){
         const result = await sendPost('/task/addOne', 'post', false, params);
 
         return result
     };
-
+    //数据库添加操作第二步中的样例查看
     static async getOneSamples(params={}){
         const result = await sendPost('/dataSource/getOneSamples', 'post', false, params);
 
         return result
+    };
+    //数据库添加操作第三步中的mapping配置中的第一步的概念树种的父节点接口
+    static async selectConceptByPid(params={}){
+        const result = await sendPost('/knowledgeGraph/selectConceptByPid', 'get', false, params);
+
+        // const treeData = result.map((item,index)=>{
+        //     return {
+        //         title: item.name,
+        //         key: index,
+        //         nodeValue: item.id
+        //     }
+        // })
+        return result
+    };
+    //数据库添加操作第三步中的mapping配置中的第一步的概念树中获取子节点
+    static async selectConceptById(params={}){
+        const {id,type} = params;
+        const result = await sendPost('/knowledgeGraph/selectConceptById', 'get', false, {id});
+        if (type === 'attr') {
+            return result.attrList.map(item=>{
+                return {
+                    title: item.name,
+                    key: item.id
+                }
+            })
+        }else if (type === 'relation') {
+            return result.relationList.map(item=>{
+                return {
+                    title: item.name,
+                    key: item.id,
+                    attrList: item.attrList
+                }
+            })
+        }
+    };
+    //数据库添加操作第三步中的mapping配置中的第二步中的数据表树
+    static async getOneFields(params={}){
+        const result = await sendPost('/dataSource/getOneFields', 'post', false, params);
+
+        return result.map(item=>{
+            return {
+                title: item,
+                key: item
+            }
+        })
     };
 
 

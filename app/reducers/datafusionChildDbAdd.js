@@ -1,7 +1,7 @@
 import { fromJS, Map, List} from 'immutable';
 
 const initialState = fromJS({
-    currentStep: 1,
+    currentStep: 0,
     modalVisible: false,
     modalConfirmLoading: false,
     mappingConfStep: 0,
@@ -10,9 +10,9 @@ const initialState = fromJS({
     step1TreeData: [[],[]],
     step2TreeData: [[],[]],
     step3TreeData: [[],[]],
-    step2SelectOptionsData: [],                                         //第三步中，关系下拉框中的数据
+    // step2SelectOptionsData: [],                                         //第三步中，关系下拉框中的数据
     MCTreeSelectValue: [[],[[],[]],[[],[]],[[],[]]],                    //已经选择数据的KEY，antd tree ues
-    MCSelectValue: [{key: 'entity', lebel: '事件'},[],[],[]],                                         //mappinf conf 中每个select的值，返回时会用，右边的显示也需要这个值拼接
+    MCSelectValue: [{key: '0', lebel: '实体'},[],[],[]],                                         //mappinf conf 中每个select的值，返回时会用，右边的显示也需要这个值拼接
     newTagData: [],
 
 
@@ -20,6 +20,13 @@ const initialState = fromJS({
     modal2Data: {},
     modalCurrentConent:0
 });
+
+
+//备忘三个事情。
+// index.js中的 如果是在添加页面则重定向到list
+// currentStep 重置为0
+// mapping中第二步的select option 注释放开
+// saga  db_add_mappingConfNext第一个判断中的默认值注释放开
 
 export default (state = initialState, action) => {
     const mappingConfStep = state.get('mappingConfStep');
@@ -39,16 +46,29 @@ export default (state = initialState, action) => {
                             .set('MCTreeSelectValue', fromJS([[],[[],[]],[[],[]],[[],[]]]))
             }
         case 'datafusionChildDbAdd/ONLOAD_STEP0_TREE_DATA':
-            return state.set('step0TreeData', fromJS(action.payload));
+            return state.set('step0TreeData', fromJS(action.args.treeData));
         case 'datafusionChildDbAdd/ONLOAD_STEP1_TREE_DATA':
-            return state.setIn(['step1TreeData', 0], fromJS(action.payload))
-                        .setIn(['step1TreeData', 1], fromJS(action.payload));
+            if (!!action.payload.treeData2) {
+                return state.setIn(['step1TreeData', 0], fromJS(action.payload.treeData))
+                            .setIn(['step1TreeData', 1], fromJS(action.payload.treeData2));
+            }else {
+                return state.setIn(['step1TreeData', 0], fromJS(action.payload.treeData))
+                            .setIn(['MCTreeSelectValue', mappingConfStep], fromJS([[],[]]));
+            }
         case 'datafusionChildDbAdd/ONLOAD_STEP2_TREE_DATA':
-            return state.setIn(['step2TreeData', 0], fromJS(action.payload))
-                        .setIn(['step2TreeData', 1], fromJS(action.payload));
+            if (action.payload.treeData2) {
+                return state.setIn(['step2TreeData', 0], fromJS(action.payload.treeData))
+                            .setIn(['step2TreeData', 1], fromJS(action.payload.treeData2));
+            }
+            return state.setIn(['step2TreeData', 0], fromJS(action.payload.treeData))
+                        .setIn(['MCTreeSelectValue', mappingConfStep], fromJS([[],[]]));
         case 'datafusionChildDbAdd/ONLOAD_STEP3_TREE_DATA':
-            return state.setIn(['step3TreeData', 0], fromJS(action.payload))
-                        .setIn(['step3TreeData', 1], fromJS(action.payload));
+            if (action.payload.treeData2) {
+                return state.setIn(['step3TreeData', 0], fromJS(action.payload.treeData))
+                            .setIn(['step3TreeData', 1], state.getIn(['step1TreeData', 1]));
+            }
+            return state.setIn(['step3TreeData', 0], fromJS(action.payload.treeData))
+
         case 'datafusionChildDbAdd/CLEAN_MAPPING_SELECT_DATA':
             // mapping配置step1时，清空操作
             // 清空右边已确认的值
@@ -62,12 +82,12 @@ export default (state = initialState, action) => {
                         .setIn(['MCTreeSelectValue', mappingConfStep], fromJS([[],[]]));
         case 'datafusionChildDbAdd/HANDLE_MC_SLEECT_CHANGE':
             const MCSelectValueIn = action.args.index!==null?['MCSelectValue', mappingConfStep, action.args.index]:['MCSelectValue', mappingConfStep];
-            return state.setIn(MCSelectValueIn, action.args.value);
+            return state.setIn(MCSelectValueIn, fromJS(action.args.value));
         case 'datafusionChildDbAdd/CHANGE_SELECT_TREE_NODE':
             const mappingSelectValueIn = action.args.index!==null?['MCTreeSelectValue', action.args.step, action.args.index]:['MCTreeSelectValue', action.args.step];
             return state.setIn(mappingSelectValueIn, action.args.selectNodes);
-        case 'datafusionChildDbAdd/INIT_STEP2_SELECT_OPTION':
-            return state.set('step2SelectOptionsData', action.args.selectOptionsData);
+        // case 'datafusionChildDbAdd/INIT_STEP2_SELECT_OPTION':
+        //     return state.set('step2SelectOptionsData', action.args.selectOptionsData);
         case 'datafusionChildDbAdd/MERGE_MAPPING_SELECT_DATA':
             return state.updateIn(['mappingSelectData', mappingConfStep], arr=>{
                             return arr.concat(List(action.args.listArr))
@@ -86,7 +106,7 @@ export default (state = initialState, action) => {
         case 'datafusionChildDbAdd/HIDE_MODAL2':
             return state.set('modalVisible2', false)
                         .set('modalCurrentConent', 0)
-                        .set('modal2Data', {})    
+                        .set('modal2Data', {})
         case 'datafusionChildDbAdd/MODAL2_HANDLE_CONTENT':
             let currentIndex = state.get('modalCurrentConent');
             if (action.args.status === 'next') {

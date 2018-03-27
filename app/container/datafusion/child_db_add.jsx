@@ -190,19 +190,13 @@ export default class Child03 extends React.Component{
     }
 
     onLoadData = (treeNode) => {
-
         return new Promise((resolve) => {
             if (treeNode.props.children) {
                 resolve();
                 return;
             }
-
-             treeNode.props.dataRef.children = [
-                 { title: `${treeNode.props.eventKey}-0`, key: `${treeNode.props.eventKey}-0` },
-                 { title: `${treeNode.props.eventKey}-1`, key: `${treeNode.props.eventKey}-1` },
-             ];
-             this.props.actions.onLoadStep1TreeData(this.props.dbAdd.step0TreeData);
-             resolve();
+            this.props.actions.onLoadStep1TreeData({treeNode,newTreeData:this.props.dbAdd.step0TreeData});
+            resolve();
         })
     }
 
@@ -231,16 +225,22 @@ export default class Child03 extends React.Component{
 
     addMCTreeSelect = (step) => {
         if (step === 0) {
-            const listArr = this.mappingConfTreeSplitArr.map(_node=>({
-                name: _node.props.title,
-                value: _node.key,
-                key: _node.key
+            const listArr = this.mappingConfTreeSplitArr.map(({props})=>({
+                name: props.title,
+                value: props.nodeValue,
+                key: props.nodeValue
             }))
             this.props.actions.addMappingSelect({listArr, treeData: this.formatTreeData(false)});
         }else {
             const {MCSelectValue, mappingSelectData} = this.props.dbAdd;
-            const addName = MCSelectValue[step][0].label;
+            let addName = '';
+            if (step === 2) {
+                addName = MCSelectValue[step].label;
+            }else {
+                addName = MCSelectValue[step][0].label;
+            }
             const [[firArr], [secArr]] = this.mappingConfTreeSplitArr;
+            console.log(this.mappingConfTreeSplitArr);
             let listArr = null;
             if (step === 1) {
                 listArr = [{
@@ -250,9 +250,10 @@ export default class Child03 extends React.Component{
                 }]
             }else if(step === 2) {
                 listArr = [{
-                    name: `${addName}（${firArr.props.title} - ${secArr.props.title}）`,
+                    name: `${firArr.props.title}（${addName} - ${secArr.props.title}）`,
                     value: `${firArr.key}|${secArr.key}`,
-                    key: `${firArr.key}|${secArr.key}`
+                    key: `${firArr.key}|${secArr.key}`,
+                    treeData: firArr.props.attrList
                 }]
             }else if(step === 3) {
                 const _index = addName.indexOf('（');
@@ -315,7 +316,7 @@ export default class Child03 extends React.Component{
 
     renderMappingConfChild = (step, mappingSelectData) => {
         const {selectTreeNode, step0TreeData, MCTreeSelectValue, step1TreeData, MCSelectValue,
-            step2SelectOptionsData, step2TreeData, step3TreeData} = this.props.dbAdd;
+            step2SelectOptionsData, step2TreeData, step3TreeData, newTagData} = this.props.dbAdd;
         if (step === 0) {
             return (
                 <Row gutter={16}>
@@ -327,8 +328,7 @@ export default class Child03 extends React.Component{
                             labelInValue
                             value={MCSelectValue[0]}
                             onChange={e=>{this.MCSelectChange(e,null)}}>
-                            <Option value="entity">实体</Option>
-                            <Option value="event">事件</Option>
+                            <Option value="0">实体</Option>
                         </Select>
                         <Label label='概念' />
                         <div style={{height: 350,width: 250, border: '1px solid #e8e8e8', overflow: 'auto'}}>
@@ -364,14 +364,14 @@ export default class Child03 extends React.Component{
                             value={MCSelectValue[1][0]}
                             labelInValue
                             key='step_1_select'
-                            onChange={e=>{this.MCSelectChange(e,'0')}}
+                            onChange={e=>{this.MCSelectChange(e,0)}}
                         >
                             {
                                 mappingSelectData[0].map(opt=><Option value={opt.value} key={opt.key}>{opt.name}</Option>)
                             }
                         </Select>
                         <Label label='属性' />
-                        <div style={{height: 350,width: 250, border: '1px solid #e8e8e8'}}>
+                        <div style={{height: 350,width: 250, border: '1px solid #e8e8e8', overflow: 'auto'}}>
                             <Tree
                                 key='step_1_tree'
                                 selectedKeys={MCTreeSelectValue[1][0]}
@@ -386,12 +386,15 @@ export default class Child03 extends React.Component{
                         <Select
                             style={{width: 250, marginBottom: 10}}
                             key='step_1_select_2'
+                            value={MCSelectValue[1][1]}
+                            labelInValue
                             onChange={this.mappingConfSelectChange}
                         >
-                            <Option value="entity">数据资产表</Option>
+                            <Option value={newTagData[0].id}>{newTagData[0].sourceName}</Option>
+                            {/* <Option value='5ab8929f1e36be17c06e4707'>测试</Option> */}
                         </Select>
                         <Label label='字段名' />
-                        <div style={{height: 350,width: 250, border: '1px solid #e8e8e8'}}>
+                        <div style={{height: 350,width: 250, border: '1px solid #e8e8e8', overflow: 'auto'}}>
                             <Tree
                                 key='step_1_tree_2'
                                 selectedKeys={MCTreeSelectValue[1][1]}
@@ -420,17 +423,17 @@ export default class Child03 extends React.Component{
                         <Label label='关系列表' />
                         <Select
                             style={{width: 250, marginBottom: 10}}
-                            value={MCSelectValue[2][0]}
+                            value={MCSelectValue[2]}
                             labelInValue
                             key='step_2_select'
-                            onChange={e=>{this.MCSelectChange(e,'0')}}
+                            onChange={e=>{this.MCSelectChange(e,0)}}
                         >
                             {
-                                step2SelectOptionsData.map(opt=><Option value={opt.value} key={opt.key}>{opt.label}</Option>)
+                                mappingSelectData[0].map(opt=><Option value={opt.value} key={opt.key}>{opt.name}</Option>)
                             }
                         </Select>
-                        <Label label='包含实体1' />
-                        <div style={{height: 350,width: 250, border: '1px solid #e8e8e8'}}>
+                        <Label label='关系' />
+                        <div style={{height: 350,width: 250, border: '1px solid #e8e8e8', overflow: 'auto'}}>
                             <Tree
                                 key='step_2_tree'
                                 selectedKeys={MCTreeSelectValue[2][0]}
@@ -444,7 +447,7 @@ export default class Child03 extends React.Component{
                         <div style={{height: 68}}></div>
 
                         <Label label='包含实体2' />
-                        <div style={{height: 350,width: 250, border: '1px solid #e8e8e8'}}>
+                        <div style={{height: 350,width: 250, border: '1px solid #e8e8e8', overflow: 'auto'}}>
                             <Tree
                                 key='step_2_tree_2'
                                 selectedKeys={MCTreeSelectValue[2][1]}
@@ -467,23 +470,31 @@ export default class Child03 extends React.Component{
                 </Row>
             )
         }else if (step === 3) {
+            const _options = mappingSelectData[2].map(item=>{
+                const _value = item.value.split('|')[0];
+                return {
+                    value: _value,
+                    key: _value,
+                    name: item.name
+                }
+            })
             return (
                 <Row gutter={16}>
                     <Col xl={7} >
-                        <Label label='概念列表' />
+                        <Label label='关系列表' />
                         <Select
                             style={{width: 250, marginBottom: 10}}
                             value={MCSelectValue[3][0]}
                             labelInValue
                             key='step_3_select'
-                            onChange={e=>{this.MCSelectChange(e,'0')}}
+                            onChange={e=>{this.MCSelectChange(e,0)}}
                         >
                             {
-                                mappingSelectData[2].map(opt=><Option value={opt.value} key={opt.key}>{opt.name}</Option>)
+                                _options.map(opt=><Option value={opt.value} key={opt.key}>{opt.name}</Option>)
                             }
                         </Select>
-                        <Label label='属性/边属性' />
-                        <div style={{height: 350,width: 250, border: '1px solid #e8e8e8'}}>
+                        <Label label='边属性' />
+                        <div style={{height: 350,width: 250, border: '1px solid #e8e8e8', overflow: 'auto'}}>
                             <Tree
                                 key='step_3_tree'
                                 selectedKeys={MCTreeSelectValue[3][0]}
@@ -495,11 +506,18 @@ export default class Child03 extends React.Component{
                     </Col>
                     <Col xl={7} >
                         <Label label='数据表' />
-                        <Select style={{width: 250, marginBottom: 10}} onChange={this.mappingConfSelectChange}>
-                            <Option value="entity">数据资产表</Option>
+                        <Select
+                            style={{width: 250, marginBottom: 10}}
+                            key='step_3_select_2'
+                            value={MCSelectValue[3][1]}
+                            labelInValue
+                            onChange={this.mappingConfSelectChange}
+                        >
+                            <Option value={newTagData[0].id}>{newTagData[0].sourceName}</Option>
+                            {/* <Option value='5ab8929f1e36be17c06e4707'>测试</Option> */}
                         </Select>
                         <Label label='字段名' />
-                        <div style={{height: 350,width: 250, border: '1px solid #e8e8e8'}}>
+                        <div style={{height: 350,width: 250, border: '1px solid #e8e8e8', overflow: 'auto'}}>
                             <Tree
                                 key='step_3_tree_2'
                                 selectedKeys={MCTreeSelectValue[3][1]}
@@ -513,7 +531,7 @@ export default class Child03 extends React.Component{
                         <Button type='primary' disabled={!(MCTreeSelectValue[3][0].length && MCTreeSelectValue[3][1].length)} onClick={()=>{this.addMCTreeSelect(3)}}>确定</Button>
                     </Col>
                     <Col xl={7}>
-                        <Label label='概念/属性/边属性－字段名' hasBtn={<Tag color="red" onClick={this.cleanMCSelectDataStepOther}>清空</Tag>} />
+                        <Label label='概念/边属性－字段名' hasBtn={<Tag color="red" onClick={this.cleanMCSelectDataStepOther}>清空</Tag>} />
                         <List
                             style={{width: '90%'}}
                             list={mappingSelectData[step]}

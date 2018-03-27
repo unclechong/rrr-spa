@@ -39,10 +39,10 @@ app.use(async (ctx, next) => {
 //当请求时GET请求时，显示表单让用户填写
 app.use(async(ctx,next)=>{
     if(ctx.url === '/supermind/api' && ctx.method==='POST'){
-        let {rest, params, method, keyPath} = ctx.request.body;
+        let {rest, params, method, keyPath, method:_method} = ctx.request.body;
         //rest 暂未转化成 URL 参数
         const postURL = SERVER_URL + keyPath + '?config_id=14';
-        const data = await axios.post(postURL, params);
+        const data = await axios[_method](postURL, _method==='get'?{params}:params);
         ctx.body = data.data;
     }else{
         await next();
