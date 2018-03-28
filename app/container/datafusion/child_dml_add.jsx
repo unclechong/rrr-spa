@@ -1,4 +1,4 @@
-import { Steps, Form, Row, Col, Button, Alert, Modal, Divider, Select, Tag, Tree, message } from 'antd';
+import { Steps, Form, Row, Col, Button, Alert, Modal, Divider, Select, Tag, Tree, message, Icon } from 'antd';
 const Step = Steps.Step;
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -16,76 +16,70 @@ const FORM_ITEM_LIST = [
     [
         {
             label:'名称',
-            id:'name_1',
-            key:'name_1',
+            id:'sourceName',
+            key:'sourceName',
             type:'input'
         }, {
             label:'描述',
-            key:'desc_1',
-            id:'desc_1',
+            key:'sourceDescription',
+            id:'sourceDescription',
             type:'inputArea',
             required:false,
         }
     ], [
         {
             label:'任务名称',
-            id:'task_name_2',
-            key:'task_name_2',
+            id:'jobName',
+            key:'jobName',
             type:'input'
         }, {
             label:'任务类型',
-            key:'task_type_2',
-            id:'task_type_2',
+            key:'jobType',
+            id:'jobType',
             type:'select',
             options:[
                 {
-                    label:'总量任务',
-                    value:'all'
+                    label:'全量任务',
+                    value:'全量任务'
                 }, {
                     label:'增量任务',
-                    value:'else'
+                    value:'增量任务'
                 }
             ]
         }, {
             label:'文档类型',
-            key:'dml_type_2',
-            id:'dml_type_2',
+            key:'docType',
+            id:'docType',
             type:'select',
-            options:[
-                {
-                    label:'TBT通报',
-                    value:'TBT'
-                }
-            ]
+            options:[]
         }, {
             label:'API地址',
-            key:'API_2',
-            id:'API_2',
+            key:'dataBusUrl',
+            id:'dataBusUrl',
             type:'inputArea',
-            required:true,
-            hasBtn:<Button style={{float: 'right'}} type="dashed">样例数据</Button>
+            required:true
         }
     ], [
         {
             label:'任务名称',
-            id:'task_name_3',
-            key:'task_name_3',
+            id:'jobName2',
+            key:'jobName2',
             type:'input'
         }, {
-            label:'模型定义',
-            key:'module_3',
-            id:'module_3',
-            type:'hasBtnSelect',
+            label:'模型',
+            key:'modelName',
+            id:'modelName',
+            type:'select',
             options:[
                 {
                     label:'D2R',
                     value:'D2R'
                 }
-            ],
-            hasBtn:<Button style={{float: 'right', marginTop: 4}} type="dashed">确定</Button>
+            ]
         }
     ]
 ]
+
 
 const mapStateToProps = state => {
     return {dmlAdd: state.get('datafusionChildDmlAdd').toJS()}
@@ -102,30 +96,79 @@ export default class Child04 extends React.Component{
     constructor(props){
         super(props)
 
-    }
+        //bind mapping conf btn callback
+        FORM_ITEM_LIST[1][3].hasBtn = <Button style={{float: 'right'}} type="dashed" onClick={this.showExample}>样例数据</Button>;
 
-    componentDidMount(){
-        // this.props.actions.startMappingConf();
     }
 
     componentWillUnmount(){
-        this.props.actions.currentComponentLeave();
+        this.props.actions.currentDmlComponentLeave();
     }
 
     onSubmit = () => {
         this.props.form.validateFields(
             (err,values) => {
                 if (!err) {
-                    if (this.props.dmlAdd.currentStep !== 2) {
-                        this.props.actions.addNewDmlNextStep()
+                    if (this.props.dmlAdd.currentStep === 0) {
+                        FORM_ITEM_LIST[1][2].options = [{label: values.sourceName, value: values.sourceName}]
+                        this.props.actions.addNewDmlNextStep({step: 1, data: {source: 'documentSource', ...values}})
+                    }else if (this.props.dmlAdd.currentStep === 1) {
+                        const {dataBusUrl, docType, jobName, jobType} = values;
+                        const {id} = this.props.dmlAdd.newTagData[0];
+                        this.props.actions.addNewDmlNextStep({step: 2, data: {
+                            jobGroup: '数据微服务',
+                            jobDescription: '',
+                            jobType,
+                            jobName,
+                            jobDataMapInfo:{
+                                docType,
+                                source: 'databaseSource',
+                                dataSourceId: id,
+                                dataBusUrl
+                            }
+                        }})
+                    }else if(this.props.dmlAdd.currentStep === 2){
+                        const {jobName, jobType} = this.props.dmlAdd.newTagData[1];
+                        const {id} = this.props.dmlAdd.newTagData[0];
+
+                        this.props.actions.addNewDmlNextStep({step: 3, data: {
+                        	jobName: values.jobName2,
+                        	jobType,
+                        	jobGroup:"非结构化数据",
+                        	jobDescription:"",
+                        	jobDataMapInfo:{
+                        		modelName: values.modelName,
+                        		modelId:"",
+                        		source:"documentSource",
+                        		dataSourceId: id
+                        	}
+                        },CB:()=>{
+                            this.props.history.push('/supermind/data/dml/list');
+                            message.success('添加成功！')
+                        }})
                     }
                 }
             }
         );
     }
 
+    showExample = () => {
+        const dataBusUrl = this.props.form.getFieldValue('dataBusUrl');
+        this.props.actions.dmlAddshowExample({data:{dataBusUrl,samplesTotal: '5'},CB:()=>{
+            message.error('API地址不正确或者此API地址下没有样例数据')
+        }})
+    }
+
+    handleModalCancel2 = () => {
+        this.props.actions.dmlAddHideExample()
+    }
+
+    modalNextContent = (status) => {
+        this.props.actions.modalHandleContent({status})
+    }
+
     render(){
-        const {currentStep} = this.props.dmlAdd;
+        const {currentStep, modalVisible, modalData, modalCurrentConent} = this.props.dmlAdd;
         return (
             <div>
                 <Card
@@ -175,6 +218,34 @@ export default class Child04 extends React.Component{
                         </Row>
                     }
                 />
+                <Modal title='样例数据'
+                    key='example_modal'
+                    visible={modalVisible}
+                    width='80%'
+                    closable={false}
+                    onCancel={this.handleModalCancel2}
+                    footer={
+                            <Button onClick={this.handleModalCancel2}>关闭</Button>
+                    }
+                >
+                    <div style={{height: 500}}>
+
+                        <div style={{height: 60}}>
+                            <div style={{float: 'left'}}>
+                                {`样例数据一共是${modalData.length}份，当前是第${modalCurrentConent+1}份`}
+                            </div>
+                            <Button.Group  style={{float: 'right'}}>
+                                <Button type="primary" onClick={()=>{this.modalNextContent('prev')}}>
+                                    <Icon type="left" />上一份
+                                </Button>
+                                <Button type="primary" onClick={()=>{this.modalNextContent('next')}}>
+                                    下一份<Icon type="right" />
+                                </Button>
+                            </Button.Group>
+                        </div>
+                        <div style={{overflow: 'auto', height: 425}} dangerouslySetInnerHTML={{__html:modalData.length?modalData[modalCurrentConent].content:null}}></div>
+                    </div>
+                </Modal>
             </div>
         )
     }

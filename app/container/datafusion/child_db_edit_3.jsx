@@ -15,9 +15,8 @@ const FORM_ITEM_LIST = [
         label:'模型',
         key:'modelName',
         id:'modelName',
-        type:'hasBtnSelect',
-        options:[],
-        hasBtn:<Button style={{float: 'right', marginTop: 4}} type="dashed">样例数据</Button>
+        type:'select',
+        options:[]
     }, {
         label:'映射关系',
         key:'mapping_3',

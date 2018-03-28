@@ -25,7 +25,7 @@ const mapDispatchToProps = dispatch => ({
 export default class Child08 extends React.Component{
 
     componentDidMount(){
-        this.props.actions.getCurrentTagData({id:this.props.match.params.id})
+        this.props.actions.getCurrentTagData({id:this.props.match.params.id,type:'db'})
     }
 
     // shouldComponentUpdate(nextProps, nextState){
@@ -55,9 +55,9 @@ export default class Child08 extends React.Component{
 
     render(){
         const {tagEditData,editStep} = this.props.dbEdit;
-        let childData = {...tagEditData.dataProcessingTaskInfo};
+        let childData = null;
         if (editStep === 3) {
-            childData = {...childData, tableData: this.formData(tagEditData.dataProcessingTaskInfo.d2rPattern)};
+            childData = {...tagEditData.dataProcessingTaskInfo, tableData: this.formData(tagEditData.dataProcessingTaskInfo.d2rPattern)};
         }
         return(
             <QueueAnim animConfig={[
@@ -67,7 +67,7 @@ export default class Child08 extends React.Component{
             >
                 {
                     (()=>{
-                        if (editStep === 1) return <Child01 dataSource={tagEditData} onClickNext={this.props.actions.editTagNext} />
+                        if (editStep === 1) return <Child01 dataSource={tagEditData} onClickNext={(obj)=>{this.props.actions.editTagNext({type:'db',...obj})}} />
                         else if(editStep === 2) return <Child02 dataSource={tagEditData.dataBusTaskInfo} />
                         else if(editStep === 3) return <Child03 dataSource={childData} />
                     })()

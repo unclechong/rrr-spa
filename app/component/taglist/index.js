@@ -9,6 +9,13 @@ const Tag = ({label,item,onClick,active}) => {
 }
 
 const TagList = ({onClick,activeTag,style,data}) => {
+
+    const currentTagOnChange = (val, item, index) => {
+        if (activeTag !== val) {
+            onClick(val, item, index)
+        }
+    }
+
     return (
         <div className='com-tl-body' style={style}>
             <ul className='com-tl-body-ul'>
@@ -16,7 +23,7 @@ const TagList = ({onClick,activeTag,style,data}) => {
                     data.map((item,k)=><Tag
                         label={item.label}
                         key={item.key}
-                        onClick={()=>{onClick(item.value, item, k)}}
+                        onClick={()=>{currentTagOnChange(item.value, item, k)}}
                         active={item.value===activeTag}
                     />)
                 }

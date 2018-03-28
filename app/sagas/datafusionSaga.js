@@ -18,9 +18,10 @@ function* getTreeData(){
 }
 
 function* changeTab({currentTab}){
-    // if (currentTab==='taskManage') {
-    //     yield put({type: 'datafusionChildDbAdd/CURRENT_COMPONENT_LEAVE'});
-    // }
+    if (currentTab==='taskManage') {
+        const activeTag = yield select(state => state.getIn(['datafusion', 'activeTag']));
+        yield call(taskManagerOnChange, {args: {value: activeTag}})
+    }
     yield put({type: 'datafusion/CHANGE_TAB', currentTab});
 }
 
@@ -86,9 +87,8 @@ function* db_add_mappingConfNext(){
         yield put({type: 'datafusionChildDbAdd/ONLOAD_STEP'+ nextMappingConfStep + '_TREE_DATA', status: 'next', payload: {treeData:_treeData,treeData2:[]}});
         yield put({type: 'datafusionChildDbAdd/HANDLE_MAPPING_STEP', status: 'next'});
         // yield put({type: 'datafusionChildDbAdd/HANDLE_MC_SLEECT_CHANGE', args: {value:[{key: selectValue.split('|')[0], label: selectLabel},{key: '5ab8929f1e36be17c06e4707', label: '数据表11'}], index: null}});
-        yield put({type: 'datafusionChildDbAdd/HANDLE_MC_SLEECT_CHANGE', args: {value:[{key: selectValue.split('|')[0], label: selectLabel.split('（')[0]},{key: newTagData[0].id, label: newTagData[0].sourceName}], index: null}});
+        yield put({type: 'datafusionChildDbAdd/HANDLE_MC_SLEECT_CHANGE', args: {value:[{key: selectValue.split('|')[0], label: selectLabel},{key: newTagData[0].id, label: newTagData[0].sourceName}], index: null}});
     }
-
 }
 
 function* changeTreeSelect({args}){
@@ -101,7 +101,11 @@ function* handleTagEdit({args}){
     // console.log(args.id);
     // const selectTreeNodeValue = yield select(state => state.getIn(['datafusion', 'selectTreeNodeValue']));
     const data = yield call(datafusionApi.getDbItemEditInfo, {mongoId: args.id});
-    yield put({type: 'datafusionChildDbEdit/GET_CURRENT_TAG_DATA_OK', payload: data})
+    if (args.type === 'db') {
+        yield put({type: 'datafusionChildDbEdit/GET_CURRENT_TAG_DATA_OK', payload: data})
+    }else {
+        yield put({type: 'datafusionChildDmlEdit/GET_CURRENT_TAG_DATA_OK', payload: data})
+    }
 }
 //
 // function* addNewTag(){
@@ -126,7 +130,13 @@ function* hanleNewTagSave({args}){
         const result = yield call(datafusionApi.handleAddNewTagSave2, args.data);
         yield put({type: 'datafusionChildDbAdd/ADD_NEW_DB_NEXT_STEP', args: {data: args.data, index: '1'}});
     }else if(step === 3 || step === '3') {
-        console.log('in 3');
+        const result = yield call(datafusionApi.handleAddNewTagSave2, args.data);
+        const treeData = yield select(state => state.getIn(['datafusion', 'treeData']).toJS());
+        const lastItem = _.last(treeData.databaseSource);
+        yield put({type: 'datafusion/CHANGE_TREE_SELECT', args: {index: [lastItem.key], value: lastItem.value}});
+        args.CB()
+        const treeNodeDetail = yield call(datafusionApi.getTreeNodeDetail,{mongoId:lastItem.value});
+        yield put({type: 'datafusion/SET_TREENODE_DETAIL', payload: treeNodeDetail})
     }
 }
 
@@ -137,7 +147,6 @@ function* showExample({args}){
     }else {
         args.CB();
     }
-
 }
 
 function* onLoadStep1TreeData({args:{treeNode,newTreeData}}){
@@ -176,12 +185,53 @@ function* handleMCSelectChange({args:{value,index}}){
     }
 }
 
+function* taskManagerOnChange({args:{value}}){
+    const result = yield call(datafusionApi.getTaskList, {jobGroup: value});
+    yield put({type:'datafusionChildTaskManager/GET_TASK_MANAGE_LIST_OK', payload: {data: result, value}});
+}
+
+function* hanleNewDmlTagSave({args}){
+    const {step, data} = args;
+    if (step === 1 || step === '1') {
+        const result = yield call(datafusionApi.handleAddNewTagSave, {...args.data});
+        const treeData = yield select(state => state.getIn(['datafusion', 'treeData']).toJS());
+        const _index = _.last(_.last(treeData.documentSource).key.split('-'))
+        const _key =`0-${Number(_index)+1}`;
+        treeData.documentSource.push({
+            title: data.sourceName,
+            key: _key,
+            value: result
+        })
+        yield put({type: 'datafusion/MERGE_TREE_DATA', payload: treeData});
+        yield put({type: 'datafusionChildDmlAdd/ADD_NEW_DML_NEXT_STEP', args: {data: {id: result, ...args.data}, index: '0'}});
+    }else if(step === 2 || step === '2'){
+        const result = yield call(datafusionApi.handleAddNewTagSave2, args.data);
+        yield put({type: 'datafusionChildDmlAdd/ADD_NEW_DML_NEXT_STEP', args: {data: args.data, index: '1'}});
+    }else if(step === 3 || step === '3') {
+        const result = yield call(datafusionApi.handleAddNewTagSave2, args.data);
+        const treeData = yield select(state => state.getIn(['datafusion', 'treeData']).toJS());
+        const lastItem = _.last(treeData.documentSource);
+        yield put({type: 'datafusion/CHANGE_TREE_SELECT', args: {index: [lastItem.key], value: lastItem.value}});
+        args.CB()
+        const treeNodeDetail = yield call(datafusionApi.getTreeNodeDetail,{mongoId:lastItem.value});
+        yield put({type: 'datafusion/SET_TREENODE_DETAIL', payload: treeNodeDetail})
+    }
+}
+
+function* dmlAddshowExample({args}){
+    const result = yield call(datafusionApi.getOneSamples, args.data);
+    if (Object.keys(result).length) {
+        yield put({type:'datafusionChildDmlAdd/GET_EXAMPLE_DATA_OK', payload: result})
+    }else {
+        args.CB();
+    }
+}
+
 function* watchCreateLesson() {
     yield[
         takeLatest('datafusion/saga/CHANGE_TAB', changeTab),
         takeLatest('datafusion/saga/GET_TREE_DATA', getTreeData),
         takeLatest('datafusion/saga/INIT_DATA_FUSION', initDataFusion),
-        // takeLatest('datafusion/saga/ADD_NEW_TAG', addNewTag),
         takeLatest('datafusion/saga/CHANGE_TREE_SELECT', changeTreeSelect),
 
         takeLatest('datafusionChildDbAdd/saga/ADD_NEW_DB_NEXT_STEP', hanleNewTagSave),
@@ -191,10 +241,12 @@ function* watchCreateLesson() {
         takeLatest('datafusionChildDbAdd/saga/MAPPING_CONG_NEXT', db_add_mappingConfNext),
         takeLatest('datafusionChildDbAdd/saga/HANDLE_MC_SLEECT_CHANGE', handleMCSelectChange),
 
-        takeLatest('datafusionChildDbEdit/saga/GET_CURRENT_TAG_DATA', handleTagEdit)
+        takeLatest('datafusionChildDmlAdd/saga/ADD_NEW_DML_NEXT_STEP', hanleNewDmlTagSave),
+        takeLatest('datafusionChildDmlAdd/saga/SHOW_EXAMPLE_DATA', dmlAddshowExample),
 
+        takeLatest('datafusionChildEdit/saga/GET_CURRENT_TAG_DATA', handleTagEdit),
 
-
+        takeLatest('datafusionChildTaskManager/saga/TASK_MANAGER_ONCHANGE', taskManagerOnChange),
     ];
 }
 

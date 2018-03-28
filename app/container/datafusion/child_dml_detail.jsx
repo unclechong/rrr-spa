@@ -7,7 +7,7 @@ import Card from 'app_component/card';
 import datafusionApi from 'app_api/datafusionApi';
 
 
-export default class Child02 extends React.Component{
+export default class Child12 extends React.Component{
 
     constructor(props){
         super(props)
@@ -61,12 +61,11 @@ export default class Child02 extends React.Component{
     async componentDidMount(){
         const params = {
             mongoId: this.props.match.params.id,
-            source: 'databaseSource'
+            source: 'documentSource'
         }
         const result = await datafusionApi.getDbItemDetail(params);
-        this.dataDetail = result.dataDetail;
         this.setState({
-            dataDetail: JSON.stringify(this.dataDetail),
+            dataDetail: result.dataDetail.rawHtml,
             dataSource: {event: result.knowledge.event, entity: result.knowledge.entity}
         })
     }
@@ -78,58 +77,15 @@ export default class Child02 extends React.Component{
         })
     }
 
-    handleFormatData = () => {
-        this.setState({
-            dataDetail: this.formatJson(this.dataDetail)
-        })
-    }
-
-    formatJson = (msg) => {
-        const rep = "~";
-        let jsonStr = JSON.stringify(msg, null, rep)
-        let str = "";
-        for (let i = 0; i < jsonStr.length; i++) {
-            const text2 = jsonStr.charAt(i)
-            if (i > 1) {
-                const text = jsonStr.charAt(i - 1)
-                if (rep != text && rep == text2) {
-                    str += "<br/>"
-                }
-            }
-            str += text2;
-        }
-        jsonStr = "";
-        for (let i = 0; i < str.length; i++) {
-            const text = str.charAt(i);
-            if (rep == text)
-                jsonStr += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
-            else {
-                jsonStr += text;
-            }
-            if (i == str.length - 2)
-                jsonStr += "<br/>"
-        }
-        return jsonStr;
-    }
-
     render(){
         return (
             <Row gutter={16} >
-                <Col xl={10} xxl={8}>
+                <Col xl={12} xxl={12}>
                     <Card
-                        title={<span>数据详情<span
-                            onClick={this.handleFormatData}
-                            style={{
-                                float:'right',
-                                fontSize: 14,
-                                color: '#26468c',
-                                fontWeight: 'normal',
-                                cursor: 'pointer'
-                            }}>格式化显示</span></span>
-                        }
+                        title='文档详情'
                         body={
                             <div style={{
-                                maxHeight: 500,
+                                maxHeight: 600,
                                 width: '100%',
                                 border: '1px solid #d9d9d9',
                                 padding: 10,
@@ -140,7 +96,7 @@ export default class Child02 extends React.Component{
                         }
                     />
                 </Col>
-                <Col xl={14} xxl={16}>
+                <Col xl={12} xxl={12}>
                     <Card
                         title='提取知识'
                         body={

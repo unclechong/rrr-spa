@@ -65,21 +65,20 @@ const FORM_ITEM_LIST = [
     ], [
         {
             label:'任务名称',
-            id:'task_name_3',
-            key:'task_name_3',
+            id:'jobName2',
+            key:'jobName2',
             type:'input'
         }, {
             label:'模型',
-            key:'module_3',
-            id:'module_3',
-            type:'hasBtnSelect',
+            key:'modelName',
+            id:'modelName',
+            type:'select',
             options:[
                 {
                     label:'D2R',
                     value:'D2R'
                 }
-            ],
-            hasBtn:<Button style={{float: 'right', marginTop: 4}} type="dashed">样例数据</Button>
+            ]
         }, {
             label:'映射关系',
             key:'mapping_3',
@@ -113,6 +112,8 @@ export default class Child03 extends React.Component{
         this.mappingConfTreeSplitArr = [];
         // 步骤一中，左侧树选中的节点的KEY，由于是多选，并且可以多次添加，由这个变量去校验左侧树的disable，在点击右侧清空按钮时一并清空
         this.selectableArr = [];
+        // 步骤三保存需要的mapping配置中的数据
+        this.step3PostNeedData = {}
     }
 
     componentDidMount(){
@@ -133,8 +134,6 @@ export default class Child03 extends React.Component{
                     }else if (this.props.dbAdd.currentStep === 1) {
                         const {dataBusUrl, docType, jobName, jobType} = values;
                         const {id} = this.props.dbAdd.newTagData[0];
-                        // const {id} = {id:'5ab8b71d1e36be209c5a2ed1'};
-                        // 5ab8b71d1e36be209c5a2ed1
                         this.props.actions.addNewDbNextStep({step: 2, data: {
                             jobGroup: '数据微服务',
                             jobDescription: '',
@@ -147,6 +146,29 @@ export default class Child03 extends React.Component{
                                 dataBusUrl
                             }
                         }})
+                    }else if (this.props.dbAdd.currentStep === 2) {
+                        if (Object.keys(this.step3PostNeedData).length) {
+                            const {jobName2,modelName} = values;
+                            const {jobType} = this.props.dbAdd.newTagData[1];
+                            const {id} = this.props.dbAdd.newTagData[0];
+                            this.props.actions.addNewDbNextStep({step: 3, data: {
+                                jobName: jobName2,
+                                jobGroup: '结构化数据',
+                                jobDescription: '',
+                                jobType,
+                                jobDataMapInfo:{
+                                    modelName,
+                                    source: 'databaseSource',
+                                    dataSourceId: id,
+                                    d2rPattern: this.step3PostNeedData
+                                }
+                            },CB:()=>{
+                                this.props.history.push('/supermind/data/db/list');
+                                message.success('添加成功！')
+                            }})
+                        }else {
+                            message.info('请进行mapping配置')
+                        }
                     }
                 }
             }
@@ -172,7 +194,85 @@ export default class Child03 extends React.Component{
             return
         }
         this.mappingConfTreeSplitArr = [];
-        this.props.actions.mappingConfNext('next');
+        if (step === 3) {
+            this.props.actions.triggerModal(false)
+            this.step3PostNeedData = this.getD2rPatternData();
+
+        }else {
+            this.props.actions.mappingConfNext('next');
+
+        }
+    }
+
+    getD2rPatternData = () => {
+        const mappingData = this.props.dbAdd.mappingSelectData;
+        let d2rPattern = {
+            event:[],
+            attribution:{},
+            relationAttr:{}
+        };
+        const entityMap = [];
+        const relationMap = [];
+        d2rPattern.entity = mappingData[0].map((item, index)=>{
+            entityMap.push(item.name);
+            return {
+                typeName: item.name,
+                mongoId: item.value,
+                id: index
+            }
+        })
+        for (let i = 0; i < mappingData[1].length; i++) {
+            const {entityName, typeName, fields, mongoId} = mappingData[1][i].formatData;
+
+            const entityIndex = entityMap.indexOf(entityName);
+            if (d2rPattern.attribution[entityIndex]) {
+                d2rPattern.attribution[entityIndex].push({
+                    typeName,
+                    mongoId,
+                    fields,
+                    among: ' '
+                })
+            }else {
+                d2rPattern.attribution[entityIndex] = [{
+                    typeName,
+                    mongoId,
+                    fields,
+                    among: ' '
+                }]
+            }
+        }
+        d2rPattern.relation = mappingData[2].map((item, index)=>{
+            const {end, mongoId, typeName, start} = item.formatData;
+            relationMap.push(typeName);
+            return {
+                typeName,
+                mongoId,
+                start:entityMap.indexOf(start),
+                end:entityMap.indexOf(end),
+                id:index
+            }
+        })
+        for (let i = 0; i < mappingData[3].length; i++) {
+            const {relationName, fields, typeName, mongoId} = mappingData[3][i].formatData;
+            const relationIndex = relationMap.indexOf(relationName);
+            if (d2rPattern.relationAttr[relationIndex]) {
+                d2rPattern.relationAttr[relationIndex].push({
+                    typeName,
+                    mongoId,
+                    fields,
+                    among: ' '
+                })
+            }else {
+                d2rPattern.relationAttr[relationIndex] = [{
+                    typeName,
+                    mongoId,
+                    fields,
+                    among: ' '
+                }]
+            }
+        }
+        return d2rPattern
+
     }
 
     mappingConfPrev = () => {
@@ -240,27 +340,43 @@ export default class Child03 extends React.Component{
                 addName = MCSelectValue[step][0].label;
             }
             const [[firArr], [secArr]] = this.mappingConfTreeSplitArr;
-            console.log(this.mappingConfTreeSplitArr);
             let listArr = null;
             if (step === 1) {
                 listArr = [{
                     name: <span>{`${addName}/${firArr.props.title}`}<span style={{marginLeft: 20}}>{secArr.props.title}</span></span>,
                     value: `${firArr.key}|${secArr.key}`,
-                    key: `${firArr.key}|${secArr.key}`
+                    key: `${firArr.key}|${secArr.key}`,
+                    formatData: {
+                        entityName: addName,
+                        typeName: firArr.props.title,
+                        mongoId: firArr.key,
+                        fields:[secArr.props.title]
+                    }
                 }]
             }else if(step === 2) {
                 listArr = [{
                     name: `${firArr.props.title}（${addName} - ${secArr.props.title}）`,
                     value: `${firArr.key}|${secArr.key}`,
                     key: `${firArr.key}|${secArr.key}`,
-                    treeData: firArr.props.attrList
+                    treeData: firArr.props.attrList,
+                    formatData: {
+                        start: addName,
+                        typeName: firArr.props.title,
+                        end: secArr.props.title,
+                        mongoId: firArr.key
+                    }
                 }]
             }else if(step === 3) {
-                const _index = addName.indexOf('（');
                 listArr = [{
-                    name: <span>{`${addName.substring(0,_index)}/${firArr.props.title}`}<span style={{marginLeft: 20}}>{secArr.props.title}</span></span>,
+                    name: <span>{`${addName}/${firArr.props.title}`}<span style={{marginLeft: 20}}>{secArr.props.title}</span></span>,
                     value: `${firArr.key}|${secArr.key}`,
-                    key: `${firArr.key}|${secArr.key}`
+                    key: `${firArr.key}|${secArr.key}`,
+                    formatData: {
+                        relationName: addName.split('（')[0],
+                        typeName: firArr.props.title,
+                        mongoId: firArr.key,
+                        fields:[secArr.props.title]
+                    }
                 }]
             }
 

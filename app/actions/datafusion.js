@@ -76,7 +76,7 @@ export const modal2HandleContent = args => ({
 
 
 
-//add dml actions
+
 export const triggerModal = isShow => ({
     type: 'datafusionChildDbAdd/TRIGGER_MODAL',
     isShow
@@ -102,17 +102,37 @@ export const handleMCSelectChange = args => ({
     args
 })
 
+export const addNewDmlNextStep = args => ({
+    type: 'datafusionChildDmlAdd/saga/ADD_NEW_DML_NEXT_STEP',
+    args
+})
+
+export const dmlAddshowExample = args => ({
+    type: 'datafusionChildDmlAdd/saga/SHOW_EXAMPLE_DATA',
+    args
+})
+
+export const dmlAddHideExample = args => ({
+    type: 'datafusionChildDmlAdd/HIDE_EXAMPLE_DATA',
+    args
+})
+
+export const modalHandleContent = args => ({
+    type: 'datafusionChildDmlAdd/MODAL_HANDLE_CONTENT',
+    args
+})
+
+export const currentDmlComponentLeave = args => ({
+    type: 'datafusionChildDmlAdd/CURRENT_COMPONENT_LEAVE',
+    args
+})
+
+
 //mapping cong step 1
 export const addMappingSelect = args => ({
     type: 'datafusionChildDbAdd/MERGE_MAPPING_SELECT_DATA',
     args
 })
-
-// export const onLaodTreeData = args => ({
-//     type: 'datafusionChildDbAdd/ON_LOAD_TREE_DATA',
-//     args
-// })
-
 
 //mapping cong step 2,3,4
 export const addMappingSelectOther = args => ({
@@ -141,23 +161,25 @@ export const cancelMappingConf = () => {
 
 
 
-//add dml actions
-export const addNewDmlNextStep = () => ({
-    type: 'datafusionChildDbAdd/ADD_NEW_DML_NEXT_STEP'
-})
-
-
-
 //edit db actions
 export const getCurrentTagData = args => ({
-    type: 'datafusionChildDbEdit/saga/GET_CURRENT_TAG_DATA',
+    type: 'datafusionChildEdit/saga/GET_CURRENT_TAG_DATA',
     args
 })
 
-export const editTagNext = args => ({
-    type: 'datafusionChildDbEdit/EDIT_TAG_NEXT',
-    args
-})
+export const editTagNext = args => {
+    if (args.type === 'db') {
+        return {
+            type: 'datafusionChildDbEdit/EDIT_TAG_NEXT',
+            args
+        }
+    }else if(args.type === 'dml') {
+        return {
+            type: 'datafusionChildDmlEdit/EDIT_TAG_NEXT',
+            args
+        }
+    }
+}
 
 export const setFieldsValues = args => ({
     type: 'datafusionChildDbEdit/SET_FIELDS_VALUES',
@@ -166,5 +188,12 @@ export const setFieldsValues = args => ({
 
 export const mergeFieldsValues = args => ({
     type: 'datafusionChildDbEdit/MERGE_FIELDS_VALUES',
+    args
+})
+
+
+//manager task
+export const taskManagerOnChange = args => ({
+    type: 'datafusionChildTaskManager/saga/TASK_MANAGER_ONCHANGE',
     args
 })

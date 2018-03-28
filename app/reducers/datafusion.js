@@ -7,7 +7,9 @@ const initialState = fromJS({
     selectTreeNodeValue: null,
     treeNodeDetail: [],
     tagEditData: {},
-    formData: {step1:{},step2:{},step3:{}}
+    formData: {step1:{},step2:{},step3:{}},
+    activeTag: '非结构化数据',
+    taskList:[]
     // currentSelectTreeName: null
 });
 
@@ -32,6 +34,12 @@ export default (state = initialState, action) => {
         case 'datafusion/SET_TREENODE_DETAIL':
             return state.set('treeNodeDetail', action.payload)
                         // .set('currentSelectTreeName', action.type);
+        // case 'datafusionChildTaskManager/TASK_MANAGER_ONCHANGE':
+        //     return state.set('activeTag', action.value)
+        case 'datafusionChildTaskManager/GET_TASK_MANAGE_LIST_OK':
+            return state.set('taskList', fromJS(action.payload.data))
+                        .set('activeTag', action.payload.value)
+            break;
         default:
             return state;
     }
