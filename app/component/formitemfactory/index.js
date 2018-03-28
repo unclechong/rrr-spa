@@ -5,7 +5,7 @@ const { TextArea } = Input;
 // const SHOW_ALL = TreeSelect.SHOW_ALL;
 import UploadForm from './uploadform';
 import HasBtnSelect from './hasBtnSelect';
-import HasBtnInputArea from './HasBtnInputArea';
+import HasBtnInputArea from './hasBtnInputArea';
 
 import './index.css';
 
