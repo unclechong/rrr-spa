@@ -1,0 +1,12 @@
+.kg-mainarea-right-title{
+    height: 45px;
+    width: 100%;
+    line-height: 45px;
+    font-size: 14px;
+    background: #fff;
+    box-shadow: 2px 2px 5px #868685;
+    -moz-box-shadow: 2px 2px 5px #868685;
+    -webkit-box-shadow: 2px 2px 5px #868685;
+    padding-left: 10px;
+    margin-bottom: 15px;
+}

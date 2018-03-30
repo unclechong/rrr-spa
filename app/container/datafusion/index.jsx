@@ -124,7 +124,7 @@ export default class DataFusion extends React.Component{
                                         <WrapTree
                                             treeData={treeData.documentSource || []}
                                             selectedKeys={treeSelectValue}
-                                            onSelect={(e,data)=>{this.handleTreeOnSelect('dml', data.node.props.value, e)}}
+                                            onSelect={(e,data)=>{this.handleTreeOnSelect('dml', data.node.props.nodeValue, e)}}
                                         />
                                     </div>
                                 </Panel>
@@ -133,7 +133,7 @@ export default class DataFusion extends React.Component{
                                         <WrapTree
                                             treeData={treeData.databaseSource || []}
                                             selectedKeys={treeSelectValue}
-                                            onSelect={(e,data)=>{this.handleTreeOnSelect('db', data.node.props.value, e)}}
+                                            onSelect={(e,data)=>{this.handleTreeOnSelect('db', data.node.props.nodeValue, e)}}
                                         />
                                     </div>
                                 </Panel>

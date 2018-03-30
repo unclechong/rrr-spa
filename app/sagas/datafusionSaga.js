@@ -4,10 +4,12 @@ import datafusionApi from 'app_api/datafusionApi';
 
 function* initDataFusion(){
     const treeData = yield call(getTreeData);
-    yield put({type: 'datafusion/CHANGE_TREE_SELECT', args: {index: [treeData.databaseSource[0].key], value: treeData.databaseSource[0].value}});
-    const mongoId = treeData.databaseSource[0].value;
-    const treeNodeDetail = yield call(datafusionApi.getTreeNodeDetail,{mongoId});
-    yield put({type: 'datafusion/SET_TREENODE_DETAIL', payload: treeNodeDetail})
+    if (treeData.databaseSource.length) {
+        yield put({type: 'datafusion/CHANGE_TREE_SELECT', args: {index: [treeData.databaseSource[0].key], value: treeData.databaseSource[0].value}});
+        const mongoId = treeData.databaseSource[0].value;
+        const treeNodeDetail = yield call(datafusionApi.getTreeNodeDetail,{mongoId});
+        yield put({type: 'datafusion/SET_TREENODE_DETAIL', payload: treeNodeDetail})
+    }
 }
 
 
@@ -37,7 +39,7 @@ function* db_add_startMappingConf(){
         return {
             title: item.name,
             key: index,
-            nodeValue: item.id
+            value: item.id
         }
     })
     yield put({type: 'datafusionChildDbAdd/TRIGGER_MODAL', isShow: true});
@@ -155,7 +157,7 @@ function* onLoadStep1TreeData({args:{treeNode,newTreeData}}){
         return {
             title: item.name,
             key: `${treeNode.props.eventKey}-${index}`,
-            nodeValue: item.id
+            value: item.id
         }
     })
     yield put({type: 'datafusionChildDbAdd/ONLOAD_STEP0_TREE_DATA', args: {treeData: newTreeData}});

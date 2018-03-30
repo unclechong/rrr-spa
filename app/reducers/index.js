@@ -5,6 +5,7 @@ import datafusionChildDbAdd from './datafusionChildDbAdd';
 import datafusionChildDbEdit from './datafusionChildDbEdit';
 import datafusionChildDmlAdd from './datafusionChildDmlAdd';
 import datafusionChildDmlEdit from './datafusionChildDmlEdit';
+import knowledgegraph from './knowledgegraph';
 
 const rootReducer = combineReducers({
     typesystem: typesystem,
@@ -12,7 +13,8 @@ const rootReducer = combineReducers({
     datafusionChildDbAdd: datafusionChildDbAdd,
     datafusionChildDbEdit: datafusionChildDbEdit,
     datafusionChildDmlAdd: datafusionChildDmlAdd,
-    datafusionChildDmlEdit: datafusionChildDmlEdit
+    datafusionChildDmlEdit: datafusionChildDmlEdit,
+    knowledgegraph: knowledgegraph
 });
 
 export default rootReducer;

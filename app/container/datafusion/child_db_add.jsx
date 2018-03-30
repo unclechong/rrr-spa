@@ -13,6 +13,7 @@ import { fromJS } from 'immutable';
 import Card from 'app_component/card';
 import List from 'app_component/list';
 import Label from 'app_component/label';
+import WrapTree from 'app_component/tree';
 import FormItemFactory from 'app_component/formitemfactory';
 
 const FORM_ITEM_LIST = [
@@ -448,14 +449,14 @@ export default class Child03 extends React.Component{
                         </Select>
                         <Label label='概念' />
                         <div style={{height: 350,width: 250, border: '1px solid #e8e8e8', overflow: 'auto'}}>
-                            <Tree
-                                loadData={this.onLoadData}
-                                selectedKeys={MCTreeSelectValue[0]}
+                            <WrapTree
+                                treeData={step0TreeData}
+                                onLoadAction={this.props.actions.onLoadStep1TreeData}
                                 multiple
+                                selectedKeys={MCTreeSelectValue[0]}
                                 onSelect={(index, e)=>{this.handelMCTreeSelect(0, index, e)}}
-                            >
-                                {this.renderTreeNodes(step0TreeData || [])}
-                            </Tree>
+                            />
+
                         </div>
                     </Col>
                     <Col xl={3} style={{paddingTop: 94}}>
@@ -488,13 +489,12 @@ export default class Child03 extends React.Component{
                         </Select>
                         <Label label='属性' />
                         <div style={{height: 350,width: 250, border: '1px solid #e8e8e8', overflow: 'auto'}}>
-                            <Tree
+                            <WrapTree
+                                treeData={step1TreeData[0]}
                                 key='step_1_tree'
                                 selectedKeys={MCTreeSelectValue[1][0]}
                                 onSelect={(index, e)=>{this.handelMCTreeSelect(1, index, e, 0)}}
-                            >
-                                {this.renderTreeNodes(step1TreeData[0] || [])}
-                            </Tree>
+                            />
                         </div>
                     </Col>
                     <Col xl={7}>
@@ -511,13 +511,12 @@ export default class Child03 extends React.Component{
                         </Select>
                         <Label label='字段名' />
                         <div style={{height: 350,width: 250, border: '1px solid #e8e8e8', overflow: 'auto'}}>
-                            <Tree
+                            <WrapTree
+                                treeData={step1TreeData[1]}
                                 key='step_1_tree_2'
                                 selectedKeys={MCTreeSelectValue[1][1]}
                                 onSelect={(index, e)=>{this.handelMCTreeSelect(1, index, e, 1)}}
-                            >
-                                {this.renderTreeNodes(step1TreeData[1] || [])}
-                            </Tree>
+                            />
                         </div>
                     </Col>
                     <Col xl={3} style={{paddingTop: 94}}>
@@ -550,13 +549,12 @@ export default class Child03 extends React.Component{
                         </Select>
                         <Label label='关系' />
                         <div style={{height: 350,width: 250, border: '1px solid #e8e8e8', overflow: 'auto'}}>
-                            <Tree
+                            <WrapTree
+                                treeData={step2TreeData[0]}
                                 key='step_2_tree'
                                 selectedKeys={MCTreeSelectValue[2][0]}
                                 onSelect={(index, e)=>{this.handelMCTreeSelect(2, index, e, 0)}}
-                            >
-                                {this.renderTreeNodes(step2TreeData[0] || [])}
-                            </Tree>
+                            />
                         </div>
                     </Col>
                     <Col xl={7} >
@@ -564,13 +562,12 @@ export default class Child03 extends React.Component{
 
                         <Label label='包含实体2' />
                         <div style={{height: 350,width: 250, border: '1px solid #e8e8e8', overflow: 'auto'}}>
-                            <Tree
+                            <WrapTree
+                                treeData={step2TreeData[1]}
                                 key='step_2_tree_2'
                                 selectedKeys={MCTreeSelectValue[2][1]}
                                 onSelect={(index, e)=>{this.handelMCTreeSelect(2, index, e, 1)}}
-                            >
-                                {this.renderTreeNodes(step2TreeData[1] || [])}
-                            </Tree>
+                            />
                         </div>
                     </Col>
                     <Col xl={3} style={{paddingTop: 94}}>
@@ -611,13 +608,12 @@ export default class Child03 extends React.Component{
                         </Select>
                         <Label label='边属性' />
                         <div style={{height: 350,width: 250, border: '1px solid #e8e8e8', overflow: 'auto'}}>
-                            <Tree
+                            <WrapTree
+                                treeData={step3TreeData[0]}
                                 key='step_3_tree'
                                 selectedKeys={MCTreeSelectValue[3][0]}
                                 onSelect={(index, e)=>{this.handelMCTreeSelect(3, index, e, 0)}}
-                            >
-                                {this.renderTreeNodes(step3TreeData[0] || [])}
-                            </Tree>
+                            />
                         </div>
                     </Col>
                     <Col xl={7} >
@@ -634,13 +630,12 @@ export default class Child03 extends React.Component{
                         </Select>
                         <Label label='字段名' />
                         <div style={{height: 350,width: 250, border: '1px solid #e8e8e8', overflow: 'auto'}}>
-                            <Tree
+                            <WrapTree
+                                treeData={step3TreeData[1]}
                                 key='step_3_tree_2'
                                 selectedKeys={MCTreeSelectValue[3][1]}
                                 onSelect={(index, e)=>{this.handelMCTreeSelect(3, index, e, 1)}}
-                            >
-                                {this.renderTreeNodes(step3TreeData[1] || [])}
-                            </Tree>
+                            />
                         </div>
                     </Col>
                     <Col xl={3} style={{paddingTop: 94}}>

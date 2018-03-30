@@ -1,4 +1,4 @@
-import { Input, Button, Form, Upload, Modal, message } from 'antd';
+import { Input, Button, Form, Modal, message } from 'antd';
 const { TextArea,Search } = Input;
 
 import {connect} from 'react-redux'

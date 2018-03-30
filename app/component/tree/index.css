@@ -11,7 +11,7 @@
     display: none;
 }
 
-.wt-wrap-class:hover .wt-tree-title-right{
+.ant-tree-node-selected:hover .wt-tree-title-right{
     display: inline-block;
 }
 

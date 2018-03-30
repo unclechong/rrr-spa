@@ -110,31 +110,4 @@ export default class datafusionApi {
         return result
     };
 
-
-
-
-    static async getMappingDataInStep1(params={}){
-        // const result = await sendPost('./test/tree.json', 'get', true, params);
-        const treeData = [
-            { title: 'Expand to load', key: '0' },
-            { title: 'Expand to load', key: '1' , children:[{ title: 'Expand to load', key: '1-0' }]},
-            { title: 'Tree Node', key: '2', isLeaf: true },
-        ]
-
-        return treeData
-    };
-
-    // get step3 select options data
-    static async getStep3SelectOptionsData(params={}){
-        // const result = await sendPost('./test/tree.json', 'get', true, params);
-        const optionsData = [
-            { key: '0', value: '0', label: '高管' },
-            { key: '1', value: '1', label: '生产' },
-            { key: '2', value: '2', label: '下游' }
-        ]
-
-        return optionsData
-    };
-
-
 }
