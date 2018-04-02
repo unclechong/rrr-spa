@@ -168,7 +168,7 @@ export default class Knowledgegraph extends React.Component{
 
     handleExportEntity = (e) => {
         const {entityTreeSelectInfo} = this.props.knowledgegraph;
-        window.location.href = '/supermind/api/knowledgeGraph/exportEntityInstance?pid=' + entityTreeSelectInfo.entityTreeSlecetValue;
+        window.location.href = 'supermind/api/knowledgeGraph/exportEntityInstance?pid=' + entityTreeSelectInfo.entityTreeSlecetValue;
 
     }
 

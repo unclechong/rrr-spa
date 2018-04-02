@@ -36,4 +36,9 @@ export default class knowledgegraphApi {
         return result
     };
 
+    static async exportEntityInstance(params={}){
+        const result = await sendPost('/knowledgeGraph/exportEntityInstance', 'get', false, params);
+        return result
+    };
+
 }
