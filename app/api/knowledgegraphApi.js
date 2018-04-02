@@ -30,4 +30,10 @@ export default class knowledgegraphApi {
         return result
     };
 
+    //事件列表 --- 根据当前事件类型获取对应事件列表详情
+    static async listEventByType(params={}){
+        const result = await sendPost('/knowledgeGraph/listEventByType', 'get', false, params);
+        return result
+    };
+
 }

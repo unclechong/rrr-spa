@@ -27,7 +27,15 @@ export const deleteAddEntity = args => ({
     args
 })
 
+export const changeTab = args => ({
+    type: 'knowledgegraph/saga/CHANGE_TAB',
+    args
+})
 
+export const changeEventActiveTag = args => ({
+    type: 'knowledgegraph/saga/GET_EVENT_TAG_DETAIL',
+    args
+})
 
 
 export const enterAddEntity = () => {

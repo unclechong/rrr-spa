@@ -1,4 +1,4 @@
-import { Icon, Button, Form, message } from 'antd';
+import { Icon, Button, Form, message, Table } from 'antd';
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux';
 import * as actions from 'actions/knowledgegraph';
@@ -89,7 +89,6 @@ export default class Knowledgegraph extends React.Component{
         this.props.actions.initKnowledgegraph()
     }
 
-
     getFormList = () => {
         const {currentFormIsAdd, entityTreeSelectInfo:{entityTreeSlecetPValue, entityTreeSlecetPLabel, entityTreeSlecetLabel, entityTreeSlecetValue}} = this.props.knowledgegraph;
         if (currentFormIsAdd) {
@@ -119,7 +118,7 @@ export default class Knowledgegraph extends React.Component{
 
     tabOnChange = (e) => {
         //切换tab
-        this.props.actions.changeTab(e);
+        this.props.actions.changeTab({currentTab: e});
     }
 
     entityTreeOnSelect = (selectKey, e) => {
@@ -163,9 +162,19 @@ export default class Knowledgegraph extends React.Component{
         }});
     }
 
+    taglistOnClick = (value, e) => {
+        this.props.actions.changeEventActiveTag({type: e.label})
+    }
+
+    handleExportEntity = (e) => {
+        const {entityTreeSelectInfo} = this.props.knowledgegraph;
+        window.location.href = '/knowledgeGraph/exportEntityInstance?pid=' + entityTreeSelectInfo.entityTreeSlecetValue;
+    }
+
 
     render(){
-        const {knowledgegraph: {currentTab, entityTreeData, entityTreeSelectInfo, currentFormIsUpdate, currentFormIsAdd}} = this.props;
+        const {knowledgegraph: {currentTab, entityTreeData, entityTreeSelectInfo, currentFormIsUpdate,
+            currentFormIsAdd, eventTagList, eventActiveTag}} = this.props;
         return(
             <PageContainer
                 areaLeft = {
@@ -180,14 +189,20 @@ export default class Knowledgegraph extends React.Component{
                                 treeData={entityTreeData}
                                 titleBtn={
                                     <span>
-                                        <Icon type="plus" style={{color: '#3963b2',marginRight: 5}} onClick={this.handleAddEntity} />
-                                        <Icon type="close" style={{color: '#3963b2'}} onClick={this.handleDeleteEntity} />
+                                        <Icon type="plus" style={{color: '#3963b2', marginRight: 5}} onClick={this.handleAddEntity} />
+                                        <Icon type="close" style={{color: '#3963b2', marginRight: 5}} onClick={this.handleDeleteEntity} />
+                                        <Icon type="download" style={{color: '#3963b2'}} onClick={this.handleExportEntity} />
                                     </span>
                                 }
                                 onLoadAction={this.props.actions.onLoadEntityTreeData}
                                 selectedKeys={entityTreeSelectInfo.entityTreeSlecetKey}
                                 onSelect={this.entityTreeOnSelect}
-                            />:null
+                            />:<TagList
+                                style={{maxHeight:'70%'}}
+                                data={eventTagList}
+                                onClick={this.taglistOnClick}
+                                activeTag={eventActiveTag}
+                            />
                         }
 
                     </div>
@@ -197,25 +212,32 @@ export default class Knowledgegraph extends React.Component{
                         <div className='kg-mainarea-right-title'>
                             {
                                 <span style={{float:'right'}}>
-                                    <Button style={{marginRight:10}} type='primary'>编辑分类</Button>
-                                    <Button style={{marginRight:10}} type="danger">删除类型</Button>
+                                    <Button style={{marginRight:10}} type='primary'>实例编辑</Button>
                                 </span>
                             }
                         </div>
-                        <WrapCard
-                            title={`概念${currentFormIsAdd?'添加':'编辑'}`}
-                            body={
-                                <div>
-                                    <FormItemFactory
-                                        getFieldDecorator={this.props.form.getFieldDecorator}
-                                        formList={this.getFormList()}
-                                        onSubmit={()=>{this.formCheck(currentFormIsAdd)}}
-                                        onCancel={this.formCancel}
-                                        elseData={{isUpdate: currentFormIsUpdate, isAdd: currentFormIsAdd}}
-                                    />
-                                </div>
-                            }
-                        />
+                        {
+                            currentTab === 'entity'?<WrapCard
+                                title={`概念${currentFormIsAdd?'添加':'编辑'}`}
+                                body={
+                                    <div>
+                                        <FormItemFactory
+                                            getFieldDecorator={this.props.form.getFieldDecorator}
+                                            formList={this.getFormList()}
+                                            onSubmit={()=>{this.formCheck(currentFormIsAdd)}}
+                                            onCancel={this.formCancel}
+                                            elseData={{isUpdate: currentFormIsUpdate, isAdd: currentFormIsAdd}}
+                                        />
+                                    </div>
+                                }
+                            />:null
+
+                            // <Table
+                            //     columns={columns}
+                            //     dataSource={data}
+                            // />
+                        }
+
                     </div>
                 }
             />

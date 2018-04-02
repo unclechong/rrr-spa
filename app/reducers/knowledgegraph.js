@@ -7,12 +7,23 @@ const initialState = fromJS({
     formData: {},
     currentFormIsUpdate: false,
     currentFormIsAdd: false,
+    eventTagList: [],
+    eventActiveTag: null,
+    currentEventTagDetail: []
 });
 
 export default (state = initialState, action) => {
     switch (action.type) {
+        case 'knowledgegraph/CHANGE_TAB':
+            return state.set('currentTab', action.args.currentTab);
         case 'knowledgegraph/GET_ENTITY_TREEDATA_OK':
             return state.set('entityTreeData', fromJS(action.payload));
+        case 'knowledgegraph/GET_TAGLIST_OK':
+            return state.set('eventTagList', fromJS(action.payload));
+        case 'knowledgegraph/CHANGE_TAGLIST_ACTIVETAG':
+            return state.set('eventActiveTag', action.args.activeTag);
+        case 'knowledgegraph/GET_EVENT_TAG_DETAIL_OK':
+            return state.set('currentEventTagDetail', fromJS(action.payload));
         case 'knowledgegraph/CHANGE_ENTITY_TREE_SELECT':
             return state.set('entityTreeSelectInfo', fromJS(action.args.entityTreeSelectInfo));
         case 'knowledgegraph/MERGE_FIELDS_VALUES':

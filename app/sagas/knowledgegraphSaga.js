@@ -1,6 +1,7 @@
 import {takeEvery, takeLatest} from 'redux-saga';
 import {call, put, take, fork, select, cancel} from 'redux-saga/effects';
 import knowledgegraphApi from 'app_api/knowledgegraphApi';
+import typesystemApi from 'app_api/typesystemApi';
 import { List, Map } from 'immutable';
 
 function* initKnowledgegraph() {
@@ -12,10 +13,23 @@ function* initKnowledgegraph() {
         hasTitleBtn: true,
         idPath: `0/${item.id}`
     }))
-    yield put({type: 'knowledgegraph/GET_ENTITY_TREEDATA_OK', payload})
+    yield put({type: 'knowledgegraph/GET_ENTITY_TREEDATA_OK', payload});
     const defaultItem = result[0];
-    yield call(setFieldsValues, {values: defaultItem})
-    yield call(setTreeSelect, {selectKey:['0'], selectInfo: {...defaultItem, idPath: `0/${defaultItem.id}`}})
+    yield call(setFieldsValues, {values: defaultItem});
+    yield call(setTreeSelect, {selectKey:['0'], selectInfo: {...defaultItem, idPath: `0/${defaultItem.id}`}});
+}
+
+function* changeTab({args}) {
+    yield put({type: 'knowledgegraph/CHANGE_TAB', args});
+    if (args.currentTab === 'event') {
+        const eventTagList = yield select(state => state.getIn(['knowledgegraph', 'eventTagList']).toJS());
+        if (!eventTagList.length) {
+            const {eventType} = yield call(typesystemApi.getTagList);
+            yield put({type: 'knowledgegraph/GET_TAGLIST_OK', payload: eventType});
+            yield put({type: 'knowledgegraph/CHANGE_TAGLIST_ACTIVETAG', args: {activeTag: eventType[0].value}});
+            yield call(getEventTagDetail, {args: {type: eventType[0].label}});
+        }
+    }
 }
 
 function* onLoadEntityTreeData({args:{treeNode,newTreeData}}){
@@ -103,6 +117,10 @@ function* deleteEntity({args}){
     args.CB()
 }
 
+function* getEventTagDetail({args:{type}}){
+    const eventDetail = yield call(knowledgegraphApi.listEventByType, {type});
+    yield put({type: 'knowledgegraph/GET_EVENT_TAG_DETAIL_OK', payload: eventDetail});
+}
 
 
 
@@ -129,18 +147,19 @@ function* setTreeSelect({selectKey, selectInfo: {id, pid, parentName, name, idPa
     yield put({type: 'knowledgegraph/CHANGE_ENTITY_TREE_SELECT', args: {entityTreeSelectInfo}})
 }
 //
-// function* handleTag(){
-//
-// }
+
 
 function* watchCreateLesson() {
     yield[
         takeLatest('knowledgegraph/saga/INIT_PAGE', initKnowledgegraph),
+        takeLatest('knowledgegraph/saga/CHANGE_TAB', changeTab),
         takeLatest('knowledgegraph/saga/ONLOAD_ENTITY_TREEDATA', onLoadEntityTreeData),
         takeLatest('knowledgegraph/saga/CHANGE_ENTITY_TREE_SELECT', changeEntityTreeSelect),
         takeLatest('knowledgegraph/saga/UPDATE_ENTITY_BSAE_INFO', updateEntityBaseInfo),
         takeLatest('knowledgegraph/saga/ADD_ENTITY_BSAE_INFO',addEntityBaseInfo),
         takeLatest('knowledgegraph/saga/DELETE_ENTITY', deleteEntity),
+        takeLatest('knowledgegraph/saga/GET_EVENT_TAG_DETAIL', getEventTagDetail),
+
     ];
 }
 
