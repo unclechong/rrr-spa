@@ -34,7 +34,7 @@ app.use(async(ctx)=>{
         try{
             console.log(postURL);
             console.log(JSON.stringify(params));
-
+            // const aa = await axios.get('http://192.168.1.253:8088/supermind/api/knowledgeGraph/exportEntityInstance?pid=5aab4f0e848cd544ed491f6b')
             const data = await axios[_method](postURL, _method==='get'?{params}:params);
             ctx.body = data.data;
         }catch (err) {
