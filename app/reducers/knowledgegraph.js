@@ -31,6 +31,9 @@ export default (state = initialState, action) => {
             return state.set('currentFormIsUpdate', false);
         case 'knowledgegraph/ADD_ENTITY_SUCCESS':
             return state.set('formData', state.get('formData').map(x => ({value: undefined})))
+        case 'knowledgegraph/DELETE_ENTITY_SUCCESS':
+            return state.set('formData', state.get('formData').map(x => ({value: undefined})))
+                        .set('currentFormIsAdd', true);
         default:
             return state;
     }
