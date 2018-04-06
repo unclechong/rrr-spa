@@ -10,6 +10,10 @@ import WrapTree from 'app_component/tree';
 import WrapCard from 'app_component/card';
 import FormItemFactory from 'app_component/formitemfactory';
 
+import Child01 from './child_instance';
+import Child02 from './child_prop_table';
+import Child03 from './child_upload_download';
+
 import './index.css';
 
 const TAB_LIST = [
@@ -51,6 +55,29 @@ const FORM_ITEM_LIST = [
         required:false,
     }
 ]
+
+const TableColumns = [{
+    title: '事件名称',
+    dataIndex: 'eventName',
+    key: 'eventName',
+    width: '15%'
+}, {
+    title: '时间',
+    dataIndex: 'eventTime',
+    key: 'eventTime',
+    width: '15%'
+}, {
+    title: '标题',
+    dataIndex: 'title',
+    key: 'title',
+    width: '35%'
+}, {
+    title: 'url',
+    dataIndex: 'url',
+    key: 'url',
+    width: '35%'
+}];
+
 
 const mapStateToProps = state => {
     return {knowledgegraph: state.get('knowledgegraph').toJS()}
@@ -163,18 +190,38 @@ export default class Knowledgegraph extends React.Component{
     }
 
     taglistOnClick = (value, e) => {
-        this.props.actions.changeEventActiveTag({type: e.label})
+        this.props.actions.changeEventActiveTag({type: e.label, value})
     }
 
     handleExportEntity = (e) => {
-        const {entityTreeSelectInfo} = this.props.knowledgegraph;
-        window.location.href = 'supermind/api/knowledgeGraph/exportEntityInstance?pid=' + entityTreeSelectInfo.entityTreeSlecetValue;
+        e.stopPropagation();
+        this.props.actions.changeRenderType('uploadAndDownload')
+        // const {entityTreeSelectInfo} = this.props.knowledgegraph;
+        // window.location.href = '/supermind/api/knowledgeGraph/exportEntityInstance?pid=' + entityTreeSelectInfo.entityTreeSlecetValue;
 
+    }
+
+    entryShowInstance = () => {
+        this.props.actions.entryShowInstance()
+    }
+
+    showEntityPropConf = () => {
+        this.props.actions.showEntityPropConf()
     }
 
     render(){
         const {knowledgegraph: {currentTab, entityTreeData, entityTreeSelectInfo, currentFormIsUpdate,
-            currentFormIsAdd, eventTagList, eventActiveTag}} = this.props;
+            currentFormIsAdd, eventTagList, eventActiveTag, currentEventTagDetail, showInstance, instanceTableData,
+            showEntityPropConf, renderType}} = this.props;
+        // let entityPageType = null;
+        // if (showInstance) {
+        //     entityPageType = 'instance';
+        // }else if (entityTreeSelectInfo.entityTreeSlecetKey&&entityTreeSelectInfo.entityTreeSlecetKey.length) {
+        //     entityPageType = 'entity'
+        // }else if (showInstance){
+        //
+        // }
+        // const renderType = currentTab==='entity'?entityPageType:'event';
         return(
             <PageContainer
                 areaLeft = {
@@ -191,7 +238,7 @@ export default class Knowledgegraph extends React.Component{
                                     <span>
                                         <Icon type="plus" style={{color: '#3963b2', marginRight: 5}} onClick={this.handleAddEntity} />
                                         <Icon type="close" style={{color: '#3963b2', marginRight: 5}} onClick={this.handleDeleteEntity} />
-                                        <Icon type="download" style={{color: '#3963b2'}} onClick={this.handleExportEntity} />
+                                        <Icon type="fork" style={{color: '#3963b2'}} onClick={this.handleExportEntity} />
                                     </span>
                                 }
                                 onLoadAction={this.props.actions.onLoadEntityTreeData}
@@ -212,30 +259,78 @@ export default class Knowledgegraph extends React.Component{
                         <div className='kg-mainarea-right-title'>
                             {
                                 <span style={{float:'right'}}>
-                                    <Button style={{marginRight:10}} type='primary'>实例编辑</Button>
+                                    <Button style={{marginRight:10}} type='primary' disabled={currentTab === 'event'} onClick={this.entryShowInstance}>实例编辑</Button>
                                 </span>
                             }
                         </div>
                         {
-                            currentTab === 'entity'?<WrapCard
-                                title={`概念${currentFormIsAdd?'添加':'编辑'}`}
-                                body={
-                                    <div>
-                                        <FormItemFactory
-                                            getFieldDecorator={this.props.form.getFieldDecorator}
-                                            formList={this.getFormList()}
-                                            onSubmit={()=>{this.formCheck(currentFormIsAdd)}}
-                                            onCancel={this.formCancel}
-                                            elseData={{isUpdate: currentFormIsUpdate, isAdd: currentFormIsAdd}}
+                            (
+                                ()=>{
+                                    if (renderType === 'entity') {
+                                        return(
+                                            <WrapCard
+                                                title={`概念${currentFormIsAdd?'添加':'编辑'}`}
+                                                body={
+                                                    <div style={{maxHeight:600,overflow:'auto'}}>
+                                                        <FormItemFactory
+                                                            getFieldDecorator={this.props.form.getFieldDecorator}
+                                                            formList={this.getFormList()}
+                                                            onSubmit={()=>{this.formCheck(currentFormIsAdd)}}
+                                                            onCancel={this.formCancel}
+                                                            elseData={{isUpdate: currentFormIsUpdate, isAdd: currentFormIsAdd}}
+                                                        />
+                                                        <div>
+                                                            {showEntityPropConf?<Child02
+                                                                onSave={this.props.actions.handleEntityPropEdit}
+                                                                onAdd={this.props.actions.handleEntityPropAdd}
+                                                                dataSource={entityTreeSelectInfo}
+                                                                tree={entityTreeData}
+                                                            />:<div style={{textAlign:'center'}}>
+                                                                <span style={{color: '#3963b2',cursor: 'pointer'}} onClick={this.showEntityPropConf}>
+                                                                    <Icon
+                                                                        type="plus"
+                                                                        style={{
+                                                                            fontSize: 20,
+                                                                            verticalAlign: 'bottom',
+                                                                            marginRight: 5
+                                                                        }}
+                                                                    />点击展开属性配置列表
+                                                                </span>
+                                                            </div>}
+                                                        </div>
+                                                    </div>
+                                                }
+                                            />
+                                        )
+                                    }else if (renderType === 'event') {
+                                        return (
+                                            <WrapCard
+                                                title='事件列表'
+                                                bodyStyle={{
+                                                    maxHeight: 600,
+                                                    overflow: 'auto'
+                                                }}
+                                                body={
+                                                    <Table
+                                                        columns={TableColumns}
+                                                        dataSource={currentEventTagDetail}
+                                                    />
+                                                }
+                                            />
+                                        )
+                                    }else if (renderType === 'instance') {
+                                        return <Child01
+                                            tableData={instanceTableData}
                                         />
-                                    </div>
+                                    }else if (renderType === 'uploadAndDownload') {
+                                        return <Child03
+                                            info={entityTreeSelectInfo}
+                                        />
+                                    }else {
+                                        return null
+                                    }
                                 }
-                            />:null
-
-                            // <Table
-                            //     columns={columns}
-                            //     dataSource={data}
-                            // />
+                            )()
                         }
 
                     </div>

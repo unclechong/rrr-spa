@@ -9,7 +9,11 @@ const initialState = fromJS({
     currentFormIsAdd: false,
     eventTagList: [],
     eventActiveTag: null,
-    currentEventTagDetail: []
+    currentEventTagDetail: [],
+    showInstance: false,
+    instanceTableData: [],
+    showEntityPropConf: false,
+    renderType: 'entity'
 });
 
 export default (state = initialState, action) => {
@@ -21,11 +25,14 @@ export default (state = initialState, action) => {
         case 'knowledgegraph/GET_TAGLIST_OK':
             return state.set('eventTagList', fromJS(action.payload));
         case 'knowledgegraph/CHANGE_TAGLIST_ACTIVETAG':
-            return state.set('eventActiveTag', action.args.activeTag);
+            return state.set('eventActiveTag', action.args.activeTag)
         case 'knowledgegraph/GET_EVENT_TAG_DETAIL_OK':
             return state.set('currentEventTagDetail', fromJS(action.payload));
         case 'knowledgegraph/CHANGE_ENTITY_TREE_SELECT':
-            return state.set('entityTreeSelectInfo', fromJS(action.args.entityTreeSelectInfo));
+            return state.set('entityTreeSelectInfo', fromJS(action.args.entityTreeSelectInfo))
+                        .set('showInstance', false)
+                        .set('instanceTableData', List())
+                        .set('showEntityPropConf', false)
         case 'knowledgegraph/MERGE_FIELDS_VALUES':
             return state.set('formData', state.get('formData').merge(action.args))
                         .set('currentFormIsUpdate', true);
@@ -37,14 +44,24 @@ export default (state = initialState, action) => {
             const newFormData = state.get('formData').map(x => ({value: undefined}));
             return state.set('formData', newFormData)
         case 'knowledgegraph/ENTER_ADD_ENTITY':
-            return state.set('currentFormIsAdd', true);
+            return state.set('currentFormIsAdd', true)
+                        .set('showEntityPropConf', false)
         case 'knowledgegraph/UPDATE_ENTITY_SUCCESS':
             return state.set('currentFormIsUpdate', false);
         case 'knowledgegraph/ADD_ENTITY_SUCCESS':
             return state.set('formData', state.get('formData').map(x => ({value: undefined})))
         case 'knowledgegraph/DELETE_ENTITY_SUCCESS':
             return state.set('formData', state.get('formData').map(x => ({value: undefined})))
-                        .set('currentFormIsAdd', true);
+                        .set('currentFormIsAdd', false)
+                        .set('entityTreeSelectInfo', Map())
+        case 'knowledgegraph/ENTRY_SHOW_INSTANCE':
+            return state.set('showInstance', action.args.key)
+                        .set('instanceTableData', action.args.data)
+                        .set('showEntityPropConf', false)
+        case 'knowledgegraph/SHOW_ENTITY_PROP_CONF':
+            return state.set('showEntityPropConf', true)
+        case 'knowledgegraph/CHANGE_RENDERTYPE':
+            return state.set('renderType', action.payload)
         default:
             return state;
     }

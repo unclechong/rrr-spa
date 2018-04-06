@@ -1,10 +1,10 @@
 import './index.css';
 
-const Card = ({title, body}) => {
+const Card = ({title, body, bodyStyle}) => {
     return (
         <div className='com-card-body'>
             <div className='com-card-body-title'>{title}</div>
-            {body}
+            <div style={bodyStyle}>{body}</div>
         </div>
     )
 }

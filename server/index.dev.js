@@ -21,7 +21,7 @@ app.use(cors({
 }))
 
 
-// const URL = 'http://192.168.1.180:8088/supermind/api';
+// const URL = 'http://192.168.1.170:8088/supermind/api';
 const URL = 'http://192.168.1.253:8088/supermind/api';
 
 
@@ -32,11 +32,24 @@ app.use(async(ctx)=>{
         //rest 暂未转化成 URL 参数
         const postURL = URL + keyPath + '?config_id=14';
         try{
-            console.log(postURL);
-            console.log(JSON.stringify(params));
-            // const aa = await axios.get('http://192.168.1.253:8088/supermind/api/knowledgeGraph/exportEntityInstance?pid=5aab4f0e848cd544ed491f6b')
-            const data = await axios[_method](postURL, _method==='get'?{params}:params);
-            ctx.body = data.data;
+            if (keyPath === '/getServerUrl') {
+                ctx.body = {
+                    header: {
+                        code: 0,
+                        message: `success`
+                    },
+                    body: {
+                        url: URL
+                    }
+                };
+            }else {
+                console.log(postURL);
+                console.log(JSON.stringify(params));
+                // const aa = await axios.get('http://192.168.1.253:8088/supermind/api/knowledgeGraph/exportEntityInstance?pid=5aab4f0e848cd544ed491f6b')
+                const data = await axios[_method](postURL, _method==='get'?{params}:params);
+                ctx.body = data.data;
+            }
+
         }catch (err) {
             if (err.response.status === 500) {
                 ctx.body = {

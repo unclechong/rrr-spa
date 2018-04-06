@@ -42,8 +42,21 @@ app.use(async(ctx,next)=>{
         let {rest, params, method, keyPath, method:_method} = ctx.request.body;
         //rest 暂未转化成 URL 参数
         const postURL = SERVER_URL + keyPath + '?config_id=14';
-        const data = await axios[_method](postURL, _method==='get'?{params}:params);
-        ctx.body = data.data;
+        if (keyPath === '/getServerUrl') {
+            ctx.body = {
+                header: {
+                    code: 0,
+                    message: `success`
+                },
+                body: {
+                    url: URL
+                }
+            };
+        }else {
+            const data = await axios[_method](postURL, _method==='get'?{params}:params);
+            ctx.body = data.data;
+        }
+
     }else{
         await next();
     }

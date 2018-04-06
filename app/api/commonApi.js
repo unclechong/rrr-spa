@@ -56,4 +56,13 @@ const sendPost = (path, method='get', isJson=false, params, onError) => {
     }
 }
 
+
+
+async function getServerUrl(params={}){
+    const result = await sendPost('/getServerUrl', 'post', false, params);
+    return result
+};
+
+export {getServerUrl}
+
 export default sendPost
