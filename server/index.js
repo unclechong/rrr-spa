@@ -49,7 +49,7 @@ app.use(async(ctx,next)=>{
                     message: `success`
                 },
                 body: {
-                    url: URL
+                    url: SERVER_URL
                 }
             };
         }else {
