@@ -216,16 +216,16 @@ export default class Child02 extends React.Component{
             const newData = [...this.state.tableData];
             const target = newData.filter(item => key === item.key)[0];
             const {dataType, dataTypeId} = target;
-            const treeSelectValue = dataType.split(',').map((label,index)=>{
-                return {
-                    label,
-                    value: dataTypeId.split(',')[index]
-                }
-            });
+
             this.editItemOldData = {...target};
             if (target) {
                 target.editable = true;
-                this.setState({ tableData: newData, isEdit: true, treeSelectValue });
+                this.setState({ tableData: newData, isEdit: true, treeSelectValue: target.propType==='对象'?dataType.split(',').map((label,index)=>{
+                    return {
+                        label,
+                        value: dataTypeId.split(',')[index]
+                    }
+                }):[] });
             }
         }else {
             message.info('请先保存上一条！');
