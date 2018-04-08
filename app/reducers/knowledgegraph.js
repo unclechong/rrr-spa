@@ -47,7 +47,8 @@ export default (state = initialState, action) => {
             return state.set('currentFormIsAdd', true)
                         .set('showEntityPropConf', false)
         case 'knowledgegraph/UPDATE_ENTITY_SUCCESS':
-            return state.set('currentFormIsUpdate', false);
+            return state.set('currentFormIsUpdate', false)
+                        .setIn(['entityTreeSelectInfo','entityTreeSlecetLabel'], action.payload)
         case 'knowledgegraph/ADD_ENTITY_SUCCESS':
             return state.set('formData', state.get('formData').map(x => ({value: undefined})))
         case 'knowledgegraph/DELETE_ENTITY_SUCCESS':

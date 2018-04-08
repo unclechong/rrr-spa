@@ -33,6 +33,7 @@ function* changeTab({args}) {
 }
 
 function* onLoadEntityTreeData({args:{treeNode,newTreeData}}){
+    console.log(treeNode,newTreeData);
     const loadData = yield call(knowledgegraphApi.selectConceptByPid, {id: treeNode.props.nodeValue});
     if (loadData.length) {
         treeNode.props.dataRef.children = loadData.map((item,index)=>{
@@ -65,7 +66,7 @@ function* updateEntityBaseInfo({args: {values, CB}}){
     const keyArr = keyStr.split(',');
     const newEntityTreeData = entityTreeData.setIn([...keyArr, 'title'], values.name);
     yield put({type: 'knowledgegraph/GET_ENTITY_TREEDATA_OK', payload: newEntityTreeData.toJS()});
-    yield put({type: 'knowledgegraph/UPDATE_ENTITY_SUCCESS'});
+    yield put({type: 'knowledgegraph/UPDATE_ENTITY_SUCCESS', payload: values.name});
     CB();
 }
 
@@ -144,10 +145,16 @@ function* showEntityPropConf(){
 }
 
 function* entityPropEdit({args}){
-    const [treeData, treeData2] = yield [
-        call(knowledgegraphApi.updateRelationOrAttribute, args.item),
-        call(knowledgegraphApi.updateConceptAttribute, args.data)
-    ]
+    if (args.item) {
+        const [treeData, treeData2] = yield [
+            call(knowledgegraphApi.updateRelationOrAttribute, args.item),
+            call(knowledgegraphApi.updateConceptAttribute, args.data)
+        ]
+    }else {
+        //删除操作
+        yield call(knowledgegraphApi.updateConceptAttribute, args.data)
+    }
+
 }
 
 function* entityPropAdd({args}){

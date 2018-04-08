@@ -284,7 +284,8 @@ export default class Knowledgegraph extends React.Component{
                                                                 onSave={this.props.actions.handleEntityPropEdit}
                                                                 onAdd={this.props.actions.handleEntityPropAdd}
                                                                 dataSource={entityTreeSelectInfo}
-                                                                tree={entityTreeData}
+                                                                treeData={entityTreeData}
+                                                                onLoadAction={this.props.actions.onLoadEntityTreeData}
                                                             />:<div style={{textAlign:'center'}}>
                                                                 <span style={{color: '#3963b2',cursor: 'pointer'}} onClick={this.showEntityPropConf}>
                                                                     <Icon

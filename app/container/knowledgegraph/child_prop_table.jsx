@@ -2,6 +2,7 @@ import { Table, message, Input, Radio, Select, Divider, Button, Popover, Checkbo
 const RadioGroup = Radio.Group;
 const { Option } = Select;
 const CheckboxGroup = Checkbox.Group;
+const TreeNode = TreeSelect.TreeNode;
 
 import knowledgegraphApi from 'app_api/knowledgegraphApi';
 
@@ -24,16 +25,11 @@ const EditableCellRadio = ({ editable, value, onChange }) => (
     </div>
 );
 
-const EditableCellSelect = ({ editable, value, onChange, type, treeData }) => {
+const EditableCellSelect = ({ editable, value, onChange, type, tree }) => {
     return (
         <div>
             {editable
-                ? type==='对象'?<TreeSelect
-                        style={{ width: '100%' }}
-                        value={value}
-                        dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-                        treeData={treeData}
-                      />
+                ? type==='对象'?tree
                 :<Select value={value} style={{ width: '100%' }} onChange={e => onChange(e)}>
                       <Option value="字符串">字符串</Option>
                       <Option value="数字">数字</Option>
@@ -107,9 +103,14 @@ export default class Child02 extends React.Component{
                 return (
                   <div>
                     {
-                      editable ?
-                        <a onClick={() => this.save(record.key)}>保存</a>
-                        : <a onClick={() => this.edit(record.key)}>编辑</a>
+                      editable ? <span>
+                          <a onClick={() => this.save(record.key)} style={{marginRight:10}}>保存</a>
+                          <a onClick={() => this.cancel(record.key)}>取消</a>
+                      </span>
+                        : <span>
+                            <a onClick={() => this.edit(record.key)} style={{marginRight:10}}>编辑</a>
+                            <a onClick={() => this.delete(record)}>删除</a>
+                        </span>
                     }
                   </div>
                 );
@@ -117,13 +118,16 @@ export default class Child02 extends React.Component{
         }];
 
         this.recommendList = {};
-        this.choiceCheckbox = [];
+        this.choiceCheckbox = {};
+
+        this.editItemOldData = {};
 
         this.state = {
             tableData: [],
             isEdit: false,
             visible: false,
-            checkboxOpts: []
+            checkboxOpts: [],
+            treeSelectValue: []
         }
 
     }
@@ -144,7 +148,20 @@ export default class Child02 extends React.Component{
 
     save = (key) => {
         const newData = [...this.state.tableData];
-        const target = newData.filter(item => key === item.key)[0];
+        let target = newData.filter(item => key === item.key)[0];
+        if (target.name === '') {
+            message.info('请填写属性名称')
+            return
+        }
+        if (target.propType === '对象') {
+            let dataType = [], dataTypeId = [];
+            this.state.treeSelectValue.map(val=>{
+                dataType.push(val.label);
+                dataTypeId.push(val.value)
+            });
+            target.dataType = dataType.join(',');
+            target.dataTypeId = dataTypeId.join(',');
+        }
         if (target) {
             delete target.editable;
             const {key, ...rest} = target;
@@ -155,10 +172,10 @@ export default class Child02 extends React.Component{
                 this.props.onAdd({data: this.cacheData, item: rest, CB:(id)=>{
                     target.key = id;
                     target.id = id;
-                    this.setState({ data: newData, isEdit: false });
+                    this.setState({ tableData: newData, isEdit: false });
                 }});
             }else {
-                this.setState({ data: newData, isEdit: false });
+                this.setState({ tableData: newData, isEdit: false });
                 //update
                 this.props.onSave({data: this.cacheData, item: rest});
             }
@@ -180,36 +197,85 @@ export default class Child02 extends React.Component{
         this.cacheData.relationList = relationList;
     }
 
+    cancel = (key) => {
+        const newData = [...this.state.tableData];
+        if (key === 'none') {
+            newData.pop();
+            this.setState({ tableData: newData, isEdit: false });
+        }else {
+            delete this.editItemOldData.editable;
+            const returnData = newData.map((item,index) => {
+                return key === item.key?this.editItemOldData:item
+            })
+            this.setState({ tableData: returnData, isEdit: false });
+        }
+    }
+
     edit = (key) => {
         if (!this.state.isEdit) {
             const newData = [...this.state.tableData];
             const target = newData.filter(item => key === item.key)[0];
+            const {dataType, dataTypeId} = target;
+            const treeSelectValue = dataType.split(',').map((label,index)=>{
+                return {
+                    label,
+                    value: dataTypeId.split(',')[index]
+                }
+            });
+            this.editItemOldData = {...target};
             if (target) {
                 target.editable = true;
-                this.setState({ data: newData, isEdit: true });
+                this.setState({ tableData: newData, isEdit: true, treeSelectValue });
             }
         }else {
             message.info('请先保存上一条！');
         }
     }
 
+    delete = (record) => {
+        const listName = record.propType === '数值'?'attrList':'relationList';
+        let deleteIndex;
+        this.cacheData[listName].map((item,index)=>{
+            if (item.key === record.key) {
+                deleteIndex = index;
+            }
+        })
+        this.cacheData[listName].splice(deleteIndex, 1);
+        this.props.onSave({data: this.cacheData});
+
+        const newData = [...this.state.tableData];
+        let tableIndex;
+        newData.map((item,index)=>{
+            if (item.key === record.key) {
+                tableIndex = index;
+            }
+        })
+        newData.splice(tableIndex, 1);
+        this.setState({ tableData: newData});
+    }
+
     handleAddEntityProp = () => {
         this.setState({
             tableData: [...this.state.tableData, tableAddNewItem],
-            isEdit: true
+            isEdit: true,
+            treeSelectValue: []
         });
     }
 
     handleQuickAddEntityProp = () => {
         let addList = [];
         this.recommendList.recommend.map(item=>{
-            if (_.indexOf(this.choiceCheckbox, item.id)>-1) {
+            if (_.indexOf(this.choiceCheckbox['recommend'], item.id)>-1) {
+                addList.push({...item, key:item.id})
+            }
+        })
+        this.recommendList.others.map(item=>{
+            if (_.indexOf(this.choiceCheckbox['others'], item.id)>-1) {
                 addList.push({...item, key:item.id})
             }
         })
         this.handleCacheData([...this.state.tableData, ...addList]);
-        // this.props.onSave({data: this.cacheData, item: rest});
-        //  批量跟新？？？？？
+        this.props.onSave({data: this.cacheData});
         this.setState({
             tableData: [...this.state.tableData, ...addList],
             visible:false
@@ -221,34 +287,64 @@ export default class Child02 extends React.Component{
         const target = newData.filter(item => key === item.key)[0];
         if (target) {
             target[column] = value;
-            this.setState({ data: newData });
+            this.setState({ tableData: newData });
         }
 
     }
 
     handleVisibleChange = async() => {
-        this.recommendList = await knowledgegraphApi.selectRecommendRelationOrAttribute({pid:this.props.dataSource.entityTreeSlecetValue, propType:'对象'});
+        this.recommendList = await knowledgegraphApi.selectRecommendRelationOrAttribute({pid:this.props.dataSource.entityTreeSlecetPValue});
 
         const hasPropList = this.state.tableData.map(item=>item.id);
         const checkboxOpts = [{
             name: '推荐属性',
             key: 'recommend',
             child: this.recommendList.recommend.map(item=>({value:item.id,label:item.name,key:item.id,disabled:_.indexOf(hasPropList, item.id)>-1}))
-            // child: this.recommendList.recommend.map(item=>({value:item.id,label:item.name,key:item.id}))
+        },{
+            name: '全部属性',
+            key: 'others',
+            child: this.recommendList.others.map(item=>({value:item.id,label:item.name,key:item.id,disabled:_.indexOf(hasPropList, item.id)>-1}))
         }]
-        // , {
-        //     name: '其他属性',
-        //     key: 'others',
-        //     child: this.recommendList.others
-        // }
+
         this.setState({
             visible: !this.state.visible,
             checkboxOpts
         })
     }
 
-    handleCheckBoxChange = (e) => {
-        this.choiceCheckbox = e;
+    handleCheckBoxChange = (e, type) => {
+        this.choiceCheckbox[type] = e;
+    }
+
+    treeSelectOnChange = (e) => {
+        this.setState({
+            treeSelectValue: e
+        })
+    }
+
+    treeSelectLoadData = (e) => {
+        return new Promise((resolve) => {
+            if (e.props.children) {
+                resolve();
+                return;
+            }
+            this.props.onLoadAction({treeNode: e, newTreeData: this.props.treeData});
+            resolve();
+        })
+    }
+
+
+    renderTreeNodes = (data, titleBtn) => {
+        return data.map((item) => {
+            if (item.children) {
+                return (
+                    <TreeNode {...item} key={item.key} title={item.title} nodeValue={item.value} dataRef={item} className='wt-wrap-class'>
+                        {this.renderTreeNodes(item.children)}
+                    </TreeNode>
+                );
+            }
+            return <TreeNode {...item} key={item.key} title={item.title} nodeValue={item.value} dataRef={item} className='wt-wrap-class' />;
+        });
     }
 
     renderColumns(text, record, column, type, ...args) {
@@ -269,13 +365,24 @@ export default class Child02 extends React.Component{
                 />
             );
         }else if (type === 'select') {
-            console.log(record);
             return (
                 <EditableCellSelect
                     editable={record.editable}
                     value={text}
                     type={record.propType}
-                    tree={this.props.tree}
+                    tree={<TreeSelect
+                        onLoadAction={this.props.onLoadAction}
+                        style={{ width: '100%' }}
+                        value={this.state.treeSelectValue}
+                        dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                        allowClear
+                        labelInValue
+                        multiple
+                        onChange={this.treeSelectOnChange}
+                        loadData={this.treeSelectLoadData}
+                    >
+                        {this.renderTreeNodes(this.props.treeData)}
+                    </TreeSelect>}
                     onChange={value => this.handleChange(value, record.key, column)}
                 />
             );
@@ -283,7 +390,6 @@ export default class Child02 extends React.Component{
     }
 
     render(){
-        console.log(this.props.tree);
         return(
             <div>
                 <Divider />
@@ -293,9 +399,12 @@ export default class Child02 extends React.Component{
                         <div>
                             {
                                 this.state.checkboxOpts.map(opts=>{
-                                    return <div key={opts.key}>
-                                        <div style={{fontWeight: 'bold',marginBottom: 5}}>{opts.name}</div>
-                                        <CheckboxGroup options={opts.child} onChange={this.handleCheckBoxChange} />
+                                    return <div key={opts.key}>{
+                                        opts.child.length?<span>
+                                            <div style={{fontWeight: 'bold',marginBottom: 5}}>{opts.name}</div>
+                                            <CheckboxGroup options={opts.child} onChange={e=>{this.handleCheckBoxChange(e, opts.key)}} />
+                                        </span>:null
+                                    }
                                     </div>
                                 })
                             }
