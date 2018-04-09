@@ -110,4 +110,11 @@ export default class datafusionApi {
         return result
     };
 
+    //删除数据源
+    static async deleteOne(params={}){
+        const result = await sendPost('/dataSource/deleteOne', 'post', false, params);
+
+        return result
+    };
+
 }

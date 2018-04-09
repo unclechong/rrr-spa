@@ -24,6 +24,10 @@ export const addNewTag = () => ({
     type: 'datafusion/saga/ADD_NEW_TAG'
 })
 
+export const deleteTag = args => ({
+    type: 'datafusion/saga/DELETE_TAG',
+    args
+})
 
 
 

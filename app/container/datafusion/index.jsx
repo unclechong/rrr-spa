@@ -97,6 +97,14 @@ export default class DataFusion extends React.Component{
         // this.props.actions.handleTagEdit();
     }
 
+    handleTagDelete = (e,type,value) => {
+        e.stopPropagation();
+        const jumpPath = `${this.props.match.path}/none`;
+        this.goPage(jumpPath);
+        // const typeName = type[0].split('-')[0] === '1'?'databaseSource':'documentSource';
+        this.props.actions.deleteTag({value,type});
+    }
+
     goPage = (jumpPath) => {
         if (this.props.location.pathname !== jumpPath) {
             this.props.history.push(jumpPath);
@@ -152,8 +160,8 @@ export default class DataFusion extends React.Component{
                         <div className='dd-mainarea-right-title'>
                             {
                                 currentTab==='dataSource'?<span style={{float:'right'}}>
-                                    <Button style={{marginRight:10}} type='primary' disabled={!treeSelectValue.length} onClick={(e)=>{this.handleTagEdit(e,treeSelectValue, selectTreeNodeValue)}}>编辑分类</Button>
-                                    <Button style={{marginRight:10}} type="danger" disabled={!treeSelectValue.length}>删除类型</Button>
+                                    <Button style={{marginRight:10}} type='primary' disabled={!treeSelectValue.length} onClick={(e)=>{this.handleTagEdit(e,treeSelectValue, selectTreeNodeValue)}}>编辑类型</Button>
+                                    <Button style={{marginRight:10}} type="danger" disabled={!treeSelectValue.length} onClick={(e)=>{this.handleTagDelete(e,treeSelectValue, selectTreeNodeValue)}}>删除类型</Button>
                                 </span>:<span style={{float:'right'}}>
                                     <Button style={{marginRight:10}} type="danger">清空任务</Button>
                                 </span>
@@ -174,8 +182,9 @@ export default class DataFusion extends React.Component{
                                 <Route exact path={`${this.props.match.path}/dml/edit/:id`} component={Child05} />
                                 <Route exact path={`${this.props.match.path}/db/edit/:id`} component={Child08} />
 
+                                <Route exact path={`${this.props.match.path}/none`} render={()=>null} />
                                 <Redirect to={`${this.props.match.path}/db/list`} />
-                            </Switch>:<TaskManager dataSource={taskList} />
+                            </Switch>:<TaskManager dataSource={taskList} activeTag={activeTag} />
                         }
                     </div>
                 }

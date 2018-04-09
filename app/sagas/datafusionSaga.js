@@ -27,6 +27,21 @@ function* changeTab({currentTab}){
     yield put({type: 'datafusion/CHANGE_TAB', currentTab});
 }
 
+function* deleteTag({args: {type, value}}){
+    const reult = yield call(datafusionApi.deleteOne, {mongoId: value});
+    const treeData = yield select(state => state.getIn(['datafusion', 'treeData']));
+
+    const typeName = type[0].split('-');
+    typeName[0] = typeName[0] === '1'?'databaseSource':'documentSource';
+    const newTreeData = treeData.deleteIn(typeName);
+
+    yield put({type: 'datafusion/MERGE_TREE_DATA', payload: newTreeData.toJS()});
+    yield put({type: 'datafusion/CHANGE_TREE_SELECT', args:{index: [], value: null}})
+
+}
+
+
+
 
 
 
@@ -235,6 +250,7 @@ function* watchCreateLesson() {
         takeLatest('datafusion/saga/GET_TREE_DATA', getTreeData),
         takeLatest('datafusion/saga/INIT_DATA_FUSION', initDataFusion),
         takeLatest('datafusion/saga/CHANGE_TREE_SELECT', changeTreeSelect),
+        takeLatest('datafusion/saga/DELETE_TAG', deleteTag),
 
         takeLatest('datafusionChildDbAdd/saga/ADD_NEW_DB_NEXT_STEP', hanleNewTagSave),
         takeLatest('datafusionChildDbAdd/saga/SHOW_EXAMPLE_DATA', showExample),

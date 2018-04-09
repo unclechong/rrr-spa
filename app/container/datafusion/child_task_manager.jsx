@@ -1,10 +1,11 @@
-import { Table } from 'antd';
+import { Table, Modal } from 'antd';
 
 import { Link } from 'react-router-dom';
 
 import Card from 'app_component/card';
+import datafusionApi from 'app_api/datafusionApi';
 
-export default class Child01 extends React.Component{
+export default class Child extends React.Component{
 
     constructor(props){
         super(props)
@@ -55,16 +56,73 @@ export default class Child01 extends React.Component{
                     <span style={{marginRight: 15}} onClick={()=>{this.onClickDetail(record)}}>暂停</span>
                     <span style={{marginRight: 15}} onClick={()=>{this.onClickDetail(record)}}>删除</span>
                     <span style={{marginRight: 15}} onClick={()=>{this.onClickDetail(record)}}>修改</span>
-                    <span style={{marginRight: 15}} onClick={()=>{this.onClickDetail(record)}}>详情</span>
+                    <span onClick={()=>{this.onClickDetail(record)}}>详情</span>
                 </span>
             )
         }];
+
+        this.state = {
+
+        }
+    }
+
+    onClickDetail = async(record) => {
+
+        const result = await datafusionApi.getDbItemEditInfo({mongoId: '5abcb0551e36be289834486a'});
+        console.log(result);
+        let obj = [];
+        if (this.props.activeTag === '数据微服务') {
+            const {jobName, jobType, docType, dataBusUrl} = result.dataBusTaskInfo;
+            obj =[{
+                name: '任务名称',
+                value: jobName
+            },{
+                name: '任务类型',
+                value: jobType
+            },{
+                name: '文档类型',
+                value: docType
+            },{
+                name: 'API地址',
+                value: dataBusUrl
+            }];
+        }else {
+            const {jobName, jobType, modelName} = result.dataProcessingTaskInfo;
+            obj =[{
+                name: '任务名称',
+                value: jobName
+            },{
+                name: '任务类型',
+                value: jobType
+            },{
+                name: '模型定义',
+                value: modelName
+            }];
+        }
+        Modal.info({
+            title: '任务详情',
+            okText: '关闭',
+            style:{padding: '0 20px'},
+            content: (
+                <div>
+                    {
+                        obj.map((item, index)=>{
+                            return <p key={index}>
+                                <span>{item.name}：</span>
+                                <span style={{wordWrap:'break-word'}}>{item.value}</span>
+                            </p>
+                        })
+                    }
+                </div>
+            ),
+            onOk() {},
+        });
     }
 
     render(){
         return(
             <Card
-                title='数据列表'
+                title='任务列表'
                 body={
                     <Table
                         dataSource={this.props.dataSource}
