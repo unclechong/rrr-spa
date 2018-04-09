@@ -1,9 +1,12 @@
-import { Button, Form } from 'antd';
+import { Button, Form, message } from 'antd';
+const FormItem = Form.Item;
 
 import { Link } from 'react-router-dom';
 
 import Card from 'app_component/card';
 import FormItemFactory from 'app_component/formitemfactory';
+
+import datafusionApi from 'app_api/datafusionApi';
 
 const FORM_ITEM_LIST = [
     {
@@ -41,10 +44,14 @@ export default class Child01 extends React.Component{
         super(props);
         FORM_ITEM_LIST[2].hasBtn = <Button style={{float: 'right', marginTop: 4}} type="dashed" onClick={()=>{this.props.onClickNext({step:2})}}>查看</Button>
         FORM_ITEM_LIST[3].hasBtn = <Button style={{float: 'right', marginTop: 4}} type="dashed" onClick={()=>{this.props.onClickNext({step:3})}}>查看</Button>
+
+        this.mongoId = '';
+        this.oldFormData = {};
     }
 
     componentDidMount(){
         const tagEditData = this.props.dataSource;
+        this.mongoId = tagEditData.mongoId;
         if(Object.keys(tagEditData).length){
             const {sourceName, sourceDescription, dataBusTaskInfo:{jobName}, dataProcessingTaskInfo:{modelName}} = tagEditData;
             FORM_ITEM_LIST[2].options = [{label:jobName,value:jobName,key:111}];
@@ -56,11 +63,20 @@ export default class Child01 extends React.Component{
                 jobName:jobName,
                 modelName:modelName
             }
+            this.oldFormData = params;
             this.props.form.setFieldsValue(params)
         }
     }
 
-
+    handleSave = async() => {
+        const {sourceName, sourceDescription} = this.props.form.getFieldsValue();
+        if (sourceName + '|||' + sourceDescription === this.oldFormData.sourceName + '|||' + this.oldFormData.sourceDescription){
+            message.info('你改了吗？就要保存？');
+            return 
+        }
+        const result = await datafusionApi.updateOne({sourceName, sourceDescription, mongoId: this.mongoId});
+        message.success('更新成功');
+    }
 
     render(){
         return(
@@ -73,6 +89,11 @@ export default class Child01 extends React.Component{
                             getFieldDecorator={this.props.form.getFieldDecorator}
                             formList={FORM_ITEM_LIST}
                         />
+                        <FormItem
+                            wrapperCol={{ span: 12, offset: 4 }}
+                        >
+                            <Button type="primary" onClick={this.handleSave}>确定</Button>
+                        </FormItem>
                     </div>
                 }
             />
