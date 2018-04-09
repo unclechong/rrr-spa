@@ -98,21 +98,21 @@ export default class Child02 extends React.Component{
         }, {
             title: '操作',
             dataIndex: 'operation',
-                render: (text, record) => {
+            render: (text, record) => {
                 const { editable } = record;
                 return (
-                  <div>
-                    {
-                      editable ? <span>
-                          <a onClick={() => this.save(record.key)} style={{marginRight:10}}>保存</a>
-                          <a onClick={() => this.cancel(record.key)}>取消</a>
-                      </span>
-                        : <span>
-                            <a onClick={() => this.edit(record.key)} style={{marginRight:10}}>编辑</a>
-                            <a onClick={() => this.delete(record)}>删除</a>
-                        </span>
-                    }
-                  </div>
+                    <div>
+                        {
+                          editable ? <span>
+                              <a onClick={() => this.save(record.key)} style={{marginRight:10}}>保存</a>
+                              <a onClick={() => this.cancel(record.key)}>取消</a>
+                          </span>
+                            : <span>
+                                <a onClick={() => this.edit(record.key)} style={{marginRight:10}}>编辑</a>
+                                <a onClick={() => this.delete(record)}>删除</a>
+                            </span>
+                        }
+                    </div>
                 );
             }
         }];

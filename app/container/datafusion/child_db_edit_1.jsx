@@ -42,8 +42,8 @@ export default class Child01 extends React.Component{
 
     constructor(props){
         super(props);
-        FORM_ITEM_LIST[2].hasBtn = <Button style={{float: 'right', marginTop: 4}} type="dashed" onClick={()=>{this.props.onClickNext({step:2})}}>修改</Button>
-        FORM_ITEM_LIST[3].hasBtn = <Button style={{float: 'right', marginTop: 4}} type="dashed" onClick={()=>{this.props.onClickNext({step:3})}}>修改</Button>
+        FORM_ITEM_LIST[2].hasBtn = <Button style={{float: 'right', marginTop: 4}} type="dashed" onClick={()=>{this.props.onClickNext({step:2})}}>查看</Button>
+        FORM_ITEM_LIST[3].hasBtn = <Button style={{float: 'right', marginTop: 4}} type="dashed" onClick={()=>{this.props.onClickNext({step:3})}}>查看</Button>
     }
 
     componentDidMount(){

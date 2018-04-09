@@ -21,9 +21,9 @@ app.use(cors({
 }))
 
 
-// const URL = 'http://192.168.1.170:8088/supermind/api';
-const URL = 'http://192.168.1.253:8088/supermind/api';
-
+const URL = 'http://192.168.1.181:8088/supermind/api';
+// const URL = 'http://192.168.1.253:8088/supermind/api';
+//
 
 //当请求时GET请求时，显示表单让用户填写
 app.use(async(ctx)=>{
@@ -54,14 +54,14 @@ app.use(async(ctx)=>{
             if (err.response.status === 500) {
                 ctx.body = {
                     header: {
-                        code: 0,
+                        code: 1,
                         message: 'server 500'
                     }
                 };
             }else {
                 ctx.body = {
                     header: {
-                        code: 0,
+                        code: 1,
                         message: `other server error ---${err.response.status}`
                     }
                 };

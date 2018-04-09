@@ -112,9 +112,38 @@ export default class datafusionApi {
 
     //删除数据源
     static async deleteOne(params={}){
-        const result = await sendPost('/dataSource/deleteOne', 'post', false, params);
+        const result = await sendPost('/task/deleteOne', 'post', false, params);
 
         return result
     };
+
+    //任务管理保存接口
+    static async updateOneInfo(params={}){
+        const result = await sendPost('/task/updateOneInfo', 'post', false, params);
+
+        return result
+    };
+
+    //任务管理启动
+    static async pauseOne(params={}){
+        const result = await sendPost('/task/pauseOne', 'post', false, params);
+
+        return result
+    };
+
+    //任务管理暂停
+    static async resumeOne(params={}){
+        const result = await sendPost('/task/resumeOne', 'post', false, params);
+
+        return result
+    };
+
+    //数据源基础信息更新
+    static async updateOne(params={}){
+        const result = await sendPost('/dataSource/updateOne', 'post', false, params);
+
+        return result
+    };
+
 
 }
