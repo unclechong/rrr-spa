@@ -72,9 +72,10 @@ export default class Child01 extends React.Component{
         const {sourceName, sourceDescription} = this.props.form.getFieldsValue();
         if (sourceName + '|||' + sourceDescription === this.oldFormData.sourceName + '|||' + this.oldFormData.sourceDescription){
             message.info('你改了吗？就要保存？');
-            return 
+            return
         }
         const result = await datafusionApi.updateOne({sourceName, sourceDescription, mongoId: this.mongoId});
+        this.oldFormData = {sourceName, sourceDescription};
         message.success('更新成功');
     }
 

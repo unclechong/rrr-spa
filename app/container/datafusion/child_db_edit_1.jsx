@@ -78,6 +78,7 @@ export default class Child01 extends React.Component{
             return
         }
         const result = await datafusionApi.updateOne({sourceName, sourceDescription, mongoId: this.mongoId});
+        this.oldFormData = {sourceName, sourceDescription};
         message.success('更新成功');
     }
 
