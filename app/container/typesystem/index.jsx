@@ -199,7 +199,7 @@ export default class TypeSystem extends React.Component {
     constructor(props){
         super(props)
 
-        // this.currentTagIndex = 0;
+        this.selectOptsMap = {};
     }
 
     componentDidMount(){
@@ -238,19 +238,41 @@ export default class TypeSystem extends React.Component {
     getFormList = () => {
         const {tagList, currentTab} = this.props.typesystem;
         if (currentTab === 'relationType' || currentTab === 'attributionType') {
-            const options = [{
+            const {entityType, eventType} = tagList;
+            this.selectOptsMap = {};
+            const entityTypeChild = entityType.map(item=>{
+                this.selectOptsMap[item.value] = {
+                    mongoId: item.value,
+                    type: 'entityType',
+                    typeName: item.label
+                }
+                return item
+            })
+            const eventTypeChild = eventType.map(item=>{
+                this.selectOptsMap[item.value] = {
+                    mongoId: item.value,
+                    type: 'eventType',
+                    typeName: item.label
+                }
+                return item
+            })
+
+            const entityTypeOpt = [{
                 label: tabMap['entityType'] + '类型',
                 key: 'entityType',
-                children: tagList['entityType'].map(item=>({...item, value: item.value+'|'+item.label}))
-            },{
+                children: entityTypeChild
+            }]
+            const eventTypeOpt = [{
                 label: tabMap['eventType'] + '类型',
                 key: 'eventType',
-                children: tagList['eventType'].map(item=>({...item, value: item.value+'|'+item.label}))
-            }];
+                children: eventTypeChild
+            }]
             const formList = FORM_ITEM_LIST[currentTab];
             formList.map(form=>{
-                if (form.id === 'entityType_start' || form.id === 'entityType_end' || form.id === 'belongedType') {
-                    form.options = options;
+                if (form.id === 'entityType_start' || form.id === 'entityType_end') {
+                    form.options = entityTypeOpt;
+                }else if(form.id === 'belongedType'){
+                    form.options = [...entityTypeOpt, ...eventTypeOpt];
                 }
             });
             return formList
@@ -273,22 +295,13 @@ export default class TypeSystem extends React.Component {
                     if (this.props.typesystem.currentTab === 'relationType') {
                         const {entityType_end, entityType_start, ...rest} = values;
                         params = {...rest,
-                            entityType_end: {
-                                mongoId: entityType_end.split('|')[0],
-                                typeName: entityType_end.split('|')[1]},
-                            entityType_start: {
-                                mongoId: entityType_start.split('|')[0],
-                                typeName: entityType_start.split('|')[1]
-                            }
+                            entityType_end: this.selectOptsMap[entityType_end],
+                            entityType_start: this.selectOptsMap[entityType_start]
                         }
                     }else if(this.props.typesystem.currentTab === 'attributionType'){
                         const {belongedType, ...rest} = values;
                         params = {...rest, belongedType:belongedType.map(i=>{
-                            const [_f, _b] = i.split('|');
-                            return {
-                                mongoId: _f,
-                                typeName: _b
-                            }
+                            return this.selectOptsMap[i]
                         })};
                     }
                     const isAdd = !this.props.typesystem.activeTag;

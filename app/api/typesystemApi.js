@@ -23,13 +23,16 @@ export default class typesystemApi {
         const returnObj = {};
         _.forOwn(rest, (v, k)=>{
             if (k === 'entityType_end' || k === 'entityType_start') {
-                returnObj[k] = {value: v.mongoId+'|'+v.typeName};
+                returnObj[k] = {value: v.mongoId};
+                // returnObj[k] = {value: v.mongoId+'|'+v.typeName};
             }else if (k === 'belongedType') {
-                returnObj[k] = {value: v.map(_v=>_v.mongoId+'|'+_v.typeName)};
+                // returnObj[k] = {value: v.map(_v=>_v.mongoId+'|'+_v.typeName)};
+                returnObj[k] = {value: v.map(_v=>_v.mongoId)};
             }else {
                 returnObj[k] = {value: v};
             }
         })
+        console.log(returnObj);
         return returnObj
     }
 
