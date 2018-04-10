@@ -33,7 +33,6 @@ function* changeTab({args}) {
 }
 
 function* onLoadEntityTreeData({args:{treeNode,newTreeData}}){
-    console.log(treeNode,newTreeData);
     const loadData = yield call(knowledgegraphApi.selectConceptByPid, {id: treeNode.props.nodeValue});
     if (loadData.length) {
         treeNode.props.dataRef.children = loadData.map((item,index)=>{

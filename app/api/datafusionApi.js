@@ -1,4 +1,5 @@
 import sendPost from './commonApi';
+import moment from 'moment';
 
 export default class datafusionApi {
 
@@ -106,6 +107,8 @@ export default class datafusionApi {
         result.map((item,index)=>{
             item.index = index+1;
             item.key = index;
+            item.createTime = item.createTime?moment(item.createTime).format('YYYY-MM-DD'):'暂无';
+            item.updateTime = item.updateTime?moment(item.updateTime).format('YYYY-MM-DD'):'暂无';
         })
         return result
     };
@@ -113,6 +116,13 @@ export default class datafusionApi {
     //删除数据源
     static async deleteOne(params={}){
         const result = await sendPost('/dataSource/deleteOne', 'post', false, params);
+
+        return result
+    };
+
+    //删除任务管理列表Item
+    static async taskDeleteOne(params={}){
+        const result = await sendPost('/task/deleteOne', 'post', false, params);
 
         return result
     };

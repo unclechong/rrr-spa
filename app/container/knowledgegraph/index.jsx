@@ -1,4 +1,4 @@
-import { Icon, Button, Form, message, Table } from 'antd';
+import { Icon, Button, Form, message, Table, Popconfirm } from 'antd';
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux';
 import * as actions from 'actions/knowledgegraph';
@@ -213,15 +213,6 @@ export default class Knowledgegraph extends React.Component{
         const {knowledgegraph: {currentTab, entityTreeData, entityTreeSelectInfo, currentFormIsUpdate,
             currentFormIsAdd, eventTagList, eventActiveTag, currentEventTagDetail, showInstance, instanceTableData,
             showEntityPropConf, renderType}} = this.props;
-        // let entityPageType = null;
-        // if (showInstance) {
-        //     entityPageType = 'instance';
-        // }else if (entityTreeSelectInfo.entityTreeSlecetKey&&entityTreeSelectInfo.entityTreeSlecetKey.length) {
-        //     entityPageType = 'entity'
-        // }else if (showInstance){
-        //
-        // }
-        // const renderType = currentTab==='entity'?entityPageType:'event';
         return(
             <PageContainer
                 areaLeft = {
@@ -237,7 +228,9 @@ export default class Knowledgegraph extends React.Component{
                                 titleBtn={
                                     <span>
                                         <Icon type="plus" style={{color: '#3963b2', marginRight: 5}} onClick={this.handleAddEntity} />
-                                        <Icon type="close" style={{color: '#3963b2', marginRight: 5}} onClick={this.handleDeleteEntity} />
+                                        <Popconfirm title="确定删除吗？" okText="确定" cancelText="取消" onConfirm={this.handleDeleteEntity}>
+                                            <Icon type="close" style={{color: '#3963b2', marginRight: 5}}/>
+                                        </Popconfirm>
                                         <Icon type="fork" style={{color: '#3963b2'}} onClick={this.handleExportEntity} />
                                     </span>
                                 }
@@ -259,7 +252,9 @@ export default class Knowledgegraph extends React.Component{
                         <div className='kg-mainarea-right-title'>
                             {
                                 <span style={{float:'right'}}>
-                                    <Button style={{marginRight:10}} type='primary' disabled={currentTab === 'event'} onClick={this.entryShowInstance}>实例编辑</Button>
+                                    {
+                                        currentTab==='entity'?<Button style={{marginRight:10}} type='primary' onClick={this.entryShowInstance}>实例编辑</Button>:null
+                                    }
                                 </span>
                             }
                         </div>

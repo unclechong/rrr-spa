@@ -117,7 +117,6 @@ export default class Child02 extends React.Component{
 
     render(){
         const {modalVisible,modalData,modalCurrentConent} = this.state;
-        console.log(this.state);
         return(
             <div>
                 <Card

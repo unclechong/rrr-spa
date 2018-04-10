@@ -1,4 +1,5 @@
 import sendPost from './commonApi';
+import moment from 'moment';
 
 export default class knowledgegraphApi {
 
@@ -36,7 +37,7 @@ export default class knowledgegraphApi {
         const list = result.map(item=>{
             return {
                 eventName: item.location,
-                eventTime: item.eventTime,
+                eventTime: item.eventTime?moment(item.eventTime).format('YYYY-MM-DD'):'暂无',
                 title: item.externalInfo.title,
                 url: item.externalInfo.url,
                 key: item.resourceId
@@ -93,7 +94,7 @@ export default class knowledgegraphApi {
         // const result = await sendPost('/knowledgeGraph/importEntityInstance', 'get', false, params);
         //
         // return result
-        // 
+        //
         // await axios.post('http://localhost:7771/supermind/api', params.formData, {
         //       headers: {
         //             'Content-Type': 'application/x-www-form-urlencoded'

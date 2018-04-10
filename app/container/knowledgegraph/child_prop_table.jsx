@@ -1,4 +1,4 @@
-import { Table, message, Input, Radio, Select, Divider, Button, Popover, Checkbox, TreeSelect } from 'antd';
+import { Table, message, Input, Radio, Select, Divider, Button, Popover, Checkbox, TreeSelect, Popconfirm } from 'antd';
 const RadioGroup = Radio.Group;
 const { Option } = Select;
 const CheckboxGroup = Checkbox.Group;
@@ -109,7 +109,9 @@ export default class Child02 extends React.Component{
                           </span>
                             : <span>
                                 <a onClick={() => this.edit(record.key)} style={{marginRight:10}}>编辑</a>
-                                <a onClick={() => this.delete(record)}>删除</a>
+                                <Popconfirm title="确定删除吗？" okText="确定" cancelText="取消" onConfirm={() => this.delete(record)}>
+                                    <a>删除</a>
+                                </Popconfirm>
                             </span>
                         }
                     </div>
@@ -154,13 +156,9 @@ export default class Child02 extends React.Component{
             return
         }
         if (target.propType === '对象') {
-            let dataType = [], dataTypeId = [];
-            this.state.treeSelectValue.map(val=>{
-                dataType.push(val.label);
-                dataTypeId.push(val.value)
-            });
-            target.dataType = dataType.join(',');
-            target.dataTypeId = dataTypeId.join(',');
+            const {value: dataTypeId, label: dataType} = this.state.treeSelectValue;
+            target.dataType = dataType;
+            target.dataTypeId = dataTypeId;
         }
         if (target) {
             delete target.editable;
@@ -216,16 +214,14 @@ export default class Child02 extends React.Component{
             const newData = [...this.state.tableData];
             const target = newData.filter(item => key === item.key)[0];
             const {dataType, dataTypeId} = target;
-
             this.editItemOldData = {...target};
             if (target) {
                 target.editable = true;
-                this.setState({ tableData: newData, isEdit: true, treeSelectValue: target.propType==='对象'?dataType.split(',').map((label,index)=>{
-                    return {
-                        label,
-                        value: dataTypeId.split(',')[index]
-                    }
-                }):[] });
+                this.setState({
+                    tableData: newData,
+                    isEdit: true,
+                    treeSelectValue: target.propType==='对象'?dataTypeId?{value: dataTypeId, label: dataType}:[]: []
+                });
             }
         }else {
             message.info('请先保存上一条！');
@@ -233,25 +229,29 @@ export default class Child02 extends React.Component{
     }
 
     delete = (record) => {
-        const listName = record.propType === '数值'?'attrList':'relationList';
-        let deleteIndex;
-        this.cacheData[listName].map((item,index)=>{
-            if (item.key === record.key) {
-                deleteIndex = index;
-            }
-        })
-        this.cacheData[listName].splice(deleteIndex, 1);
-        this.props.onSave({data: this.cacheData});
+        if (!this.state.isEdit) {
+            const listName = record.propType === '数值'?'attrList':'relationList';
+            let deleteIndex;
+            this.cacheData[listName].map((item,index)=>{
+                if (item.key === record.key) {
+                    deleteIndex = index;
+                }
+            })
+            this.cacheData[listName].splice(deleteIndex, 1);
+            this.props.onSave({data: this.cacheData});
 
-        const newData = [...this.state.tableData];
-        let tableIndex;
-        newData.map((item,index)=>{
-            if (item.key === record.key) {
-                tableIndex = index;
-            }
-        })
-        newData.splice(tableIndex, 1);
-        this.setState({ tableData: newData});
+            const newData = [...this.state.tableData];
+            let tableIndex;
+            newData.map((item,index)=>{
+                if (item.key === record.key) {
+                    tableIndex = index;
+                }
+            })
+            newData.splice(tableIndex, 1);
+            this.setState({ tableData: newData});
+        }else {
+            message.info('请先保存上一条！');
+        }
     }
 
     handleAddEntityProp = () => {
@@ -377,7 +377,6 @@ export default class Child02 extends React.Component{
                         dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
                         allowClear
                         labelInValue
-                        multiple
                         onChange={this.treeSelectOnChange}
                         loadData={this.treeSelectLoadData}
                     >

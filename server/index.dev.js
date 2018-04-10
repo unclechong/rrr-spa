@@ -21,8 +21,8 @@ app.use(cors({
 }))
 
 
-const URL = 'http://192.168.1.181:8088/supermind/api';
-// const URL = 'http://192.168.1.253:8088/supermind/api';
+//const URL = 'http://192.168.1.181:8088/supermind/api';
+const URL = 'http://192.168.1.253:8088/supermind/api';
 //
 
 //当请求时GET请求时，显示表单让用户填写

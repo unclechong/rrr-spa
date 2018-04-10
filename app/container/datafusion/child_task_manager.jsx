@@ -1,4 +1,4 @@
-import { Table, Modal, message, Input } from 'antd';
+import { Table, Modal, message, Input, Popconfirm } from 'antd';
 
 import { Link } from 'react-router-dom';
 
@@ -73,7 +73,9 @@ export default class Child extends React.Component{
                             : <span style={{color: '#3963b2',cursor: 'pointer'}}>
                                 <span style={{marginRight: 15}} onClick={()=>{this.onClickStart(record)}}>启动</span>
                                 <span style={{marginRight: 15}} onClick={()=>{this.onClickSuspend(record)}}>暂停</span>
-                                <span style={{marginRight: 15}} onClick={()=>{this.onClickDelete(record)}}>删除</span>
+                                <Popconfirm title="确定删除吗？" okText="确定" cancelText="取消" onConfirm={() => this.onClickDelete(record)}>
+                                    <span style={{marginRight: 15}}>删除</span>
+                                </Popconfirm>
                                 <span style={{marginRight: 15}} onClick={()=>{this.onClickEdit(record)}}>修改</span>
                                 <span onClick={()=>{this.onClickDetail(record)}}>详情</span>
                             </span>
@@ -206,7 +208,7 @@ export default class Child extends React.Component{
 
     onClickDelete = async(record) => {
         const data = [...this.state.dataSource];
-        const result = await datafusionApi.deleteOne({taskId: data[record.key].taskId});
+        const result = await datafusionApi.taskDeleteOne({taskId: data[record.key].taskId});
         message.success('删除成功');
         data.splice(record.key, 1);
         data.map(item=>{

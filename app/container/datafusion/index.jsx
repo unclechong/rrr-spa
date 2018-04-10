@@ -1,4 +1,4 @@
-import { Collapse, Icon, Button } from 'antd';
+import { Collapse, Icon, Button, message, Popconfirm } from 'antd';
 const Panel = Collapse.Panel;
 
 import {connect} from 'react-redux'
@@ -111,6 +111,9 @@ export default class DataFusion extends React.Component{
         }
     }
 
+    cleanTask = () => {
+        message.info('哈哈哈，什么没有！！！')
+    }
 
     render(){
         const {datafusion: {currentTab, treeData, treeSelectValue, treeNodeDetail, tagEditData, selectTreeNodeValue, activeTag, taskList}} = this.props;
@@ -161,9 +164,11 @@ export default class DataFusion extends React.Component{
                             {
                                 currentTab==='dataSource'?<span style={{float:'right'}}>
                                     <Button style={{marginRight:10}} type='primary' disabled={!treeSelectValue.length} onClick={(e)=>{this.handleTagEdit(e,treeSelectValue, selectTreeNodeValue)}}>编辑类型</Button>
-                                    <Button style={{marginRight:10}} type="danger" disabled={!treeSelectValue.length} onClick={(e)=>{this.handleTagDelete(e,treeSelectValue, selectTreeNodeValue)}}>删除类型</Button>
+                                    <Popconfirm title="确定删除吗？" okText="确定" cancelText="取消" placement="bottom" onConfirm={(e) => this.handleTagDelete(e,treeSelectValue, selectTreeNodeValue)}>
+                                        <Button style={{marginRight:10}} type="danger" disabled={!treeSelectValue.length}>删除类型</Button>
+                                    </Popconfirm>
                                 </span>:<span style={{float:'right'}}>
-                                    <Button style={{marginRight:10}} type="danger">清空任务</Button>
+                                    <Button style={{marginRight:10}} type="danger" onClick={this.cleanTask}>清空任务</Button>
                                 </span>
                             }
                         </div>

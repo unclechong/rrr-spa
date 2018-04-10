@@ -1,4 +1,4 @@
-import { Input, Button, Form, Modal, message } from 'antd';
+import { Input, Button, Form, Modal, message, Popconfirm } from 'antd';
 const { TextArea,Search } = Input;
 
 import {connect} from 'react-redux'
@@ -378,10 +378,10 @@ export default class TypeSystem extends React.Component {
                             onClick={this.taglistOnClick}
                             activeTag={activeTag}
                         />
-                        <div style={{marginTop:10,textAlign: 'center'}}>
+                        {/* <div style={{marginTop:10,textAlign: 'center'}}>
                             <Button type="primary" icon="upload" style={{marginRight:'7%'}}>批量导出</Button>
                             <Button type="primary" icon="download">批量导入</Button>
-                        </div>
+                        </div> */}
                     </div>
                 }
                 areaRight = {
@@ -390,7 +390,9 @@ export default class TypeSystem extends React.Component {
                             当前：{tabMap[currentTab]}{activeTagName?` / ${activeTagName}`:''}
                             <span style={{float:'right'}}>
                                 <Button style={{marginRight:10}} type='primary' onClick={this.wantAddTag}>新增{tabMap[currentTab]}类型</Button>
-                                <Button style={{marginRight:10}} type="danger" onClick={this.deleteCurrentType} disabled={isSearch?true:!activeTag}>删除{tabMap[currentTab]}类型</Button>
+                                <Popconfirm title="确定删除吗？" placement="bottom"  okText="确定" cancelText="取消" onConfirm={this.deleteCurrentType}>
+                                    <Button style={{marginRight:10}} type="danger" disabled={isSearch?true:!activeTag}>删除{tabMap[currentTab]}类型</Button>
+                                </Popconfirm>
                             </span>
                         </div>
                         {this.getEditArea(!activeTag)}
