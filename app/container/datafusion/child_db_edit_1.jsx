@@ -56,15 +56,15 @@ export default class Child01 extends React.Component{
         const tagEditData = this.props.dataSource;
         this.mongoId = tagEditData.mongoId;
         if(Object.keys(tagEditData).length){
-            const {sourceName, sourceDescription, dataBusTaskInfo:{jobName}, dataProcessingTaskInfo:{modelName}} = tagEditData;
+            const {sourceName, sourceDescription, dataBusTaskInfo:{jobName}, dataProcessingTaskInfo} = tagEditData;
             FORM_ITEM_LIST[2].options = [{label:jobName,value:jobName,key:111}];
-            FORM_ITEM_LIST[3].options = [{label:modelName,value:modelName,key:222}];
+            FORM_ITEM_LIST[3].options = [{label:dataProcessingTaskInfo?dataProcessingTaskInfo.modelName:'',value:dataProcessingTaskInfo?dataProcessingTaskInfo.modelName:'',key:222}];
 
             const params = {
                 sourceName,
                 sourceDescription,
                 jobName:jobName,
-                modelName:modelName
+                modelName:dataProcessingTaskInfo?dataProcessingTaskInfo.modelName:''
             }
             this.oldFormData = params;
             this.props.form.setFieldsValue(params)

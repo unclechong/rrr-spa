@@ -6,6 +6,46 @@ const TreeNode = TreeSelect.TreeNode;
 
 import knowledgegraphApi from 'app_api/knowledgegraphApi';
 
+
+const SELECT_OPTIONS = [
+    {
+        label:'整数值',
+        value:'int'
+    },
+    {
+        label:'浮点值',
+        value:'float'
+    },
+    {
+        label:'布尔值',
+        value:'bool'
+    },
+    {
+        label:'日期时间',
+        value:'datetime'
+    },
+    {
+        label:'日期',
+        value:'date'
+    },
+    {
+        label:'时间',
+        value:'time'
+    },
+    {
+        label:'字符串',
+        value:'string'
+    },
+    {
+        label:'范围型',
+        value:'range'
+    },
+    {
+        label:'Map型',
+        value:'map'
+    }
+]
+
 const EditableCellInput = ({ editable, value, onChange }) => (
     <div>
         {editable
@@ -26,18 +66,19 @@ const EditableCellRadio = ({ editable, value, onChange }) => (
 );
 
 const EditableCellSelect = ({ editable, value, onChange, type, tree }) => {
+    const optValue = type==='对象' ? value : SELECT_OPTIONS.filter(item=>item.value === value)[0].label;
     return (
         <div>
             {editable
                 ? type==='对象'?tree
                 :<Select value={value} style={{ width: '100%' }} onChange={e => onChange(e)}>
-                      <Option value="字符串">字符串</Option>
-                      <Option value="数字">数字</Option>
-                      <Option value="浮点">浮点</Option>
-                      <Option value="BOOL">BOOL</Option>
-                      <Option value="其他">其他</Option>
+                    {
+                        SELECT_OPTIONS.map(item=>{
+                            return <Option value={item.value} key={item.value}>{item.label}</Option>
+                        })
+                    }
                   </Select>
-                : value
+                : optValue || ''
             }
         </div>
     )
@@ -395,7 +436,7 @@ export default class Child02 extends React.Component{
                 <Button disabled={this.state.isEdit} type="primary" style={{marginBottom: 10, marginRight:10}} onClick={this.handleAddEntityProp}>添加</Button>
                 <Popover
                     content={
-                        <div>
+                        <div style={{maxWidth: 500}}>
                             {
                                 this.state.checkboxOpts.map(opts=>{
                                     return <div key={opts.key}>{

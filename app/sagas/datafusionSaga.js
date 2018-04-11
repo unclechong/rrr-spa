@@ -222,7 +222,11 @@ function* hanleNewDmlTagSave({args}){
         yield put({type: 'datafusion/MERGE_TREE_DATA', payload: treeData});
         yield put({type: 'datafusionChildDmlAdd/ADD_NEW_DML_NEXT_STEP', args: {data: {id: result, ...args.data}, index: '0'}});
     }else if(step === 2 || step === '2'){
-        const result = yield call(datafusionApi.handleAddNewTagSave2, args.data);
+        const [result, data] = yield [
+            call(datafusionApi.handleAddNewTagSave2, args.data),
+            call(datafusionApi.getPipelineList)
+        ]
+        args.CB(data)
         yield put({type: 'datafusionChildDmlAdd/ADD_NEW_DML_NEXT_STEP', args: {data: args.data, index: '1'}});
     }else if(step === 3 || step === '3') {
         const result = yield call(datafusionApi.handleAddNewTagSave2, args.data);

@@ -155,5 +155,11 @@ export default class datafusionApi {
         return result
     };
 
+    //添加文档库第三步的数据模型
+    static async getPipelineList(params={}){
+        const result = await sendPost('/dataSource/getPipelineList', 'post', false, params);
+
+        return result
+    };
 
 }

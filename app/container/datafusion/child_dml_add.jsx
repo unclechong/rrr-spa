@@ -70,12 +70,7 @@ const FORM_ITEM_LIST = [
             key:'modelName',
             id:'modelName',
             type:'select',
-            options:[
-                {
-                    label:'D2R',
-                    value:'D2R'
-                }
-            ]
+            options:[]
         }
     ]
 ]
@@ -126,6 +121,8 @@ export default class Child04 extends React.Component{
                                 dataSourceId: id,
                                 dataBusUrl
                             }
+                        },CB:(opts)=>{
+                            FORM_ITEM_LIST[2][1].options = opts.map(item=>({value:item.id,label:item.description,key:item.id}))
                         }})
                     }else if(this.props.dmlAdd.currentStep === 2){
                         const {jobName, jobType} = this.props.dmlAdd.newTagData[1];
@@ -140,7 +137,8 @@ export default class Child04 extends React.Component{
                         		modelName: values.modelName,
                         		modelId:"",
                         		source:"documentSource",
-                        		dataSourceId: id
+                        		dataSourceId: id,
+                                pipelineId: values.modelName
                         	}
                         },CB:()=>{
                             this.props.history.push('/supermind/data/dml/list');
@@ -225,7 +223,7 @@ export default class Child04 extends React.Component{
                     closable={false}
                     onCancel={this.handleModalCancel2}
                     footer={
-                            <Button onClick={this.handleModalCancel2}>关闭</Button>
+                        <Button onClick={this.handleModalCancel2}>关闭</Button>
                     }
                 >
                     <div style={{height: 500}}>
