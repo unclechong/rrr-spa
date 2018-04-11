@@ -27,7 +27,9 @@ function* changeTab({args}) {
         if (!eventTagList.length) {
             const {eventType} = yield call(typesystemApi.getTagList);
             yield put({type: 'knowledgegraph/GET_TAGLIST_OK', payload: eventType});
-            yield call(getEventTagDetail, {args: {type: eventType[0].label, value: eventType[0].value}});
+            if (eventType.length) {
+                yield call(getEventTagDetail, {args: {type: eventType[0].label, value: eventType[0].value}});
+            }
         }
     }
 }
