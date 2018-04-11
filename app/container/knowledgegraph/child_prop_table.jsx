@@ -197,9 +197,9 @@ export default class Child02 extends React.Component{
             return
         }
         if (target.propType === '对象') {
-            const {value: dataTypeId, label: dataType} = this.state.treeSelectValue;
-            target.dataType = dataType;
-            target.dataTypeId = dataTypeId;
+            const {value: endNodeId, label: endNodeName} = this.state.treeSelectValue;
+            target.endNodeName = endNodeName;
+            target.endNodeId = endNodeId;
         }
         if (target) {
             delete target.editable;
@@ -254,14 +254,14 @@ export default class Child02 extends React.Component{
         if (!this.state.isEdit) {
             const newData = [...this.state.tableData];
             const target = newData.filter(item => key === item.key)[0];
-            const {dataType, dataTypeId} = target;
+            const {dataType, endNodeId, endNodeName} = target;
             this.editItemOldData = {...target};
             if (target) {
                 target.editable = true;
                 this.setState({
                     tableData: newData,
                     isEdit: true,
-                    treeSelectValue: target.propType==='对象'?dataTypeId?{value: dataTypeId, label: dataType}:[]: []
+                    treeSelectValue: target.propType==='对象'?endNodeId?{value: endNodeId, label: endNodeName}:[]: []
                 });
             }
         }else {
@@ -409,7 +409,7 @@ export default class Child02 extends React.Component{
             return (
                 <EditableCellSelect
                     editable={record.editable}
-                    value={text}
+                    value={record.propType==='对象'?record.endNodeName:text}
                     type={record.propType}
                     tree={<TreeSelect
                         onLoadAction={this.props.onLoadAction}

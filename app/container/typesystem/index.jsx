@@ -343,7 +343,7 @@ export default class TypeSystem extends React.Component {
         const elseData = {isUpdate: this.props.typesystem.currentFormIsUpdate, isAdd}
         return (
             <Card
-                title={tabMap[this.props.typesystem.currentTab]+'类型'+ isAdd?'添加':'编辑'}
+                title={`${tabMap[this.props.typesystem.currentTab]}类型${isAdd?'添加':'编辑'}`}
                 body={
                     <div>
                         <FormItemFactory

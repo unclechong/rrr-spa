@@ -60,12 +60,15 @@ function* changeTab({currentTab}) {
     const taglist = yield select(state => state.get('typesystem').get('tagList').toJS());
     const tag = taglist[currentTab][0];
     if (tag) {
-        yield call(handleEditTag, tag);
-        yield put({type: 'typesystem/CLEAN_SEARCH_LIST'});
+        const flag = yield call(handleEditTag, tag);
+        if (flag) {
+            yield put({type: 'typesystem/CHANGE_TAB', currentTab});
+            yield put({type: 'typesystem/CLEAN_SEARCH_LIST'});
+        }
     }else {
         yield call(cancelSelectedTag);
+        yield put({type: 'typesystem/CHANGE_TAB', currentTab});
     }
-    yield put({type: 'typesystem/CHANGE_TAB', currentTab});
 
 }
 
@@ -84,6 +87,7 @@ function* handleEditTag(tag) {
             yield put({type: 'FETCH_FAILED', error});
         }
     }
+    return flag
 }
 
 function* cancelSelectedTag(){

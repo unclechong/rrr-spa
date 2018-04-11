@@ -134,7 +134,7 @@ function* hanleNewTagSave({args}){
     if (step === 1 || step === '1') {
         const result = yield call(datafusionApi.handleAddNewTagSave, {...args.data});
         const treeData = yield select(state => state.getIn(['datafusion', 'treeData']).toJS());
-        const _index = _.last(_.last(treeData.databaseSource).key.split('-'))
+        const _index = treeData.databaseSource.length?_.last(_.last(treeData.databaseSource).key.split('-')):-1
         const _key =`1-${Number(_index)+1}`;
         treeData.databaseSource.push({
             title: data.sourceName,
@@ -212,7 +212,7 @@ function* hanleNewDmlTagSave({args}){
     if (step === 1 || step === '1') {
         const result = yield call(datafusionApi.handleAddNewTagSave, {...args.data});
         const treeData = yield select(state => state.getIn(['datafusion', 'treeData']).toJS());
-        const _index = _.last(_.last(treeData.documentSource).key.split('-'))
+        const _index = treeData.documentSource.length?_.last(_.last(treeData.documentSource).key.split('-')):-1
         const _key =`0-${Number(_index)+1}`;
         treeData.documentSource.push({
             title: data.sourceName,
