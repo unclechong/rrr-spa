@@ -87,7 +87,7 @@ const EditableCellSelect = ({ editable, value, onChange, type, tree }) => {
 const tableAddNewItem = {
     anotherName: "",
     attrList: [],
-    dataType: "字符串",
+    dataType: "string",
     description: "",
     endNodeId: "",
     endNodeName: "",

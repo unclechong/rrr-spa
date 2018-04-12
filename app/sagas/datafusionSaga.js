@@ -74,7 +74,7 @@ function* db_add_mappingConfNext(){
             call(datafusionApi.getOneFields, {mongoId: newTagData[0].id})
         ]
         // 上面步骤条+1
-        yield put({type: 'datafusionChildDbAdd/ONLOAD_STEP'+ nextMappingConfStep + '_TREE_DATA', status: 'next', payload: {treeData,treeData2}});
+        yield put({type: 'datafusionChildDbAdd/ONLOAD_STEP'+ nextMappingConfStep + '_TREE_DATA', status: 'next', payload: {treeData:[{title: "名称", key: ""},...treeData],treeData2}});
         yield put({type: 'datafusionChildDbAdd/HANDLE_MAPPING_STEP', status: 'next'});
         // yield put({type: 'datafusionChildDbAdd/HANDLE_MC_SLEECT_CHANGE', args: {value:[{key: selectValue, label: selectLabel},{key: '5ab8929f1e36be17c06e4707', label: '数据表11'}], index: null}});
         yield put({type: 'datafusionChildDbAdd/HANDLE_MC_SLEECT_CHANGE', args: {value:[{key: selectValue, label: selectLabel},{key: newTagData[0].id, label: newTagData[0].sourceName}], index: null}});
@@ -182,7 +182,7 @@ function* handleMCSelectChange({args:{value,index}}){
     const mappingConfStep = yield select(state => state.getIn(['datafusionChildDbAdd', 'mappingConfStep']));
     if (mappingConfStep === 1) {
         const treeData = yield call(datafusionApi.selectConceptById, {id: value.key, type: 'attr'});
-        yield put({type: 'datafusionChildDbAdd/ONLOAD_STEP'+ mappingConfStep + '_TREE_DATA', status: 'next', payload: {treeData}});
+        yield put({type: 'datafusionChildDbAdd/ONLOAD_STEP'+ mappingConfStep + '_TREE_DATA', status: 'next', payload: {treeData:[{title: "名称", key: ""}, ...treeData]}});
         yield put({type: 'datafusionChildDbAdd/HANDLE_MC_SLEECT_CHANGE', args: {value:{key: value.key, label: value.label}, index}});
     }else if(mappingConfStep === 2){
         const treeData = yield call(datafusionApi.selectConceptById, {id: value.key, type: 'relation'});
