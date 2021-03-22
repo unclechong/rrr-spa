@@ -40,7 +40,7 @@
     },
     "dependencies": {
         "antd": "^3.1.6",
-        "axios": "^0.17.1",
+        "axios": "^0.21.1",
         "babel-runtime": "^6.26.0",
         "koa": "^2.4.1",
         "koa-bodyparser": "^4.2.0",
